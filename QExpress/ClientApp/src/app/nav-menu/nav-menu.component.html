@@ -28,16 +28,36 @@
             [routerLinkActive]="['link-active']"
             [routerLinkActiveOptions]="{ exact: true }"
           >
-            <a class="nav-link text-light" [routerLink]="['/']">Home</a>
+            <a class="nav-link text-light" [routerLink]="['/']">Sorszámaim</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/counter']"
-              >Counter</a
+            <a class="nav-link text-light" [routerLink]="['/history']"
+              >Sorszám előzmények</a
             >
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/fetch-data']"
-              >Fetch data</a
+            <a class="nav-link text-light" [routerLink]="['/waiting']"
+              >Várakozó ügyfelek</a
+            >
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/category/list']"
+              >Kategóriák</a
+            >
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/employee/list']"
+              >Alkalmazottak</a
+            >
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/site/list']"
+              >Telephelyek</a
+            >
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/company/list']"
+              >Cégek</a
             >
           </li>
         </ul>

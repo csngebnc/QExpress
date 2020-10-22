@@ -1,0 +1,43 @@
+.row{
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.card{
+    margin-bottom: 30px;
+    color: #363c47;
+    border-color: #061f4d;
+    border-width: 2px;
+    transition: all 0.5s;
+}
+
+.img-fluid{
+    width: 60px;
+    margin-bottom: 20px;
+}
+
+.card-title{
+    margin-bottom: 0px;
+}
+
+.number{
+    margin-top: -20px;
+    margin-bottom: 0px;
+    font-size: 50px;
+}
+
+.text-muted{
+    margin-bottom: 0px;
+}
+
+.card:hover{
+    box-shadow: 5px 5px 10px lightblue;
+}
+
+.add-button{
+    font-size: 160px;
+}
+
+.add-card{
+    height: 281px;
+}
