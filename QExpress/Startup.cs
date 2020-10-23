@@ -26,15 +26,17 @@ namespace QExpress
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddSwaggerDocument();
+
+            services.AddDbContext<QExpressDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<Felhasznalo>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<QExpressDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<Felhasznalo, QExpressDbContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
@@ -61,6 +63,10 @@ namespace QExpress
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
