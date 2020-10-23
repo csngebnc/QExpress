@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import { faMobile } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-current',
@@ -8,7 +9,55 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class CurrentComponent{
 
+  active_queue = [];
+
   constructor(public dialog: MatDialog) {
+
+    this.active_queue = 
+    [{
+      company: "T-Mobile",
+      companylogo: "../../../assets/tmobile.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+    {
+      company: "UPC",
+      companylogo: "../../../assets/upc.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+    {
+      company: "T-Mobile",
+      companylogo: "../../../assets/tmobile.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+    {
+      company: "T-Mobile",
+      companylogo: "../../../assets/tmobile.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+    {
+      company: "T-Mobile",
+      companylogo: "../../../assets/tmobile.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+    {
+      company: "T-Mobile",
+      companylogo: "../../../assets/tmobile.png",
+      address: "Bartók Béla utca 23.",
+      number: 34,
+      inline: 5
+    },
+  ]
+
   }
 
   openDialog() {

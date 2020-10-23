@@ -23,5 +23,4 @@ export class QueueService {
         this.active_queue.splice(index, 1);
     }
   }
-
 }

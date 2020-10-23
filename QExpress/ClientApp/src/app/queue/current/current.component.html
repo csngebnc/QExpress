@@ -1,88 +1,24 @@
-<div class="row">
-  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-    <div class="card text-center view add-card p-2">
-      <div class="card-body">
-        <a role="button" class="card-block stretched-link text-decoration-none">
-          <h5 class="card-title add-button" (click)="openDialog()">+</h5>
-        </a>
-      </div>
-    </div>
-  </div>  
-  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-      <div class="card text-center view">
-        <div class="card-body">
-            <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-            <h5 class="card-title">T-Mobile</h5>
-            <p class="card-text">Bartók Béla utca 24.</p>
-            <p class="number">045</p>
-            <p class="text-muted">Várakozók száma: 5</p>
-        </div>
-      </div>
-    </div>
+<div class="container">
+  <div class="row">
     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
+      <div class="card text-center view add-card p-2">
+        <div class="card-body">
+          <a role="button" class="card-block stretched-link text-decoration-none">
+            <h5 class="card-title add-button" (click)="openDialog()">+</h5>
+          </a>
         </div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
+    </div> 
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3" *ngFor="let queue of active_queue">
+      <div class="card text-center">
+        <div class="card-body">
+            <img class="img-fluid" [src]="queue.companylogo" alt="">
+            <h5 class="card-title">{{queue.company}}</h5>
+            <p class="card-text">{{queue.address}}</p>
+            <p class="number">{{queue.number}}</p>
+            <p class="text-muted">Várakozók száma: {{queue.inline}}</p>
         </div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div class="card text-center">
-          <div class="card-body">
-              <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
-              <h5 class="card-title">T-Mobile</h5>
-              <p class="card-text">Bartók Béla utca 24.</p>
-              <p class="number">045</p>
-              <p class="text-muted">Várakozók száma: 5</p>
-          </div>
-        </div>
-      </div>
+    </div>
   </div>
+</div>

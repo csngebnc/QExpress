@@ -11,8 +11,9 @@
     transition: all 0.5s;
 }
 
+
 .img-fluid{
-    width: 60px;
+    height: 75px;
     margin-bottom: 20px;
 }
 
