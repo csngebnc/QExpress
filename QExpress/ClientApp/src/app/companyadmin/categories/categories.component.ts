@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-categories',
@@ -11,5 +12,8 @@ export class CategoriesComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  faEdit = faEdit;
+  faTrashAlt = faTrashAlt;
 
 }

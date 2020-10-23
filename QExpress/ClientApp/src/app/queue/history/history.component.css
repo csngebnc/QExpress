@@ -1,0 +1,39 @@
+.page{
+    margin-top: 0px;
+}
+
+.entry{
+    margin-top: 0px;
+    border-bottom: 2px solid #448ccb;
+}
+
+img{
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    display: block;
+    margin-top: 10px;
+}
+
+.col-1{
+    text-align: center;
+    margin-right: 1000px;
+}
+
+.company-name{
+    font-size: 30px;
+    font-family: Rogan;
+    margin-bottom: -5px;
+}
+
+.number{
+    font-size: 50px;
+    font-family: Rogan;
+    text-align: center;
+    padding-right: 38px;
+    color: #448ccb;
+}
+
+.date{
+    margin-bottom: 5px;
+}

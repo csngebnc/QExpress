@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faBullhorn, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-waiting',
@@ -11,5 +12,9 @@ export class WaitingComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  faEdit = faEdit;
+  faTrashAlt = faTrashAlt;
+  bullhorn = faBullhorn;
 
 }

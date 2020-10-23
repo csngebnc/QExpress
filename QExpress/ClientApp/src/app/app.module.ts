@@ -21,8 +21,9 @@ import { WaitingComponent } from './employee/waiting/waiting.component';
 import { CurrentComponent } from './queue/current/current.component';
 import { HistoryComponent } from './queue/history/history.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
-import { MatDialogModule } from '@angular/material/dialog'
-import { NewDialog } from './queue/current/current.component'
+import { MatDialogModule } from '@angular/material/dialog';
+import { NewDialog } from './queue/current/current.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 var routes = [
   {
@@ -52,7 +53,7 @@ var routes = [
   },
   {
     component: RegistercompanyComponent,
-    path: 'company/register'
+    path: 'company/edit/:companyid'
   },
   {
     component: CompaniesComponent,
@@ -60,7 +61,7 @@ var routes = [
   },
   {
     component: EditsiteComponent,
-    path: 'site/edit'
+    path: 'site/edit/:siteid'
   },
   {
     component:SitesComponent,
@@ -68,7 +69,7 @@ var routes = [
   },
   {
     component:EditemployeeComponent,
-    path: 'employee/edit'
+    path: 'employee/edit/:employeeid'
   },
   {
     component:EmployeesComponent,
@@ -76,7 +77,7 @@ var routes = [
   },
   {
     component:EditcategoryComponent,
-    path: 'category/edit'
+    path: 'category/edit/:categoryid'
   },
   {
     component:CategoriesComponent,
@@ -112,6 +113,7 @@ var routes = [
     ApiAuthorizationModule,
     RouterModule.forRoot(routes),
     MatDialogModule,
+    FontAwesomeModule,
   ],
   exports:[
     MatDialogModule,
@@ -121,4 +123,6 @@ var routes = [
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  
+}

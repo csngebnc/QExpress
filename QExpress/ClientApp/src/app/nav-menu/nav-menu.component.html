@@ -1,6 +1,6 @@
 <header>
   <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3"
+    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3"
   >
     <div class="container">
       <a class="navbar-brand" [routerLink]="['/']">
@@ -24,38 +24,39 @@
         <app-login-menu></app-login-menu>
         <ul class="navbar-nav flex-grow">
           <li
+            *ngIf = "user_level == 1"
             class="nav-item"
             [routerLinkActive]="['link-active']"
             [routerLinkActiveOptions]="{ exact: true }"
           >
             <a class="nav-link text-light" [routerLink]="['/']">Sorszámaim</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li *ngIf = "user_level == 1" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/history']"
               >Sorszám előzmények</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li *ngIf = "user_level == 2" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/waiting']"
               >Várakozó ügyfelek</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li *ngIf = "user_level == 3" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/category/list']"
               >Kategóriák</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li *ngIf = "user_level == 3" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/employee/list']"
               >Alkalmazottak</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li  *ngIf = "user_level == 3"class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/site/list']"
               >Telephelyek</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li *ngIf = "user_level == 4" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/company/list']"
               >Cégek</a
             >

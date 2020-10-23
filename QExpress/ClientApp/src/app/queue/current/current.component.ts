@@ -8,7 +8,8 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class CurrentComponent{
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog) {
+  }
 
   openDialog() {
     const dialogRef = this.dialog.open(NewDialog);

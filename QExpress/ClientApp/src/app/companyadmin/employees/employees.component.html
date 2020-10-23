@@ -1,1 +1,39 @@
-<p>employees works!</p>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Alkalmazottak</h2>
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>
+                        Név
+                    </th>
+                    <th>
+                        E-mail
+                    </th>
+                    <th>
+                        Telephely
+                    </th>
+                    <th>
+                        Műveletek
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        Németh Ádám
+                    </td>
+                    <td>
+                        nemeth.adam@upc.hu
+                    </td>
+                    <td>
+                        Bartók Béla utca 4.
+                    </td>
+                    <td style="width:30px;white-space: nowrap">
+                        <a href="/employee/edit/:employeeid" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+        </div>
+    </div>
+</div>
