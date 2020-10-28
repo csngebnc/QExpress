@@ -24,6 +24,7 @@ import { EditUserComponent } from './user/edit-user/edit-user.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NewDialog } from './queue/current/current.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 var routes = [
   {
@@ -114,6 +115,7 @@ var routes = [
     RouterModule.forRoot(routes),
     MatDialogModule,
     FontAwesomeModule,
+    BrowserAnimationsModule,
   ],
   exports:[
     MatDialogModule,

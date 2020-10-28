@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import { faMobile } from '@fortawesome/free-solid-svg-icons';
+import {MatDialog} from '@angular/material';
 
 @Component({
   selector: 'app-current',
   templateUrl: './current.component.html',
-  styleUrls: ['./current.component.css']
+  styleUrls: ['./current.component.css'],
 })
 export class CurrentComponent{
 
@@ -56,9 +55,7 @@ export class CurrentComponent{
       number: 34,
       inline: 5
     },
-  ]
-
-  }
+  ]}
 
   openDialog() {
     const dialogRef = this.dialog.open(NewDialog);
@@ -71,7 +68,7 @@ export class CurrentComponent{
 
 @Component({
   selector: 'queue-new',
-  templateUrl: 'new-dialog.html',
+  templateUrl: './new-dialog.html',
   styleUrls: ['./new-dialog.css']
 })
 export class NewDialog {}

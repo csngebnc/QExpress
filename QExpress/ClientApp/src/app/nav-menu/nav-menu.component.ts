@@ -8,7 +8,8 @@ import { Component } from '@angular/core';
 export class NavMenuComponent {
   isExpanded = false;
 
-  user_level = 4;
+  user_level = 3;
+  
 
   collapse() {
     this.isExpanded = false;
