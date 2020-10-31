@@ -1,51 +1,51 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {RouterModule} from '@angular/router';
 
-import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
-import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
-import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
-import { CompaniesComponent } from './admin/companies/companies.component';
-import { RegistercompanyComponent } from './admin/registercompany/registercompany.component';
-import { CategoriesComponent } from './companyadmin/categories/categories.component';
-import { EmployeesComponent } from './companyadmin/employees/employees.component';
-import { EditcategoryComponent } from './companyadmin/editcategory/editcategory.component'
-import { EditemployeeComponent } from './companyadmin/editemployee/editemployee.component'
-import { EditsiteComponent } from './companyadmin/editsite/editsite.component'
-import { SitesComponent } from './companyadmin/sites/sites.component';
-import { WaitingComponent } from './employee/waiting/waiting.component';
-import { CurrentComponent } from './queue/current/current.component';
-import { HistoryComponent } from './queue/history/history.component';
-import { EditUserComponent } from './user/edit-user/edit-user.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { NewDialog } from './queue/current/current.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {AppComponent} from './app.component';
+import {NavMenuComponent} from './nav-menu/nav-menu.component';
+import {ApiAuthorizationModule} from 'src/api-authorization/api-authorization.module';
+import {AuthorizeGuard} from 'src/api-authorization/authorize.guard';
+import {AuthorizeInterceptor} from 'src/api-authorization/authorize.interceptor';
+import {CompaniesComponent} from './admin/companies/companies.component';
+import {RegistercompanyComponent} from './admin/registercompany/registercompany.component';
+import {CategoriesComponent} from './companyadmin/categories/categories.component';
+import {EmployeesComponent} from './companyadmin/employees/employees.component';
+import {EditcategoryComponent} from './companyadmin/editcategory/editcategory.component';
+import {EditemployeeComponent} from './companyadmin/editemployee/editemployee.component';
+import {EditsiteComponent} from './companyadmin/editsite/editsite.component';
+import {SitesComponent} from './companyadmin/sites/sites.component';
+import {WaitingComponent} from './employee/waiting/waiting.component';
+import {CurrentComponent} from './queue/current/current.component';
+import {HistoryComponent} from './queue/history/history.component';
+import {EditUserComponent} from './user/edit-user/edit-user.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {NewDialog} from './queue/current/current.component';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 var routes = [
   {
-    component:CurrentComponent,
+    component: CurrentComponent,
     path: ''
   },
   {
-    component:EditUserComponent,
+    component: EditUserComponent,
     path: 'profile'
   },
-  
+
   {
-    component:HistoryComponent,
+    component: HistoryComponent,
     path: 'history'
   },
   {
-    component:WaitingComponent,
+    component: WaitingComponent,
     path: 'waiting'
   },
   {
-    component:CurrentComponent,
+    component: CurrentComponent,
     path: ''
   },
   {
@@ -65,23 +65,23 @@ var routes = [
     path: 'site/edit/:siteid'
   },
   {
-    component:SitesComponent,
+    component: SitesComponent,
     path: 'site/list'
   },
   {
-    component:EditemployeeComponent,
+    component: EditemployeeComponent,
     path: 'employee/edit/:employeeid'
   },
   {
-    component:EmployeesComponent,
+    component: EmployeesComponent,
     path: 'employee/list'
   },
   {
-    component:EditcategoryComponent,
+    component: EditcategoryComponent,
     path: 'category/edit/:categoryid'
   },
   {
-    component:CategoriesComponent,
+    component: CategoriesComponent,
     path: 'category/list'
   },
 ];
@@ -108,23 +108,23 @@ var routes = [
     NewDialog,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
-    ApiAuthorizationModule,
+    // ApiAuthorizationModule,
     RouterModule.forRoot(routes),
     MatDialogModule,
     FontAwesomeModule,
     BrowserAnimationsModule,
   ],
-  exports:[
+  exports: [
     MatDialogModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }
+    // {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { 
-  
+export class AppModule {
+
 }

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {HttpService} from '../../http.service';
 
 @Component({
   selector: 'app-registercompany',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegistercompanyComponent implements OnInit {
 
-  constructor() { }
+  constructor(private httpService: HttpService) {
+  }
 
   ngOnInit() {
+  }
+
+  public save(data): void {
+    this.httpService.addCompany(data).subscribe(
+      response => console.log(response)
+    );
   }
 
 }

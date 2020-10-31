@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {HttpService} from '../../http.service';
+
+export class Category {
+  nev: string;
+}
 
 @Component({
   selector: 'app-editcategory',
@@ -7,9 +12,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EditcategoryComponent implements OnInit {
 
-  constructor() { }
+  public category: Category = {
+    nev: 'Example name',
+  };
+
+  constructor(private httpService: HttpService) {
+  }
 
   ngOnInit() {
+  }
+
+  public submitCategory(): void {
+    this.httpService.addCategory(this.category).subscribe(
+      res => console.log(res)
+    );
   }
 
 }
