@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
 using QExpress.Models;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class KategoriaController : ControllerBase
     {
@@ -21,7 +23,9 @@ namespace QExpress.Controllers
             _context = context;
         }
 
-        // Kategoriak lekerese
+        /*
+         * Az osszes kategoria lekerdezese
+         */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriak()
         {
@@ -34,7 +38,9 @@ namespace QExpress.Controllers
             return dto;
         }
 
-        // Egy kategoria lekerese
+        /*
+         * Parameterkent kapott ID-val rendelkezo kategoria lekerese.
+         */
         [HttpGet("{id}")]
         public async Task<ActionResult<KategoriaDTO>> GetKategoria(int id)
         {
@@ -48,7 +54,9 @@ namespace QExpress.Controllers
             return new KategoriaDTO(kategoria);
         }
 
-        // Kategoria szerkesztese
+        /*
+         * Parameterkent kapott ID-val rendelkezo kategoria nevenek megvaltoztatasa.
+         */
         [HttpPut("{id}/NewName")]
         public async Task<IActionResult> EditKategoria(int id, String uj_megnevezes)
         {
@@ -56,11 +64,14 @@ namespace QExpress.Controllers
             kategoria.Megnevezes = uj_megnevezes;
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            var dto = new KategoriaDTO(kategoria);
+            return CreatedAtAction(nameof(GetKategoria), new { id = kategoria.Id }, dto);
         }
 
 
-        // Kategoria felvetele
+        /*
+         * Uj kategoria rogzitese megadott ceghez.
+         */
         [HttpPost]
         [Route("[action]")]
         public async Task<ActionResult<KategoriaDTO>> AddKategoria(String nev, int ceg_id)
@@ -74,7 +85,9 @@ namespace QExpress.Controllers
         }
 
 
-        // Kategoria torlese
+        /*
+         * Parameterkent kapott ID-val rendelkezo kategoria torlese, valamint a kategoriahoz tartozo sorszamok torlese.
+         */
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKategoria(int id)
         {
@@ -84,12 +97,17 @@ namespace QExpress.Controllers
                 return NotFound();
             }
 
+            var sorszamok = await _context.Sorszam.Where(s => s.KategoriaId == kategoria.Id).ToListAsync();
+            _context.Sorszam.RemoveRange(sorszamok);
             _context.Kategoria.Remove(kategoria);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
+        /*
+        * Ellenorzes, hogy a parameterkent kapott ID-val letezik-e kategoria.
+        */
         private bool KategoriaExists(int id)
         {
             return _context.Kategoria.Any(e => e.Id == id);
