@@ -8,7 +8,7 @@ import { Company } from './models/Company'
 })
 export class HttpService {
 
-  private baseUrl = 'https://localhost:5001/api/';
+  private baseUrl = 'https://localhost:44390/api/';
 
   constructor(private httpClient: HttpClient) {
   }
