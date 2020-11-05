@@ -1,4 +1,4 @@
-export class Cegadmin {
+export class User {
   id: string;
   userName: string;
   normalizedUsername: string;

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import { Company } from '../app/admin/companies/Company'
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class HttpService {
 
   // Összes lekérés
   // Összes cég lekérése
-  public getCompanies(): Observable<any> {
+  public getCompanies(): Observable<Company> {
     console.log('get companies');
     return this.getRequest('Ceg');
   }
