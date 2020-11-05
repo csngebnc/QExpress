@@ -1,6 +1,7 @@
-export class Company
-{
+import { User } from "oidc-client";
+
+export interface Company{
   id: number;
-  nev: string;
-  cegadminid: string;
+  name: string;
+  admin: User;
 }

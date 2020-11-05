@@ -1,4 +1,4 @@
-export class User {
+export interface User {
   id: string;
   userName: string;
   normalizedUsername: string;
@@ -14,5 +14,5 @@ export class User {
   lockoutEnd: Date;
   lockoutEnabled: boolean;
   accessFailedCount: number;
-  jogosultsagi_szint: number;
+  userLevel: number;
 }

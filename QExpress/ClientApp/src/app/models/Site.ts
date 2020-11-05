@@ -1,5 +1,5 @@
-export class Site {
+export interface Site{
   id: number;
-  cim: string;
-  cegid: number;
+  address: string;
+  companyid: number;
 }

@@ -1,7 +1,7 @@
 import { Company } from "./Company";
 
-export class Category{
+export interface Category{
     id: number;
-    megnevezes: string;
-    ceg: Company;
+    name: string;
+    company: Company;
 }
