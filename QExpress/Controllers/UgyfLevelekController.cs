@@ -6,6 +6,7 @@ using QExpress.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace QExpress.Controllers
@@ -22,16 +23,22 @@ namespace QExpress.Controllers
             _context = context;
         }
 
-        // Ugyfél levelek lekerese
-        [HttpGet]
+        /*
+         * Minden ügyfél levél lekérése
+         * api/UgyfLevelek/GetUgyfLevelek
+         */
+        [HttpGet("/GetUgyfLevelek")]
         public async Task<ActionResult<IEnumerable<UgyfLevelek>>> GetUgyfLevelek()
         {
             return await _context.UgyfLevelek.ToListAsync();
         }
 
-        // Ugyfél levelek lekerese
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UgyfLevelekDTO>> GetUgyfLevelek(int id)
+        /*
+         * Adott id-vel rendelező ügyféllevél lekérése
+         * api/UgyfLevelek/GetUgyfLevel/{id}
+         */
+        [HttpGet("/GetUgyfLevel/{id}")]
+        public async Task<ActionResult<UgyfLevelekDTO>> GetUgyfLevel(int id)
         {
             var level = await _context.UgyfLevelek.FindAsync(id);
 
@@ -43,23 +50,35 @@ namespace QExpress.Controllers
             return new UgyfLevelekDTO(level);
         }
 
-        // Ugyfél levelek felvetele
-        [HttpPost]
-        [Route("[action]")]
-        public async Task<ActionResult<UgyfLevelekDTO>> AddUgyfLevelek(String panasz)
+        /*
+         * Aktuálisan bejelentkezett felhasználóhoz panasz rögzítése paraméterként kapott céghez.
+         * api/UgyfLevelek/AddUgyfLevel
+         * params: panasz: a panasz, ceg_id: bepanaszolt cég id-ja
+         */
+        [HttpPost("/AddUgyfLevel")]
+        public async Task<ActionResult<UgyfLevelekDTO>> AddUgyfLevel(String panasz, int ceg_id)
         {
-            UgyfLevelek newPanasz = new UgyfLevelek { Panasz = panasz };
-            _context.UgyfLevelek.Add(newPanasz);
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            if(!_context.Ceg.Any(c=>c.Id == ceg_id))
+            {
+                return NotFound();
+            }
+
+            UgyfLevelek ujPanasz = new UgyfLevelek { Panasz = panasz, CegId = ceg_id, PanaszoloId = user_id };
+            _context.UgyfLevelek.Add(ujPanasz);
             await _context.SaveChangesAsync();
 
-            var dto = new UgyfLevelekDTO(newPanasz);
+            var dto = new UgyfLevelekDTO(ujPanasz);
 
-            return CreatedAtAction(nameof(GetUgyfLevelek), new { id = newPanasz.Id }, dto);
+            return CreatedAtAction(nameof(GetUgyfLevelek), new { id = ujPanasz.Id }, dto);
         }
 
-        // Ugyfél levelek torlese  
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<UgyfLevelekDTO>> DeleteUgyfLevelek(int id)
+        /*
+         * Adott id-val rendelkező ügyféllevél törlése
+         * api/UgyfLevelek/DeleteUgyfLevel/{id}
+         */
+        [HttpDelete("/DeleteUgyfLevel/{id}")]
+        public async Task<ActionResult<UgyfLevelekDTO>> DeleteUgyfLevel(int id)
         {
             var panasz = await _context.UgyfLevelek.FindAsync(id);
             if (panasz == null)
