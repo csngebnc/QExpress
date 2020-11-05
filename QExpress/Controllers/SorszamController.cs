@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NJsonSchema;
 using QExpress.Data;
 using QExpress.Models;
 using QExpress.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace QExpress.Controllers
@@ -21,23 +23,39 @@ namespace QExpress.Controllers
             _context = context;
         }
 
-        //Sorszám létrehozása
-        [HttpPost]
-        [Route("[action]")]
-        public async Task<ActionResult<SorszamDTO>> AddSorszam(int idTelephely)
+        /*
+         * Sorszám felvétele aktuális felhasználóhoz
+         * api/Sorszam/AddSorszam
+         * params: ugyfel_id, kategoria_id, telephely_id
+         */
+        [HttpPost("/AddSorszam")]
+        public async Task<ActionResult<SorszamDTO>> AddSorszam(int kategoria_id, int telephely_id)
         {
+            string ugyfel_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            Sorszam newSorszam = new Sorszam { SorszamIdTelephelyen = idTelephely };
-            _context.Sorszam.Add(newSorszam);
+            int sorszam_counter = _context.Sorszam.Where(t => t.TelephelyId == telephely_id).Max(n => n.SorszamIdTelephelyen);
+
+            Sorszam ujSorszam = new Sorszam { 
+                UgyfelId = ugyfel_id,
+                Allapot = "Aktív", 
+                KategoriaId = kategoria_id, 
+                TelephelyId = telephely_id, 
+                Idopont = DateTime.Now, 
+                SorszamIdTelephelyen = sorszam_counter
+            };
+            _context.Sorszam.Add(ujSorszam);
             await _context.SaveChangesAsync();
 
-            var dto = new SorszamDTO(newSorszam);
-            return CreatedAtAction(nameof(GetSorzsamok), new { id = newSorszam.Id }, dto);
+            var dto = new SorszamDTO(ujSorszam);
+            return CreatedAtAction(nameof(GetSorszam), new { id = ujSorszam.Id }, dto);
         }
 
-        //Sorszámok lekérdezése
-        [HttpGet]
-        public async Task<ActionResult<SorszamDTO>> GetSorzsamok(int id)
+        /*
+         * Adott id-val rendelkező sorszám lekérése
+         * api/Sorszam/GetSorszam/{id}
+         */
+        [HttpGet("/GetSorszam/{id}")]
+        public async Task<ActionResult<SorszamDTO>> GetSorszam(int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);
 
@@ -49,8 +67,11 @@ namespace QExpress.Controllers
             return new SorszamDTO(sorszam);
         }
 
-        //Sorszám törlése  
-        [HttpDelete("{id}")]
+        /*
+         * Adott id-val rendelkező sorszám törlése
+         * api/Sorszam/DeleteSorszam/{id}
+         */
+        [HttpDelete("/DeleteSorszam/{id}")]
         public async Task<ActionResult<SorszamDTO>> DeleteSorszam(int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);

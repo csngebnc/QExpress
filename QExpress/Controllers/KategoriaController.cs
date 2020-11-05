@@ -25,8 +25,9 @@ namespace QExpress.Controllers
 
         /*
          * Az osszes kategoria lekerdezese
+         * api/Kategoria/GetKategoriak
          */
-        [HttpGet]
+        [HttpGet("/GetKategoriak")]
         public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriak()
         {
             var katekoriak = await _context.Kategoria.ToListAsync();
@@ -40,8 +41,10 @@ namespace QExpress.Controllers
 
         /*
          * Parameterkent kapott ID-val rendelkezo kategoria lekerese.
+         * api/Ceg/GetCeg/{id}
+         * param: id: lekérendő cég id-ja
          */
-        [HttpGet("{id}")]
+        [HttpGet("/GetCeg/{id}")]
         public async Task<ActionResult<KategoriaDTO>> GetKategoria(int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);
@@ -56,6 +59,8 @@ namespace QExpress.Controllers
 
         /*
          * Parameterkent kapott ID-val rendelkezo kategoria nevenek megvaltoztatasa.
+         * api/Kategoria/{id}/NewName
+         * params: id: kategoria id-ja, uj_megnevezes: kategoria uj neve
          */
         [HttpPut("{id}/NewName")]
         public async Task<IActionResult> EditKategoria(int id, String uj_megnevezes)
@@ -71,9 +76,10 @@ namespace QExpress.Controllers
 
         /*
          * Uj kategoria rogzitese megadott ceghez.
+         * api/Kategoria/AddKategoria
+         * params: nev: kategoria neve, ceg_id: cég id-ja
          */
-        [HttpPost]
-        [Route("[action]")]
+        [HttpPost("/AddKategoria")]
         public async Task<ActionResult<KategoriaDTO>> AddKategoria(String nev, int ceg_id)
         {
             Kategoria newKat = new Kategoria { Megnevezes = nev, CegId = ceg_id };
@@ -87,8 +93,10 @@ namespace QExpress.Controllers
 
         /*
          * Parameterkent kapott ID-val rendelkezo kategoria torlese, valamint a kategoriahoz tartozo sorszamok torlese.
+         * api/Kategoria/DeleteKategoria/{id}
+         * param: id: törlendő cég id-ja
          */
-        [HttpDelete("{id}")]
+        [HttpDelete("/DeleteKategoria/{id}")]
         public async Task<IActionResult> DeleteKategoria(int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);

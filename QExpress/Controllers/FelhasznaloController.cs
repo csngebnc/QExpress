@@ -23,6 +23,7 @@ namespace QExpress.Controllers
 
         /*
          * Aktualisan bejelentkezett felhasznalo lekerese.
+         * api/Felhasznalo/GetCurrentFelhasznalo
          */
         [HttpGet("/GetCurrentFelhasznalo", Name = "CurrentFelhasznalo")]
         public async Task<ActionResult<FelhasznaloDTO>> GetCurrentFelhasznalo()
@@ -34,6 +35,7 @@ namespace QExpress.Controllers
 
         /*
          * Osszes felhasznalo lekerese
+         * api/Felhasznalo/GetFelhasznalok
          */
         [HttpGet("/GetFelhasznalok", Name = "GetFelhasznalok")]
         public async Task<ActionResult<IEnumerable<FelhasznaloDTO>>> GetFelhasznalok()
@@ -49,6 +51,7 @@ namespace QExpress.Controllers
 
         /*
          * Egy felhasznalo lekerese megadott ID alapjan.
+         * api/Felhasznalo/GetFelhasznalo/{id}
          */
         [HttpGet("GetFelhasznalo/{id}", Name = "GetFelhasznalo")]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo(String id)
@@ -65,6 +68,7 @@ namespace QExpress.Controllers
 
         /*
          * A bejelentkezett felhasznalo aktiv sorszamainak lekerese
+         * api/Felhasznalo/AktivSorszamok
          */
         [HttpGet("/AktivSorszamok", Name = "GetAktivSorszamok")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetFelhasznaloSorszamai()
@@ -81,8 +85,9 @@ namespace QExpress.Controllers
 
         /*
          * A bejelentkezett felhasznalo mar korabban behivott sorszamainak lekerese
+         * api/Felhasznalo/KorabbiSorszamok
          */
-        [HttpGet("/KorabbiSorszamok", Name = "GetKorabbiSorszamok")]
+        [HttpGet("/KorabbiSorszamok", Name = "KorabbiSorszamok")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetKorabbiSorszamok()
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
@@ -97,6 +102,8 @@ namespace QExpress.Controllers
 
         /*
          * A bejelentkezett felhasznalo e-mail cimenek megvaltoztatasa
+         * api/Felhasznalo/NewEmail
+         * param: uj email
          */
         [HttpPost("/NewEmail", Name = "NewEmail")]
         public async Task<IActionResult> EditFelhasznaloEmail(String uj_email)
@@ -122,6 +129,8 @@ namespace QExpress.Controllers
 
         /*
          * A bejelentkezett felhasznalo jelszavanak megvaltoztatasa
+         * api/Felhasznalo/NewPassword
+         * params: regi_jelszo, uj_jelszo
          */
         [HttpPost("/NewPassword", Name = "NewPassword")]
         public async Task<IActionResult> EditFelhasznaloJelszo(String regi_jelszo, String uj_jelszo)
@@ -149,7 +158,8 @@ namespace QExpress.Controllers
 
         /*
          * Egy felhasznalo felvetele
-         * Aktualis login mellett nem feltetlenul szukseges.
+         * ###### Aktualis login mellett nem feltetlenul szukseges. ######
+         * api/Felhasznalo/AddFelhasznalo
          */
         [HttpPost("AddFelhasznalo", Name = "AddFelhasznalo")]
         public async Task<ActionResult<FelhasznaloDTO>> AddFelhasznaloParams(String name, String email, String pw, int jog_szint)
@@ -163,8 +173,11 @@ namespace QExpress.Controllers
             return CreatedAtAction(nameof(GetFelhasznalo), new { id = newUser.Id }, dto);
         }
 
-        // Felhasznalo torlese
-        [HttpDelete("{id}")]
+        /*
+         * Megadott ID-val rendelkezo felhasznalo torlese
+         * api/Felhasznalo/DeleteFelhasznalo/{id}
+         */
+        [HttpDelete("/DeleteFelhasznalo/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo(String id)
         {
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);
@@ -185,26 +198,26 @@ namespace QExpress.Controllers
 
         /*
          * Megadott ID-val rendelkezo felhasznalo hozzarendelese a megadott telephelyhez.
+         * api/Felhasznalo/SetTelephely
+         * param: FelhasznaloTelephelyDTO --> FelhasznaloId, TelephelyId
          */
-        [HttpPost("SetTelephely", Name = "SetTelephely")]
-        public async Task<IActionResult> SetTelephely(String id, int telephely_id)
+        [HttpPost("/SetTelephely", Name = "SetTelephely")]
+        public async Task<IActionResult> SetTelephely(FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(id)).First();
-            if (!FelhasznaloExists(id))
-            {
-                return NotFound();
-            }
-            if (!id.Equals(felh.Id))
-            {
-                return BadRequest();
-            }
-
-            if (!_context.Telephely.Any(e => e.Id == telephely_id))
+            Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
+            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {
                 return NotFound();
             }
 
-            _context.FelhasznaloTelephely.Add(new FelhasznaloTelephely { FelhasznaloId = id, TelephelyId = telephely_id });
+            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
+            {
+                return NotFound();
+            }
+
+            _context.FelhasznaloTelephely.Add(new FelhasznaloTelephely { FelhasznaloId = felhasznaloTelephely.FelhasznaloId, TelephelyId = felhasznaloTelephely.TelephelyId });
+            felh.jogosultsagi_szint = 2;
+
             await _context.SaveChangesAsync();
 
             var dto = new FelhasznaloDTO(felh);
@@ -214,25 +227,32 @@ namespace QExpress.Controllers
 
         /*
          * A megadott felhasznalo eltavolitasa egy megadott telephely alkalmazotti listajabol.
+         * api/Felhasznalo/DelFromTelephely
+         * param: FelhasznaloTelephelyDTO --> FelhasznaloId, TelephelyId
          */
-        [HttpPost("DelFromTelephely", Name = "DelFromTelephely")]
-        public async Task<IActionResult> DelFromTelephely(String id, int telephely_id)
+        [HttpPost("/DelFromTelephely", Name = "DelFromTelephely")]
+        public async Task<IActionResult> DelFromTelephely(FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            if (!FelhasznaloExists(id))
+            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {
                 return NotFound();
             }
 
-            if (!_context.Telephely.Any(e => e.Id == telephely_id))
+            Felhasznalo felh = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
+
+            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
                 return NotFound();
             }
 
-            var felhTelep = _context.FelhasznaloTelephely.Where(fh => fh.FelhasznaloId.Equals(id)).Where(fh => fh.TelephelyId == telephely_id).ToList();
-            foreach (var item in felhTelep)
-            {
-                _context.FelhasznaloTelephely.Remove(item);
-            }
+            var felhTelep = await _context.FelhasznaloTelephely
+                .Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId))
+                .Where(t => t.TelephelyId == felhasznaloTelephely.TelephelyId).FirstAsync();
+
+            _context.FelhasznaloTelephely.Remove(felhTelep);
+
+            if (!_context.FelhasznaloTelephely.Any(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+                felh.jogosultsagi_szint = 1;
 
             await _context.SaveChangesAsync();
 
