@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import { Company } from '../app/admin/companies/Company'
+import { Company } from './models/Company'
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,13 @@ export class HttpService {
   // Összes cég lekérése
   public getCompanies(): Observable<Company> {
     console.log('get companies');
-    return this.getRequest('Ceg');
+    return this.getRequest('/Ceg/GetCegek');
+  }
+
+  //Egy cég lekérése
+  public getCompany(id): Observable<Company> {
+    console.log('get company');
+    return this.getRequest('Ceg/GetCeg/' + id);
   }
 
   // felhasználók lekérése

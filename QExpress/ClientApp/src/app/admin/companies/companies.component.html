@@ -14,19 +14,20 @@
                         Műveletek
                     </th>
                 </tr>
-                <tr>
+                <tr *ngFor="let c of companies">
                     <td>
-                        UPC
+                        {{c.name}}
                     </td>
                     <td>
-                        Németh Ádám
+                        {{c.admin.userName}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/company/edit/:companyid" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
-                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
+                        <a href="/company/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a href="/company/delete/{{c.id}}" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
             </table>
+            <a class="btn btn-primary" href="/company/edit/new">Új cég felvétele</a>
             <br/>
         </div>
     </div>

@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {HttpService} from '../../http.service';
 
 @Component({
@@ -8,10 +10,21 @@ import {HttpService} from '../../http.service';
 })
 export class RegistercompanyComponent implements OnInit {
 
-  constructor(private httpService: HttpService) {
+  private routeSub: Subscription;
+  private companyid;
+
+  constructor(private httpService: HttpService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    this.routeSub = this.route.params.subscribe(params => {
+      this.companyid = params['companyid'];
+    })
+    console.log(this.companyid);
+  }
+
+  public getCompany(id): void{
+    this.httpService.getCompany
   }
 
   public save(data): void {

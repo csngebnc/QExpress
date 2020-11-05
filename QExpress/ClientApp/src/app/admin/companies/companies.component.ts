@@ -3,6 +3,7 @@ import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {HttpService} from '../../http.service';
+import {Company} from '../../models/Company'
 
 /*
 export class Ceg {
@@ -22,7 +23,7 @@ export class CompaniesComponent implements OnInit {
 
   // readonly url = 'https://localhost:44390/api/Ceg';
 
-  cegek: any = [];
+  companies: Company[] = [];
 
   constructor(private httpService: HttpService) {
   }
@@ -37,5 +38,4 @@ export class CompaniesComponent implements OnInit {
   private handleCompaniesResponse(companies) {
     console.log(companies);
   }
-
 }

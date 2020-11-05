@@ -1,4 +1,4 @@
-import { User } from "oidc-client";
+import { User } from "./User";
 
 export interface Company{
   id: number;
