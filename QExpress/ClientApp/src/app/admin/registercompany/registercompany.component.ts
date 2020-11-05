@@ -32,10 +32,10 @@ export class RegistercompanyComponent implements OnInit {
     console.log(companyid);
   }
 
-  public save(data): void {
+  /* public save(data): void {
     this.httpService.addCompany(data).subscribe(
       response => console.log(response)
     );
-  }
+  } */
 
 }

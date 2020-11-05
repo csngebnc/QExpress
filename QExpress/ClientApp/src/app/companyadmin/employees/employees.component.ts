@@ -19,10 +19,10 @@ export class EmployeesComponent implements OnInit {
 
   ngOnInit() {
     console.log('Init Alkalamzottak');
-    this.getAlkalmazottak();
+  /*   this.getAlkalmazottak(); */
   }
 
-  private getAlkalmazottak(): void {
+  /* private getAlkalmazottak(): void {
     console.log('Get alkalmazottak');
 
     this.httpService.getFelhasznalo().subscribe(
@@ -34,5 +34,5 @@ export class EmployeesComponent implements OnInit {
   private handleAlkalmazottakResponse(alkalmazottak): void {
     console.log(alkalmazottak);
     this.alkalmazottak = alkalmazottak;
-  }
+  } */
 }

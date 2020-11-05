@@ -19,10 +19,10 @@ export class SitesComponent implements OnInit {
 
   ngOnInit() {
     console.log('Init Telephely');
-    this.getTelephely();
+    /* this.getTelephely(); */
   }
 
-  private getTelephely(): void {
+  /* private getTelephely(): void {
     console.log('Get Telephely');
 
     this.httpService.getTelephely().subscribe(
@@ -34,5 +34,5 @@ export class SitesComponent implements OnInit {
   private handleTelephelyekResponse(telephelyek): void {
     console.log(telephelyek);
     this.telephelyek = telephelyek;
-  }
+  } */
 }

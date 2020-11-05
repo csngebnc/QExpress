@@ -19,10 +19,10 @@ export class CategoriesComponent implements OnInit {
 
   ngOnInit() {
     console.log('Init categories');
-    this.getCategories();
+    /* this.getCategories(); */
   }
 
-  private getCategories(): void {
+  /* private getCategories(): void {
     console.log('Get categories');
 
     this.httpService.getCategories().subscribe(
@@ -42,6 +42,6 @@ export class CategoriesComponent implements OnInit {
       nev: 'string',
       cegadminId: 'string'
     }).subscribe(res => console.log(res));
-  }
+  } */
 
 }

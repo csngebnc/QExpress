@@ -22,10 +22,10 @@ export class EditcategoryComponent implements OnInit {
   ngOnInit() {
   }
 
-  public submitCategory(): void {
+  /* public submitCategory(): void {
     this.httpService.addCategory(this.category).subscribe(
       res => console.log(res)
     );
-  }
+  } */
 
 }
