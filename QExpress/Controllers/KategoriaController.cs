@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
     [ApiController]
     public class KategoriaController : ControllerBase
     {
@@ -27,7 +26,8 @@ namespace QExpress.Controllers
          * Az osszes kategoria lekerdezese
          * api/Kategoria/GetKategoriak
          */
-        [HttpGet("/GetKategoriak")]
+        [HttpGet]
+        [Route("GetKategoriak")]
         public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriak()
         {
             var katekoriak = await _context.Kategoria.ToListAsync();
@@ -44,7 +44,7 @@ namespace QExpress.Controllers
          * api/Ceg/GetCeg/{id}
          * param: id: lekérendő cég id-ja
          */
-        [HttpGet("/GetCeg/{id}")]
+        [HttpGet("GetKategoria/{id}")]
         public async Task<ActionResult<KategoriaDTO>> GetKategoria(int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);
@@ -79,7 +79,8 @@ namespace QExpress.Controllers
          * api/Kategoria/AddKategoria
          * params: nev: kategoria neve, ceg_id: cég id-ja
          */
-        [HttpPost("/AddKategoria")]
+        [HttpPost]
+        [Route("AddKategoria")]
         public async Task<ActionResult<KategoriaDTO>> AddKategoria(String nev, int ceg_id)
         {
             Kategoria newKat = new Kategoria { Megnevezes = nev, CegId = ceg_id };
@@ -93,10 +94,10 @@ namespace QExpress.Controllers
 
         /*
          * Parameterkent kapott ID-val rendelkezo kategoria torlese, valamint a kategoriahoz tartozo sorszamok torlese.
-         * api/Kategoria/DeleteKategoria/{id}
+         * api/Kategoria/Delete/{id}
          * param: id: törlendő cég id-ja
          */
-        [HttpDelete("/DeleteKategoria/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteKategoria(int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);

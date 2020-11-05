@@ -55,8 +55,7 @@ namespace QExpress.Controllers
          * Egy felhasznalo lekerese megadott ID alapjan.
          * api/Felhasznalo/GetFelhasznalo/{id}
          */
-        [HttpGet("{id}")]
-        [Route("GetFelhasznalo")]
+        [HttpGet("GetFelhasznalo/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo(String id)
         {
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);
@@ -183,10 +182,9 @@ namespace QExpress.Controllers
 
         /*
          * Megadott ID-val rendelkezo felhasznalo torlese
-         * api/Felhasznalo/DeleteFelhasznalo/{id}
+         * api/Felhasznalo/Delete/{id}
          */
-        [HttpDelete("{id}")]
-        [Route("Delete")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo(String id)
         {
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);

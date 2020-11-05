@@ -15,8 +15,6 @@ namespace QExpress.Controllers
     [ApiController]
     public class TelephelyController : Controller
     {
-        //comment
-
         private readonly QExpressDbContext _context;
 
         public TelephelyController(QExpressDbContext context)
@@ -29,7 +27,8 @@ namespace QExpress.Controllers
          * Összes telephely lekérése
          * api/Telephely/GetTelephelyek
          */
-        [HttpGet("/GetTelephelyek")]
+        [HttpGet]
+        [Route("GetTelephelyek")]
         public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek()
         {
             var telekhelyek = await _context.Telephely.ToListAsync();
@@ -47,7 +46,7 @@ namespace QExpress.Controllers
          * api/GetTelephely/{id}
          * param: id: telephely id-ja
          */
-        [HttpGet("/GetTelephely/{id}")]
+        [HttpGet("GetTelephely/{id}")]
         public async Task<ActionResult<TelephelyDTO>> GetTelephely(int id)
         {
             var telephely = await _context.Telephely.FindAsync(id);
@@ -67,7 +66,8 @@ namespace QExpress.Controllers
          * api/Telephely/AddTelephely
          * param: cim: telephely címe
          */
-        [HttpPost("/AddTelephely")]
+        [HttpPost]
+        [Route("AddTelephely")]
         public async Task<ActionResult<TelephelyDTO>> AddTelephely(String cim)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
@@ -90,10 +90,10 @@ namespace QExpress.Controllers
 
         /*
          * Megadott id-val rendelkező telephely törlése
-         * api/Telephely/DeleteTelephely/{id}
+         * api/Telephely/Delete/{id}
          * param: id: törlendő telephely id-ja
          */
-        [HttpDelete("/DeleteTelephely/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<TelephelyDTO>> DeleteTelephely(int id)
         {
             var telephely = await _context.Telephely.FindAsync(id);

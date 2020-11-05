@@ -15,11 +15,11 @@ export class HttpService {
 
   //Cégek lekérése
   public getCompanies(): Observable<Company[]>{
-    return this.httpClient.get<Company[]>(this.baseUrl + 'GetCegek')
+    return this.httpClient.get<Company[]>(this.baseUrl + 'Ceg/GetCegek')
   }
 
   //Adott ID-jű cég lekérése
   public getCompany(id: any): Observable<Company>{
-    return this.httpClient.get<Company>(this.baseUrl + 'GetCeg/' + id)
+    return this.httpClient.get<Company>(this.baseUrl + 'Ceg/GetCeg/' + id)
   }
 }

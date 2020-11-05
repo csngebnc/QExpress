@@ -27,7 +27,8 @@ namespace QExpress.Controllers
          * Minden ügyfél levél lekérése
          * api/UgyfLevelek/GetUgyfLevelek
          */
-        [HttpGet("/GetUgyfLevelek")]
+        [HttpGet]
+        [Route("GetUgyfLevelek")]
         public async Task<ActionResult<IEnumerable<UgyfLevelek>>> GetUgyfLevelek()
         {
             return await _context.UgyfLevelek.ToListAsync();
@@ -37,7 +38,7 @@ namespace QExpress.Controllers
          * Adott id-vel rendelező ügyféllevél lekérése
          * api/UgyfLevelek/GetUgyfLevel/{id}
          */
-        [HttpGet("/GetUgyfLevel/{id}")]
+        [HttpGet("GetUgyfLevel/{id}")]
         public async Task<ActionResult<UgyfLevelekDTO>> GetUgyfLevel(int id)
         {
             var level = await _context.UgyfLevelek.FindAsync(id);
@@ -55,7 +56,8 @@ namespace QExpress.Controllers
          * api/UgyfLevelek/AddUgyfLevel
          * params: panasz: a panasz, ceg_id: bepanaszolt cég id-ja
          */
-        [HttpPost("/AddUgyfLevel")]
+        [HttpPost]
+        [Route("AddUgyfLevel")]
         public async Task<ActionResult<UgyfLevelekDTO>> AddUgyfLevel(String panasz, int ceg_id)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
@@ -77,7 +79,7 @@ namespace QExpress.Controllers
          * Adott id-val rendelkező ügyféllevél törlése
          * api/UgyfLevelek/DeleteUgyfLevel/{id}
          */
-        [HttpDelete("/DeleteUgyfLevel/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<UgyfLevelekDTO>> DeleteUgyfLevel(int id)
         {
             var panasz = await _context.UgyfLevelek.FindAsync(id);

@@ -16,10 +16,10 @@
                 </tr>
                 <tr *ngFor="let c of companies">
                     <td>
-                        {{c.name}}
+                        {{c.nev}}
                     </td>
                     <td>
-                        {{c.admin.userName}}
+                        {{c.cegadminId}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
                         <a href="/company/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>

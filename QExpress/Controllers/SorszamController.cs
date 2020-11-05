@@ -28,7 +28,8 @@ namespace QExpress.Controllers
          * api/Sorszam/AddSorszam
          * params: ugyfel_id, kategoria_id, telephely_id
          */
-        [HttpPost("/AddSorszam")]
+        [HttpPost]
+        [Route("AddSorszam")]
         public async Task<ActionResult<SorszamDTO>> AddSorszam(int kategoria_id, int telephely_id)
         {
             string ugyfel_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
@@ -54,7 +55,7 @@ namespace QExpress.Controllers
          * Adott id-val rendelkező sorszám lekérése
          * api/Sorszam/GetSorszam/{id}
          */
-        [HttpGet("/GetSorszam/{id}")]
+        [HttpGet("GetSorszam/{id}")]
         public async Task<ActionResult<SorszamDTO>> GetSorszam(int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);
@@ -71,7 +72,7 @@ namespace QExpress.Controllers
          * Adott id-val rendelkező sorszám törlése
          * api/Sorszam/DeleteSorszam/{id}
          */
-        [HttpDelete("/DeleteSorszam/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<SorszamDTO>> DeleteSorszam(int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);
