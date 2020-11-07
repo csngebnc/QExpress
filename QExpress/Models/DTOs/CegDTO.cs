@@ -11,11 +11,11 @@ namespace QExpress.Models.DTOs
         {
             Id = c.Id;
             Nev = c.nev;
-            Cegadmin = c.Cegadmin;
+            CegadminId = c.CegadminId;
         }
 
         public int Id { get; set; }
         public String Nev { get; set; }
-        public Felhasznalo Cegadmin { get; set; }
+        public String CegadminId { get; set; }
     }
 }

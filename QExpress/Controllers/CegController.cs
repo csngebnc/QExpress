@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
 using QExpress.Models;
@@ -6,6 +7,7 @@ using QExpress.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace QExpress.Controllers
@@ -21,8 +23,12 @@ namespace QExpress.Controllers
             _context = context;
         }
 
-        // Cegek lekerese
+        /*
+         * Az osszes ceg lekerese.
+         * api/Ceg/GetCegek
+         */
         [HttpGet]
+        [Route("GetCegek")]
         public async Task<ActionResult<IEnumerable<CegDTO>>> GetCegek()
         {
             var cegek = await _context.Ceg.ToListAsync();
@@ -34,13 +40,17 @@ namespace QExpress.Controllers
             return dto;
         }
 
-        // Egy ceg lekerese
-        [HttpGet("{id}")]
+        /*
+         * A parameterkent kapott ID-val rendelkezo ceg lekerese.
+         * api/Ceg/GetCeg/{id}
+         * param: lekérendő cég id
+         */
+        [HttpGet("GetCeg/{id}")]
         public async Task<ActionResult<CegDTO>> GetCeg(int id)
         {
             var ceg = await _context.Ceg.FindAsync(id);
 
-            if (ceg == null)
+            if (!CegExists(id))
             {
                 return NotFound();
             }
@@ -48,19 +58,46 @@ namespace QExpress.Controllers
             return new CegDTO(ceg);
         }
 
-        // Uj cegnev
-        [HttpPost("{id}/NewName")]
-        public async Task<IActionResult> EdigCegNev(int id, String uj_nev)
+        /*
+         * A parameterkent kapott ID-val rendelkezo ceg kategoriainak lekerese.
+         * api/Ceg/{id}/Kategoriak
+         * param: id - annak a cégnek az id-ja, aminek a kategóriái kellenek
+         */
+        [HttpGet("{id}/Kategoriak")]
+        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetCegKategoriai(int id)
         {
-            var ceg = await _context.Ceg.FindAsync(id);
             if (!CegExists(id))
             {
                 return NotFound();
             }
-            if (id != ceg.Id)
+            var kategoriak = await _context.Kategoria.Where(k => k.CegId == id).ToListAsync();
+
+            if (kategoriak.Count == 0)
             {
-                return BadRequest();
+                return NoContent();
             }
+
+            var dto = new List<KategoriaDTO>();
+            foreach (var k in kategoriak)
+            {
+                dto.Add(new KategoriaDTO(k));
+            }
+            return dto;
+        }
+
+        /*
+         * Aktuális felhasználó ha cégadmin, akkor a cégének a nevét változtatja meg a kapott paraméterre.
+         * api/Ceg/NewName
+         * param: Aktuális felhasz
+         */
+        [HttpPost]
+        [Route("{ceg_id}/NewName")]
+        public async Task<IActionResult> EdigCegNev(int ceg_id, String uj_nev)
+        {
+            if (!CegExists(ceg_id))
+                return NotFound();
+
+            var ceg = await _context.Ceg.FindAsync(ceg_id);
 
             ceg.nev = uj_nev;
 
@@ -71,41 +108,65 @@ namespace QExpress.Controllers
             return CreatedAtAction(nameof(GetCeg), new { id = ceg.Id }, dto);
         }
 
+        /*
+         * A parameterkent kapott ID-val rendelkezo ceg elere uj felhasznalo beallitasa adminnak.
+         * api/Ceg/{ceg_id}/UpdateAdmin
+         * param: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
+         */
         [HttpPost("{ceg_id}/UpdateAdmin")]
-        public async Task<IActionResult> EditCegAdmin(int id, String uj_admin_id)
+        public async Task<IActionResult> EditCegAdmin(int ceg_id, String uj_admin_felhasznalonev)
         {
-            Ceg ceg = await _context.Ceg.FindAsync(id);
-            if (!CegExists(id))
+            if (!CegExists(ceg_id))
             {
                 return NotFound();
             }
-            if (id != ceg.Id)
-            {
-                return BadRequest();
+
+            Ceg ceg = await _context.Ceg.FindAsync(ceg_id);
+            if(!_context.Felhasznalo.Any(f => f.UserName.Equals(uj_admin_felhasznalonev))){
+                return NotFound();
             }
-            ceg.CegadminId = uj_admin_id;
+
+            var uj_admin = await _context.Felhasznalo.Where(f => f.UserName.Equals(uj_admin_felhasznalonev)).FirstAsync();
+
+            ceg.CegadminId = uj_admin.Id;
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // Ceg felvetele
+        /*
+         * Uj ceg rogzitese
+         * api/Ceg/AddCeg
+         * params: cegnev: cég neve, cegadmin_id: cégadmin id-ja
+         */
         [HttpPost]
-        [Route("[action]")]
-        public async Task<ActionResult<Ceg>> AddCegParams(String cegnev, String cegadmin_id)
+        [Route("AddCeg")]
+        public async Task<ActionResult<Ceg>> AddCeg(String cegnev, String cegadmin_id)
         {
-            Ceg newCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
-            _context.Ceg.Add(newCeg);
+            Ceg ujCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
+            _context.Ceg.Add(ujCeg);
             await _context.SaveChangesAsync();
 
-            var dto = new CegDTO(newCeg);
+            var dto = new CegDTO(ujCeg);
 
-            return CreatedAtAction(nameof(GetCeg), new { id = newCeg.Id }, dto);
+            return CreatedAtAction(nameof(GetCeg), new { id = ujCeg.Id }, dto);
         }
 
 
-        // Felhasznalo torlese
-        [HttpDelete("{id}")]
+        /*
+         * A parameterkent kapott ID-val rendelkezo ceg torlese.
+         * Torles sorban: 
+         * - ceg ugyflevelei
+         * - sorszamok
+         * - dolgozok hozzarendelesei
+         * - telephelyek
+         * - kategoriak
+         * - ceg
+         * 
+         * api/Ceg/Delete/{id}
+         * param: id: törlendő cég id-ja
+         */
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteCeg(int id)
         {
             var ceg = await _context.Ceg.FindAsync(id);
@@ -114,12 +175,34 @@ namespace QExpress.Controllers
                 return NotFound();
             }
 
+            // sorrend: levelek, sorszamok, dolgozok, telephelyek, kategoriak, ceg
+
+            var ugyfLevelek = await _context.UgyfLevelek.Where(uf => uf.CegId == id).ToListAsync();
+            var telephelyek = await _context.Telephely.Where(t => t.Ceg_id == id).ToListAsync();
+            var telephelyek_id = new List<int>();
+            foreach (var item in telephelyek)
+            {
+                telephelyek_id.Add(item.Id);
+            }
+            var felhasznalo_telephely = await _context.FelhasznaloTelephely.Where(ft => telephelyek_id.Contains(ft.TelephelyId)).ToListAsync();
+
+            var sorszamok = await _context.Sorszam.Where(s => telephelyek_id.Contains(s.TelephelyId)).ToListAsync();
+            var kategoriak = await _context.Kategoria.Where(k => k.CegId == id).ToListAsync();
+
+            _context.UgyfLevelek.RemoveRange(ugyfLevelek);
+            _context.Sorszam.RemoveRange(sorszamok);
+            _context.FelhasznaloTelephely.RemoveRange(felhasznalo_telephely);
+            _context.Telephely.RemoveRange(telephelyek);
+            _context.Kategoria.RemoveRange(kategoriak);
             _context.Ceg.Remove(ceg);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
+        /*
+        * Ellenorzes, hogy a parameterkent kapott ID-val letezik-e ceg.
+        */
         private bool CegExists(int id)
         {
             return _context.Ceg.Any(e => e.Id == id);

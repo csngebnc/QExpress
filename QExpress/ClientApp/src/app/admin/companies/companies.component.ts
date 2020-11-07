@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ErrorHandler, OnInit} from '@angular/core';
 import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {HttpService} from '../../http.service';
+import {Company} from '../../models/Company'
+import { catchError, tap } from 'rxjs/operators';
 
 /*
 export class Ceg {
@@ -22,20 +24,15 @@ export class CompaniesComponent implements OnInit {
 
   // readonly url = 'https://localhost:44390/api/Ceg';
 
-  cegek: any = [];
+  companies: Company[] = [];
 
   constructor(private httpService: HttpService) {
   }
 
   ngOnInit() {
-    console.log('hello');
-    this.httpService.getCompanies().subscribe(
-      companies => this.handleCompaniesResponse(companies)
-    );
+    this.httpService.getCompanies().subscribe((companies: Company[])=>{
+      this.companies = companies;
+      console.log(companies);
+    })
   }
-
-  private handleCompaniesResponse(companies) {
-    console.log(companies);
-  }
-
 }
