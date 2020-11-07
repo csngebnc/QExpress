@@ -7,6 +7,10 @@
           <label for="megnevezes">Megnevezés</label>
           <input [(ngModel)]="category.nev" type="text" class="form-control" id="megnevezes" name="megnevezes">
         </div>
+        <div class="form-group">
+          <label for="Id">Id</label>
+          <input [(ngModel)]="category.CegId" type="text" class="form-control" id="id" name="megnevezes">
+        </div>
         <button type="submit" class="btn btn-primary">Mentés</button>
         <a class="btn btn-link" href="/category/list">Mégsem</a>
       </form>

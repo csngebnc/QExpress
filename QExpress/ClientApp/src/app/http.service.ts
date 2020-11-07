@@ -12,7 +12,7 @@ export class HttpService {
   constructor(private httpClient: HttpClient) {
   }
 
-  // Összes lekérés
+  // GET
   // Összes cég lekérése
   public getCompanies(): Observable<any> {
     console.log('get companies');
@@ -49,12 +49,44 @@ export class HttpService {
     return this.getRequest('UgyfLevelek');
   }
 
+  // POST
+  // Cég
   public addCompany(data): Observable<any> {
     return this.postRequest('Ceg/AddCegParams', data);
   }
 
+  // Felhasznalo
+  public addUser(data): Observable<any> {
+    return this.postRequest('Felhasznalo/AddFelhasznalo', data);
+  }
+
+  public setTelephely(data): Observable<any> {
+    return this.postRequest('Felhasznalo/SetTelephely', data);
+  }
+
+  // Kategoria
   public addCategory(data): Observable<any> {
     return this.postRequest('Kategoria/AddKategoria', data);
+  }
+
+  // Sorszam
+  public addSorszam(data): Observable<any> {
+    return this.postRequest('Sorszam/AddSorszam', data);
+  }
+
+  // Telephely
+  public addTelephely(data): Observable<any> {
+    return this.postRequest('Telephely/AddTelephely', data);
+  }
+
+  // UgyfLevelek
+  public addUgyfLevelek(data): Observable<any> {
+    return this.postRequest('UgyfLevelek/AddUgyfLevelek', data);
+  }
+
+  // DELETE
+  public deleteUgyfLevelek(data): Observable<any> {
+    return this.deleteRequest('UgyfLevelek/{data}', data);
   }
 
   // GET kérés, a base URL beépítve, csak a kiegészítő útvonal hiányzik
@@ -66,8 +98,8 @@ export class HttpService {
   // Delete kérés, a GET-hez hasonlóan
   // Adott ID-val rendelkező elem törlése esetén a route része legyen az ID
   // Például: deleteRequest('Ceg/1') az 1-es ID-val rendelkező céget törli
-  private deleteRequest(route: string): Observable<any> {
-    return this.httpClient.delete(this.baseUrl + route);
+  private deleteRequest(route: string, body): Observable<any> {
+    return this.httpClient.delete(this.baseUrl + route, body);
   }
 
   // POST kérés, GET-hez hasonló
@@ -81,4 +113,10 @@ export class HttpService {
   private putRequest(route: string, body): Observable<any> {
     return this.httpClient.put(this.baseUrl + route, body);
   }
+
+  /*
+  private deleteRequest(route: string): Observable<any> {
+    return this.httpClient.delete(this.baseUrl + route);
+  }
+   */
 }

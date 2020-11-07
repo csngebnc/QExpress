@@ -36,12 +36,14 @@ export class CategoriesComponent implements OnInit {
     this.categories = categories;
   }
 
+  /*
   private exampleCompanyCreate(): void {
     this.httpService.addCompany({
       id: 0,
       nev: 'string',
-      cegadminId: 'string'
+      CegId: 'string'
     }).subscribe(res => console.log(res));
   }
+  */
 
 }
