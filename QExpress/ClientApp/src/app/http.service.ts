@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Company} from './models/Company';
 import {Category} from './models/Category';
 import {Employe} from './models/Employe';
@@ -13,7 +13,11 @@ import {Site} from './models/Site';
 })
 export class HttpService {
 
-  private baseUrl = 'https://localhost:5001/api/';
+  private baseUrl = 'https://localhost:44390/api/';
+  //private baseUrl = 'https://localhost:5001/api
+  
+  //Bejelentkezett felhasználó
+  private currentUserSubject = new BehaviorSubject<User>(null);
 
   constructor(private httpClient: HttpClient) {
   }
@@ -264,9 +268,7 @@ export class HttpService {
     return this.getRequest('Telephely/Delete' + id);
   }
 
-  /*
-  private deleteRequest(route: string): Observable<any> {
-    return this.httpClient.delete(this.baseUrl + route);
+  public getCurrentUser(): Observable<User> {
+    return this.getRequest('Felhasznalo/GetCurrentFelhasznalo');
   }
-   */
 }
