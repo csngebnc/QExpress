@@ -55,7 +55,7 @@ var routes = [
   {
     component: LoginComponent,
     path: 'login'
-  },
+  }
   {
     component: CurrentComponent,
     path: ''
