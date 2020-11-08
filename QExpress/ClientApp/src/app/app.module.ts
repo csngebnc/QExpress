@@ -7,7 +7,6 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
 import {ApiAuthorizationModule} from 'src/api-authorization/api-authorization.module';
-import {AuthorizeGuard} from 'src/api-authorization/authorize.guard';
 import {AuthorizeInterceptor} from 'src/api-authorization/authorize.interceptor';
 import {CompaniesComponent} from './admin/companies/companies.component';
 import {RegistercompanyComponent} from './admin/registercompany/registercompany.component';
@@ -29,10 +28,6 @@ import {AddCompanyComponent} from './admin/add-company/add-company.component';
 import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
 
 var routes = [
-  {
-    component: CurrentComponent,
-    path: ''
-  },
   {
     component: EditUserComponent,
     path: 'profile'
@@ -96,6 +91,10 @@ var routes = [
     component: CategoriesComponent,
     path: 'category/list'
   },
+  {
+    component: CurrentComponent,
+    path: ''
+  },
 ];
 
 @NgModule({
@@ -125,17 +124,17 @@ var routes = [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
-    // ApiAuthorizationModule,
     RouterModule.forRoot(routes),
     MatDialogModule,
     FontAwesomeModule,
     BrowserAnimationsModule,
+    ApiAuthorizationModule,
   ],
   exports: [
     MatDialogModule,
   ],
   providers: [
-    // {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })
