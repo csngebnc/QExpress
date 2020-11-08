@@ -3,8 +3,8 @@ import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {HttpService} from '../../http.service';
-import {Company} from '../../models/Company'
-import { catchError, tap } from 'rxjs/operators';
+import {Company} from '../../models/Company';
+import {catchError, tap} from 'rxjs/operators';
 
 /*
 export class Ceg {
@@ -30,9 +30,19 @@ export class CompaniesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.httpService.getCompanies().subscribe((companies: Company[])=>{
+    this.loadCompanies();
+  }
+
+  deleteCompany(id: number): void {
+    this.httpService.deleteCompany(id).subscribe(
+      () => this.loadCompanies()
+    );
+  }
+
+  loadCompanies(): void {
+    this.httpService.getCompanies().subscribe((companies: Company[]) => {
       this.companies = companies;
       console.log(companies);
-    })
+    });
   }
 }

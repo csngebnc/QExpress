@@ -141,9 +141,10 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddCeg")]
-        public async Task<ActionResult<Ceg>> AddCeg(String cegnev, String cegadmin_id)
+        public async Task<ActionResult<Ceg>> AddCeg(String nev, String cegadminId)
         {
-            Ceg ujCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
+            Ceg ujCeg = new Ceg { nev = nev, CegadminId = cegadminId };
+            // Ceg ujCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
             _context.Ceg.Add(ujCeg);
             await _context.SaveChangesAsync();
 

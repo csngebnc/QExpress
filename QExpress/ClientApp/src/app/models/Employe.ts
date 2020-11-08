@@ -1,4 +1,6 @@
-export interface User {
+
+
+export interface Employe {
   id: string
   email: string
   userName: string

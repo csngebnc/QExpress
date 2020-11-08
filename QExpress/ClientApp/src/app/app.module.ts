@@ -25,6 +25,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {NewDialog} from './queue/current/current.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AddCompanyComponent} from './admin/add-company/add-company.component';
+import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
 
 var routes = [
   {
@@ -52,9 +54,17 @@ var routes = [
     component: CompaniesComponent,
     path: 'company/list'
   },
+  // {
+  //   component: RegistercompanyComponent,
+  //   path: 'company/edit/:companyid'
+  // },
   {
-    component: RegistercompanyComponent,
+    component: EditCompanyComponent,
     path: 'company/edit/:companyid'
+  },
+  {
+    component: AddCompanyComponent,
+    path: 'company/add'
   },
   /*
   {
@@ -102,6 +112,8 @@ var routes = [
     CategoriesComponent,
     EmployeesComponent,
     RegistercompanyComponent,
+    AddCompanyComponent,
+    EditCompanyComponent,
     CompaniesComponent,
     WaitingComponent,
     NewDialog,

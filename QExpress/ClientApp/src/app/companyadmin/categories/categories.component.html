@@ -32,6 +32,21 @@
                         <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
+              <tr *ngFor="let c of categories">
+                <td>
+                  {{c.megnevezes}}
+                </td>
+                <td>
+                  {{c.cegId}}
+                </td>
+                <td>
+                  {{c.id}}
+                </td>
+                <td style="width:30px;white-space: nowrap">
+                  <a href="/category/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                  <button (click)="deleteCategory(c.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></button>
+                </td>
+              </tr>
             </table>
             <br/>
         </div>

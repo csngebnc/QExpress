@@ -1,4 +1,6 @@
-import { Category } from "../companyadmin/editcategory/editcategory.component";
+// import { Category } from "../companyadmin/editcategory/editcategory.component";
+
+import {Category} from './Category';
 
 export interface Queue{
     id: number;

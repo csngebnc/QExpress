@@ -2,16 +2,18 @@
     <div class="row">
         <div class="col-12">
             <h2>Cégek felvétele / szerkesztése</h2>
-            <form>
+            <form (ngSubmit)="submitCompany()">
                 <div class="form-group">
                     <label for="companyname">Cég neve</label>
-                    <input type="text" class="form-control" id="companyname" name="companyname">
+                      <input [(ngModel)]="company.nev" type="text" class="form-control" id="companyname" name="companyname">
                 </div>
                 <div class="form-group">
-                    <label for="companyadminemail">Cégadmin e-mail cime</label>
-                    <input type="text" class="form-control" id="companyadminemail" name="companyadminemail">
+<!--                    <label for="companyadminemail">Cégadmin e-mail cime</label> -->
+<!--                  <input type="text" class="form-control" id="companyadminid" name="companyadminid"> -->
+                  <label for="companyadminid">Cégadmin id-ja</label>
+                    <input [(ngModel)]="company.cegadminId" type="text" class="form-control" id="companyadminid" name="companyadminid">
                 </div>
-                <a class="btn btn-primary" href="/">Mentés</a>
+                <button type="submit" class="btn btn-primary">Mentés</button>
                 <a class="btn btn-link" href="/company/list">Mégsem</a>
             </form>
         </div>

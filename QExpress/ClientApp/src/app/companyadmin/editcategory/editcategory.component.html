@@ -5,11 +5,11 @@
       <form (ngSubmit)="submitCategory()">
         <div class="form-group">
           <label for="megnevezes">Megnevezés</label>
-          <input [(ngModel)]="category.nev" type="text" class="form-control" id="megnevezes" name="megnevezes">
+          <input [(ngModel)]="category.megnevezes" type="text" class="form-control" id="megnevezes" name="megnevezes">
         </div>
         <div class="form-group">
           <label for="Id">Id</label>
-          <input [(ngModel)]="category.CegId" type="text" class="form-control" id="id" name="megnevezes">
+          <input [(ngModel)]="category.id" type="text" class="form-control" id="id" name="id">
         </div>
         <button type="submit" class="btn btn-primary">Mentés</button>
         <a class="btn btn-link" href="/category/list">Mégsem</a>

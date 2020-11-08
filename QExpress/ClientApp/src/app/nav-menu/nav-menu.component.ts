@@ -8,8 +8,10 @@ import { Component } from '@angular/core';
 export class NavMenuComponent {
   isExpanded = false;
 
-  user_level = 4;
-  
+  // user level 4: cegek
+  // user level 3: kategoriak, alkalmazottak, telephelyek
+  user_level = 3;
+
 
   collapse() {
     this.isExpanded = false;
