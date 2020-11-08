@@ -5,6 +5,7 @@ using QExpress.Models;
 using QExpress.Models.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -30,6 +31,10 @@ namespace QExpress.Controllers
         public async Task<ActionResult<FelhasznaloDTO>> GetCurrentFelhasznalo()
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            if(id == null)
+            {
+                return new FelhasznaloDTO{ jogosultsagi_szint = 0, Email= "None", Id = "", UserName = "None" };
+            }
             var currentUser = await _context.Felhasznalo.FindAsync(id);
             return new FelhasznaloDTO(currentUser);
         }
