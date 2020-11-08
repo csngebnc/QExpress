@@ -27,8 +27,6 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AddCompanyComponent} from './admin/add-company/add-company.component';
 import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
-import { RegisterComponent } from './user/register/register.component';
-import { LoginComponent } from 'src/api-authorization/login/login.component';
 
 var routes = [
   {
@@ -49,14 +47,6 @@ var routes = [
     path: 'waiting'
   },
   {
-    component: RegisterComponent,
-    path: 'register'
-  },
-  {
-    component: LoginComponent,
-    path: 'login'
-  }
-  {
     component: CurrentComponent,
     path: ''
   },
@@ -64,6 +54,10 @@ var routes = [
     component: CompaniesComponent,
     path: 'company/list'
   },
+  // {
+  //   component: RegistercompanyComponent,
+  //   path: 'company/edit/:companyid'
+  // },
   {
     component: EditCompanyComponent,
     path: 'company/edit/:companyid'
@@ -72,6 +66,12 @@ var routes = [
     component: AddCompanyComponent,
     path: 'company/add'
   },
+  /*
+  {
+    component: CompaniesComponent,
+    path: 'company/list'
+  },
+  */
   {
     component: EditsiteComponent,
     path: 'site/edit/:siteid'
