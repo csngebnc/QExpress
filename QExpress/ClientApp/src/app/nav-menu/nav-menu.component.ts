@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { type } from 'os';
 import { Observable } from 'rxjs';
-import { AuthorizeService } from 'src/api-authorization/authorize.service'
+import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service'
+import { HttpService } from 'src/app/http.service'
+import { User } from '../models/User'
 
 @Component({
   selector: 'app-nav-menu',
@@ -9,13 +12,13 @@ import { AuthorizeService } from 'src/api-authorization/authorize.service'
 })
 export class NavMenuComponent implements OnInit{
   isExpanded = false;
-  public isAuthenticated: Observable<boolean>;
+  user: User;
 
   // user level 4: cegek
   // user level 3: kategoriak, alkalmazottak, telephelyek
-  user_level = 3;
+  private user_level: number;
 
-  constructor(private authorizeService: AuthorizeService){
+  constructor(private authorizeService: AuthorizeService, private httpService: HttpService){
 
   }
 
@@ -28,6 +31,6 @@ export class NavMenuComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.isAuthenticated = this.authorizeService.isAuthenticated();
+    this.user_level = 2;
   }
 }
