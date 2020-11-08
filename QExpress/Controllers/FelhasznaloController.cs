@@ -61,7 +61,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/GetFelhasznalo/{id}
          */
         [HttpGet("GetFelhasznalo/{id}")]
-        public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo(String id)
+        public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo([FromRoute] String id)
         {
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);
 
@@ -116,7 +116,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("NewEmail")]
-        public async Task<IActionResult> EditFelhasznaloEmail(String uj_email)
+        public async Task<IActionResult> EditFelhasznaloEmail([FromBody] String uj_email)
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(id)).First();
@@ -144,7 +144,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("NewPassword")]
-        public async Task<IActionResult> EditFelhasznaloJelszo(String regi_jelszo, String uj_jelszo)
+        public async Task<IActionResult> EditFelhasznaloJelszo([FromBody] String[] jelszavak)
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             Felhasznalo felh = await _context.Felhasznalo.FindAsync(id);
@@ -157,8 +157,8 @@ namespace QExpress.Controllers
                 return BadRequest();
             }
 
-            if (felh.PasswordHash.Equals(regi_jelszo))
-                felh.PasswordHash = uj_jelszo;
+            if (felh.PasswordHash.Equals(jelszavak[0]))
+                felh.PasswordHash = jelszavak[1];
             await _context.SaveChangesAsync();
 
             var dto = new FelhasznaloDTO(felh);
@@ -172,9 +172,11 @@ namespace QExpress.Controllers
          * ###### Aktualis login mellett nem feltetlenul szukseges. ######
          * api/Felhasznalo/AddFelhasznalo
          */
+
+        /*
         [HttpPost]
         [Route("AddFelhasznalo")]
-        public async Task<ActionResult<FelhasznaloDTO>> AddFelhasznaloParams(String name, String email, String pw, int jog_szint)
+        public async Task<ActionResult<FelhasznaloDTO>> AddFelhasznaloParams([FromBody] String name, [FromBody] String email, [FromBody] String pw, [FromBody] int jog_szint)
         {
             Felhasznalo newUser = new Felhasznalo { UserName = name, Email = email, PasswordHash = pw, jogosultsagi_szint = jog_szint };
             _context.Felhasznalo.Add(newUser);
@@ -184,13 +186,15 @@ namespace QExpress.Controllers
 
             return CreatedAtAction(nameof(GetFelhasznalo), new { id = newUser.Id }, dto);
         }
+        */
+
 
         /*
          * Megadott ID-val rendelkezo felhasznalo torlese
          * api/Felhasznalo/Delete/{id}
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo(String id)
+        public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo([FromRoute] String id)
         {
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);
             if (felhasznalo == null)
@@ -215,7 +219,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("SetTelephely")]
-        public async Task<IActionResult> SetTelephely(FelhasznaloTelephelyDTO felhasznaloTelephely)
+        public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
             Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
@@ -245,7 +249,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("DelFromTelephely")]
-        public async Task<IActionResult> DelFromTelephely(FelhasznaloTelephelyDTO felhasznaloTelephely)
+        public async Task<IActionResult> DelFromTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {

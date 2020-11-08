@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class KategoriaDTO
     {
+        public KategoriaDTO() { }
         public KategoriaDTO(Kategoria k)
         {
             Id = k.Id;

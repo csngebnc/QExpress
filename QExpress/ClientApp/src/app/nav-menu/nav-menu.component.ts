@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { type } from 'os';
+//import { type } from 'os';
 import { Observable } from 'rxjs';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service'
 import { HttpService } from 'src/app/http.service'
@@ -31,6 +31,6 @@ export class NavMenuComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.user_level = 2;
+    this.user_level = 4;
   }
 }

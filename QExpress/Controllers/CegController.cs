@@ -46,7 +46,7 @@ namespace QExpress.Controllers
          * param: lekérendő cég id
          */
         [HttpGet("GetCeg/{id}")]
-        public async Task<ActionResult<CegDTO>> GetCeg(int id)
+        public async Task<ActionResult<CegDTO>> GetCeg([FromRoute] int id)
         {
             var ceg = await _context.Ceg.FindAsync(id);
 
@@ -64,7 +64,7 @@ namespace QExpress.Controllers
          * param: id - annak a cégnek az id-ja, aminek a kategóriái kellenek
          */
         [HttpGet("{id}/Kategoriak")]
-        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetCegKategoriai(int id)
+        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetCegKategoriai([FromRoute] int id)
         {
             if (!CegExists(id))
             {
@@ -92,7 +92,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("{ceg_id}/NewName")]
-        public async Task<IActionResult> EdigCegNev(int ceg_id, String uj_nev)
+        public async Task<IActionResult> EdigCegNev([FromRoute] int ceg_id, [FromBody]String uj_nev)
         {
             if (!CegExists(ceg_id))
                 return NotFound();
@@ -114,7 +114,7 @@ namespace QExpress.Controllers
          * param: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
          */
         [HttpPost("{ceg_id}/UpdateAdmin")]
-        public async Task<IActionResult> EditCegAdmin(int ceg_id, String uj_admin_felhasznalonev)
+        public async Task<IActionResult> EditCegAdmin([FromRoute] int ceg_id, [FromBody] String uj_admin_felhasznalonev)
         {
             if (!CegExists(ceg_id))
             {
@@ -141,9 +141,9 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddCeg")]
-        public async Task<ActionResult<Ceg>> AddCeg(String nev, String cegadminId)
+        public async Task<ActionResult<Ceg>> AddCeg([FromBody] CegDTO ceg)
         {
-            Ceg ujCeg = new Ceg { nev = nev, CegadminId = cegadminId };
+            Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
             // Ceg ujCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
             _context.Ceg.Add(ujCeg);
             await _context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace QExpress.Controllers
          * param: id: törlendő cég id-ja
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteCeg(int id)
+        public async Task<IActionResult> DeleteCeg([FromRoute] int id)
         {
             var ceg = await _context.Ceg.FindAsync(id);
             if (ceg == null || !CegExists(id))
