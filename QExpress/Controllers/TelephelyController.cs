@@ -47,7 +47,7 @@ namespace QExpress.Controllers
          * param: id: telephely id-ja
          */
         [HttpGet("GetTelephely/{id}")]
-        public async Task<ActionResult<TelephelyDTO>> GetTelephely(int id)
+        public async Task<ActionResult<TelephelyDTO>> GetTelephely([FromRoute] int id)
         {
             var telephely = await _context.Telephely.FindAsync(id);
 
@@ -68,7 +68,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddTelephely")]
-        public async Task<ActionResult<TelephelyDTO>> AddTelephely(String cim)
+        public async Task<ActionResult<TelephelyDTO>> AddTelephely([FromBody] String cim)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             Felhasznalo felh = await _context.Felhasznalo.FindAsync(user_id);
@@ -94,7 +94,7 @@ namespace QExpress.Controllers
          * param: id: törlendő telephely id-ja
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult<TelephelyDTO>> DeleteTelephely(int id)
+        public async Task<ActionResult<TelephelyDTO>> DeleteTelephely([FromRoute] int id)
         {
             var telephely = await _context.Telephely.FindAsync(id);
             if (telephely == null)

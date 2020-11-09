@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class SorszamDTO
     {
+        public SorszamDTO() { }
         public SorszamDTO(Sorszam s)
         {
             Id = s.Id;

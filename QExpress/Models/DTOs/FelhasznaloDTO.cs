@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class FelhasznaloDTO
     {
+        public FelhasznaloDTO() { }
         public FelhasznaloDTO(Felhasznalo f)
         {
             Id = f.Id;

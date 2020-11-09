@@ -45,7 +45,7 @@ namespace QExpress.Controllers
          * param: id: lekérendő cég id-ja
          */
         [HttpGet("GetKategoria/{id}")]
-        public async Task<ActionResult<KategoriaDTO>> GetKategoria(int id)
+        public async Task<ActionResult<KategoriaDTO>> GetKategoria([FromRoute] int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);
 
@@ -63,7 +63,7 @@ namespace QExpress.Controllers
          * params: id: kategoria id-ja, uj_megnevezes: kategoria uj neve
          */
         [HttpPut("{id}/NewName")]
-        public async Task<IActionResult> EditKategoria(int id, String uj_megnevezes)
+        public async Task<IActionResult> EditKategoria([FromRoute] int id, [FromBody] String uj_megnevezes)
         {
             Kategoria kategoria = await _context.Kategoria.FindAsync(id);
             kategoria.Megnevezes = uj_megnevezes;
@@ -81,9 +81,9 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddKategoria")]
-        public async Task<ActionResult<KategoriaDTO>> AddKategoria(String nev, int ceg_id)
+        public async Task<ActionResult<KategoriaDTO>> AddKategoria([FromBody] KategoriaDTO kategoria)
         {
-            Kategoria newKat = new Kategoria { Megnevezes = nev, CegId = ceg_id };
+            Kategoria newKat = new Kategoria { Megnevezes = kategoria.Megnevezes, CegId = kategoria.CegId };
             _context.Kategoria.Add(newKat);
             await _context.SaveChangesAsync();
 
@@ -98,7 +98,7 @@ namespace QExpress.Controllers
          * param: id: törlendő cég id-ja
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteKategoria(int id)
+        public async Task<IActionResult> DeleteKategoria([FromRoute] int id)
         {
             var kategoria = await _context.Kategoria.FindAsync(id);
             if (kategoria == null)

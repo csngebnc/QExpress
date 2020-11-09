@@ -39,7 +39,7 @@ namespace QExpress.Controllers
          * api/UgyfLevelek/GetUgyfLevel/{id}
          */
         [HttpGet("GetUgyfLevel/{id}")]
-        public async Task<ActionResult<UgyfLevelekDTO>> GetUgyfLevel(int id)
+        public async Task<ActionResult<UgyfLevelekDTO>> GetUgyfLevel([FromRoute] int id)
         {
             var level = await _context.UgyfLevelek.FindAsync(id);
 
@@ -58,15 +58,15 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddUgyfLevel")]
-        public async Task<ActionResult<UgyfLevelekDTO>> AddUgyfLevel(String panasz, int ceg_id)
+        public async Task<ActionResult<UgyfLevelekDTO>> AddUgyfLevel([FromBody] UgyfLevelek ugyfelLevel)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            if(!_context.Ceg.Any(c=>c.Id == ceg_id))
+            if(!_context.Ceg.Any(c=>c.Id == ugyfelLevel.CegId))
             {
                 return NotFound();
             }
 
-            UgyfLevelek ujPanasz = new UgyfLevelek { Panasz = panasz, CegId = ceg_id, PanaszoloId = user_id };
+            UgyfLevelek ujPanasz = new UgyfLevelek { Panasz = ugyfelLevel.Panasz, CegId = ugyfelLevel.CegId, PanaszoloId = user_id };
             _context.UgyfLevelek.Add(ujPanasz);
             await _context.SaveChangesAsync();
 
@@ -80,7 +80,7 @@ namespace QExpress.Controllers
          * api/UgyfLevelek/DeleteUgyfLevel/{id}
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult<UgyfLevelekDTO>> DeleteUgyfLevel(int id)
+        public async Task<ActionResult<UgyfLevelekDTO>> DeleteUgyfLevel([FromRoute] int id)
         {
             var panasz = await _context.UgyfLevelek.FindAsync(id);
             if (panasz == null)

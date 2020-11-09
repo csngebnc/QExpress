@@ -30,17 +30,17 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddSorszam")]
-        public async Task<ActionResult<SorszamDTO>> AddSorszam(int kategoria_id, int telephely_id)
+        public async Task<ActionResult<SorszamDTO>> AddSorszam([FromBody] SorszamDTO sorszam)
         {
             string ugyfel_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            int sorszam_counter = _context.Sorszam.Where(t => t.TelephelyId == telephely_id).Max(n => n.SorszamIdTelephelyen);
+            int sorszam_counter = _context.Sorszam.Where(t => t.TelephelyId == sorszam.TelephelyId).Max(n => n.SorszamIdTelephelyen);
 
             Sorszam ujSorszam = new Sorszam { 
                 UgyfelId = ugyfel_id,
                 Allapot = "Aktív", 
-                KategoriaId = kategoria_id, 
-                TelephelyId = telephely_id, 
+                KategoriaId = sorszam.KategoriaId, 
+                TelephelyId = sorszam.TelephelyId, 
                 Idopont = DateTime.Now, 
                 SorszamIdTelephelyen = sorszam_counter
             };
@@ -56,7 +56,7 @@ namespace QExpress.Controllers
          * api/Sorszam/GetSorszam/{id}
          */
         [HttpGet("GetSorszam/{id}")]
-        public async Task<ActionResult<SorszamDTO>> GetSorszam(int id)
+        public async Task<ActionResult<SorszamDTO>> GetSorszam([FromRoute] int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);
 
@@ -73,7 +73,7 @@ namespace QExpress.Controllers
          * api/Sorszam/DeleteSorszam/{id}
          */
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult<SorszamDTO>> DeleteSorszam(int id)
+        public async Task<ActionResult<SorszamDTO>> DeleteSorszam([FromRoute] int id)
         {
             var sorszam = await _context.Sorszam.FindAsync(id);
             if (sorszam == null)

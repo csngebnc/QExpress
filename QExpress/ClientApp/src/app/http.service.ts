@@ -13,7 +13,7 @@ import {Site} from './models/Site';
 })
 export class HttpService {
 
-  private baseUrl = 'https://localhost:5001/api/';
+  private baseUrl = 'https://localhost:44390/api/';
 
   constructor(private httpClient: HttpClient) {
   }
