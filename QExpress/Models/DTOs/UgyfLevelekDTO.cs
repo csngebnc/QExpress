@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class UgyfLevelekDTO
     {
+        public UgyfLevelekDTO() { }
         public UgyfLevelekDTO(UgyfLevelek u)
         {
             Id = u.Id;

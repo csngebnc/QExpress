@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class CegDTO
     {
+        public CegDTO() { }
         public CegDTO(Ceg c)
         {
             Id = c.Id;

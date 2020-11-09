@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
 using QExpress.Models;
@@ -29,9 +30,15 @@ namespace QExpress.Controllers
          */
         [HttpGet]
         [Route("GetUgyfLevelek")]
-        public async Task<ActionResult<IEnumerable<UgyfLevelek>>> GetUgyfLevelek()
+        public async Task<ActionResult<IEnumerable<UgyfLevelekDTO>>> GetUgyfLevelek()
         {
-            return await _context.UgyfLevelek.ToListAsync();
+            var levelek = await _context.UgyfLevelek.ToListAsync();
+            var dto = new List<UgyfLevelekDTO>();
+            foreach (var ufl in levelek)
+            {
+                dto.Add(new UgyfLevelekDTO(ufl));
+            }
+            return dto;
         }
 
         /*
@@ -73,6 +80,33 @@ namespace QExpress.Controllers
             var dto = new UgyfLevelekDTO(ujPanasz);
 
             return CreatedAtAction(nameof(GetUgyfLevelek), new { id = ujPanasz.Id }, dto);
+        }
+
+        /*
+         * Visszaadja annak a cégnek a beérkezett ügyfél leveleit, amelyhez a bejelentkezett felhasználó (ügyintéző) tartozik.
+         * api/UgyfLevelek/GetCegLevelei
+         */
+        [HttpGet("GetCegLevelei")]
+        public async Task<ActionResult<IEnumerable<UgyfLevelekDTO>>> GetCegLevelei()
+        {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            if(!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId == user_id))
+            {
+                return NotFound();
+            }
+
+            var egyTelephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId == user_id).FirstAsync();
+            var telephely = await _context.Telephely.Where(t => t.Id == egyTelephelyHozzarendeles.TelephelyId).FirstAsync();
+
+            var ceg = await _context.Ceg.FindAsync(telephely.Ceg_id);
+            var levelek = await _context.UgyfLevelek.Where(uf => uf.CegId == ceg.Id).ToListAsync();
+
+            var dtoList = new List<UgyfLevelekDTO>();
+            foreach (var item in levelek)
+            {
+                dtoList.Add(new UgyfLevelekDTO(item));
+            }
+            return dtoList;
         }
 
         /*

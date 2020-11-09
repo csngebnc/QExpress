@@ -114,7 +114,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/NewEmail
          * param: uj email
          */
-        [HttpPost]
+        [HttpPut]
         [Route("NewEmail")]
         public async Task<IActionResult> EditFelhasznaloEmail([FromBody] String uj_email)
         {
@@ -142,7 +142,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/NewPassword
          * params: regi_jelszo, uj_jelszo
          */
-        [HttpPost]
+        [HttpPut]
         [Route("NewPassword")]
         public async Task<IActionResult> EditFelhasznaloJelszo([FromBody] String[] jelszavak)
         {

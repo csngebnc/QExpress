@@ -90,7 +90,7 @@ namespace QExpress.Controllers
          * api/Ceg/NewName
          * param: Aktuális felhasz
          */
-        [HttpPost]
+        [HttpPut]
         [Route("{ceg_id}/NewName")]
         public async Task<IActionResult> EdigCegNev([FromRoute] int ceg_id, [FromBody]String uj_nev)
         {
@@ -113,20 +113,28 @@ namespace QExpress.Controllers
          * api/Ceg/{ceg_id}/UpdateAdmin
          * param: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
          */
-        [HttpPost("{ceg_id}/UpdateAdmin")]
+        [HttpPut("{ceg_id}/UpdateAdmin")]
         public async Task<IActionResult> EditCegAdmin([FromRoute] int ceg_id, [FromBody] String uj_admin_felhasznalonev)
         {
+            if (!_context.Felhasznalo.Any(f => f.UserName.Equals(uj_admin_felhasznalonev)))
+            {
+                return NotFound();
+            }
+
+            if(_context.Ceg.Any(c => c.CegadminId == uj_admin_felhasznalonev))
+            {
+                return BadRequest(new { error = "user is admin already" });
+            }
+
+            var uj_admin = await _context.Felhasznalo.Where(f => f.UserName.Equals(uj_admin_felhasznalonev)).FirstAsync();
+
+
             if (!CegExists(ceg_id))
             {
                 return NotFound();
             }
 
             Ceg ceg = await _context.Ceg.FindAsync(ceg_id);
-            if(!_context.Felhasznalo.Any(f => f.UserName.Equals(uj_admin_felhasznalonev))){
-                return NotFound();
-            }
-
-            var uj_admin = await _context.Felhasznalo.Where(f => f.UserName.Equals(uj_admin_felhasznalonev)).FirstAsync();
 
             ceg.CegadminId = uj_admin.Id;
             await _context.SaveChangesAsync();

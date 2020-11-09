@@ -69,6 +69,29 @@ namespace QExpress.Controllers
         }
 
         /*
+         * Adott id-vel rendelkező sorszám frissítése.
+         * api/Sorszam/{id}/Update
+         * params: id - queryből, sorszám id-je, putSorszam - frissített sorszám dto
+         * megjegyzés: paramétereket meg kell még beszélni itt!
+         */
+        [HttpPut("{id}/Update")]
+        public async Task<ActionResult<SorszamDTO>> UpdateSorszam([FromRoute] int id, [FromBody] SorszamDTO putSorszam)
+        {
+            if (!SorszamExists(putSorszam.Id))
+                return NotFound();
+
+            if (id != putSorszam.Id)
+                return BadRequest();
+
+            var sorszam = await _context.Sorszam.FindAsync(putSorszam.Id);
+            sorszam.Allapot = putSorszam.Allapot;
+
+            await _context.SaveChangesAsync();
+
+            return new SorszamDTO(sorszam);
+        }
+
+        /*
          * Adott id-val rendelkező sorszám törlése
          * api/Sorszam/DeleteSorszam/{id}
          */
