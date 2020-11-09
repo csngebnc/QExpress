@@ -213,7 +213,7 @@ export class HttpService {
   }
 
   // Jelenlegi felhasznalo lekérése
-  public getEmployeCurrent(): Observable<User> {
+  public getCurrentUser(): Observable<User> {
     return this.getRequest('Felhasznalo/GetCurrentFelhasznalo');
   }
 
