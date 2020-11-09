@@ -109,6 +109,29 @@ namespace QExpress.Controllers
             return dto;
         }
 
+        [HttpGet]
+        [Route("GetTelephelyek")]
+        public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek()
+        {
+            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var telephelyHozzarendelesek = await _context.FelhasznaloTelephely.Where(s => s.FelhasznaloId.Equals(id)).ToListAsync();
+            var telephely_ids = new List<int>();
+            foreach (var item in telephelyHozzarendelesek)
+            {
+                if (!telephely_ids.Contains(item.TelephelyId))
+                    telephely_ids.Add(item.TelephelyId);
+            }
+            var telephelyek = await _context.Telephely.Where(t => telephely_ids.Contains(t.Id)).ToListAsync();
+
+            var dto = new List<TelephelyDTO>();
+            foreach (var t in telephelyek)
+            {
+                dto.Add(new TelephelyDTO(t));
+            }
+
+            return dto;
+        }
+
         /*
          * A bejelentkezett felhasznalo e-mail cimenek megvaltoztatasa
          * api/Felhasznalo/NewEmail
