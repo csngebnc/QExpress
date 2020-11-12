@@ -158,15 +158,13 @@ namespace QExpress.Controllers
          * api/Ceg/{ceg_id}/UpdateCeg
          * params: id: ceg id-ja, ceg: CegDTO a frissitett adatokkal
          */
-        [HttpPut("{ceg_id}/UpdateCeg")]
-        public async Task<IActionResult> UpdateCeg([FromRoute] int ceg_id, [FromBody] CegDTO ceg)
+        [HttpPut("UpdateCeg")]
+        public async Task<IActionResult> UpdateCeg([FromBody] CegDTO ceg)
         {
-            if (!CegExists(ceg_id))
+            if (!CegExists(ceg.Id))
                 return NotFound();
-            if (ceg_id != ceg.Id)
-                return BadRequest();
 
-            var frissitendo_ceg = await _context.Ceg.FindAsync(ceg_id);
+            var frissitendo_ceg = await _context.Ceg.FindAsync(ceg.Id);
             frissitendo_ceg.CegadminId = ceg.CegadminId;
             frissitendo_ceg.nev = ceg.Nev;
 
@@ -186,7 +184,7 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddCeg")]
-        public async Task<ActionResult<Ceg>> AddCeg([FromBody] CegDTO ceg)
+        public async Task<ActionResult<CegDTO>> AddCeg([FromBody] CegDTO ceg)
         {          
             Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
 
