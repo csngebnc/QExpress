@@ -63,12 +63,12 @@ namespace QExpress.Controllers
         [HttpGet("GetFelhasznalo/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo([FromRoute] String id)
         {
-            var felhasznalo = await _context.Felhasznalo.FindAsync(id);
-
             if (!FelhasznaloExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott felhasználó nem létezik.");
+                return BadRequest(ModelState);
             }
+            var felhasznalo = await _context.Felhasznalo.FindAsync(id);
 
             return new FelhasznaloDTO(felhasznalo);
         }
@@ -82,8 +82,10 @@ namespace QExpress.Controllers
         {
             var felhasznalo = await _context.Felhasznalo.Where(f => f.Email.Equals(email)).FirstAsync();
             if (felhasznalo == null)
-                return NotFound();
-
+            {
+                ModelState.AddModelError(nameof(email), "A megadott e-mail címmel nem létezik felhasználó.");
+                return BadRequest(ModelState);
+            }
             return new FelhasznaloDTO(felhasznalo);
         }
 
