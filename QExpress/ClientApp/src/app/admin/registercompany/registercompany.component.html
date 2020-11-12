@@ -1,8 +1,8 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h2>Cégek felvétele / szerkesztése</h2>
-            <form (ngSubmit)="submitCompany()">
+            <h2>Cég felvétele</h2>
+            <form (ngSubmit)="submitCompany()" method="POST">
                 <div class="form-group">
                     <label for="companyname">Cég neve</label>
                     <input [(ngModel)]="company.nev" type="text" class="form-control" id="companyname" name="companyname">

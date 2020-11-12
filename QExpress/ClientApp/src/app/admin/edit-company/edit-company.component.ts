@@ -1,38 +1,53 @@
 import {Component, OnInit} from '@angular/core';
 import {Company} from '../../models/Company';
+import { User } from '../../models/User';
 import {HttpService} from '../../http.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, FormsModule, FormGroup } from '@angular/forms'
 
 @Component({
   selector: 'app-edit-company',
   templateUrl: './edit-company.component.html',
-  styleUrls: ['./edit-company.component.css']
+  styleUrls: ['./edit-company.component.css'],
 })
 export class EditCompanyComponent implements OnInit {
 
   company: Company;
+  email: String;
+  editCompanyForm;
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private httpService: HttpService) {
+    private httpService: HttpService,
+    private router: Router,
+    private formBuilder: FormBuilder) {
+      this.editCompanyForm = this.formBuilder.group({
+        name: '1',
+        email: ''
+      })
   }
 
   ngOnInit() {
     const companyId = this.activatedRoute.snapshot.paramMap.get('companyid');
-    console.log(companyId);
     this.httpService.getCompany(companyId).subscribe(
       company => this.company = company
     );
+    this.httpService.getUserById(this.company.cegadminId).subscribe((u: User) =>{
+      this.email = u.email;
+    })
+    this.editCompanyForm = this.formBuilder.group({
+      name: '2',
+      email: ''
+    })
   }
 
-  editCompany(): void {
-    this.httpService.editComanpy(this.company).subscribe(
-      res => console.log(res)
-    );
+  onSubmit(companyData) {
+    this.httpService.getUserByEmail(companyData.email).subscribe((user: User) => {
+      this.company.nev = companyData.name;
+      this.company.cegadminId = user.id;
+      this.httpService.editCompany(this.company).subscribe((c: Company) => {
+        this.router.navigate(['/company/list'])
+      });
+    })
   }
-
-  addCompany(email: string): void{
-    this.httpService.addCompany(this.company)
-  }
-
 }

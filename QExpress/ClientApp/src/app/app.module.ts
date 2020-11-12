@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 
@@ -49,10 +49,6 @@ var routes = [
     component: CompaniesComponent,
     path: 'company/list'
   },
-  // {
-  //   component: RegistercompanyComponent,
-  //   path: 'company/edit/:companyid'
-  // },
   {
     component: EditCompanyComponent,
     path: 'company/edit/:companyid'
@@ -61,12 +57,6 @@ var routes = [
     component: AddCompanyComponent,
     path: 'company/add'
   },
-  /*
-  {
-    component: CompaniesComponent,
-    path: 'company/list'
-  },
-  */
   {
     component: EditsiteComponent,
     path: 'site/edit/:siteid'
@@ -124,6 +114,7 @@ var routes = [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule.forRoot(routes),
     MatDialogModule,
     FontAwesomeModule,

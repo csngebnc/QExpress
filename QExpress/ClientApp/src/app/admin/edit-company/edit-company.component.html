@@ -1,4 +1,19 @@
-<app-registercompany
-  (saveClicked)="editCompany()"
-  [company]="company">
-</app-registercompany>
+<div class="container">
+  <div class="row">
+      <div class="col-12">
+          <h2>Cég szerkesztése</h2>
+          <form [formGroup]="editCompanyForm" (ngSubmit)="onSubmit(editCompanyForm.value)" action="/company/list">
+              <div class="form-group">
+                  <label for="companyname">Cég neve</label>
+                  <input type="text" class="form-control" id="companyname" formControlName="name">
+              </div>
+              <div class="form-group">
+                  <label for="companyadminemail">Cégadmin e-mail cime</label>
+                  <input type="text" class="form-control" id="companyadminemail" formControlName="email">
+              </div>
+              <button type="submit" class="btn btn-primary" href="/company/list">Mentés</button>
+              <a class="btn btn-link">Mégsem</a>
+          </form>
+      </div>
+  </div>
+</div>

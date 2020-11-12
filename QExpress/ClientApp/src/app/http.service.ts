@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Company} from './models/Company';
 import {Category} from './models/Category';
@@ -7,6 +7,13 @@ import {Employe} from './models/Employe';
 import {User} from './models/User';
 import {Queue} from './models/Queue';
 import {Site} from './models/Site';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json',
+    Authorization: 'my-auth-token'
+  })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -18,114 +25,31 @@ export class HttpService {
   constructor(private httpClient: HttpClient) {
   }
 
-  /*
-  // GET
-  // Összes cég lekérése
-  public getCompanies(): Observable<any> {
-    console.log('get companies');
-    return this.getRequest('Ceg');
-  }
-
-  // felhasználók lekérése
-  public getFelhasznalo(): Observable<any> {
-    console.log('Get felhasznalo http');
-    return this.getRequest('Felhasznalo');
-  }
-
-  // kategóriák lekérése
-  public getCategories(): Observable<any> {
-    console.log('Get categories http');
-    return this.getRequest('Kategoria');
-  }
-
-  // Sorszam lekérése
-  public getSorszam(): Observable<any> {
-    console.log('Get sorszam http');
-    return this.getRequest('Sorszam');
-  }
-
-  // Telephely lekérése
-  public getTelephely(): Observable<any> {
-    console.log('Get telephely http');
-    return this.getRequest('Telephely');
-  }
-
-  // Levelek lekérése
-  public getUgyfLevelek(): Observable<any> {
-    console.log('Get levelek http');
-    return this.getRequest('UgyfLevelek');
-  }
-
-  // POST
-  // Cég
-  public addCompany(data): Observable<any> {
-    return this.postRequest('Ceg/AddCegParams', data);
-  }
-
-  // Felhasznalo
-  public addUser(data): Observable<any> {
-    return this.postRequest('Felhasznalo/AddFelhasznalo', data);
-  }
-
-  public setTelephely(data): Observable<any> {
-    return this.postRequest('Felhasznalo/SetTelephely', data);
-  }
-
-  // Kategoria
-  public addCategory(data): Observable<any> {
-    return this.postRequest('Kategoria/AddKategoria', data);
-  }
-
-  // Sorszam
-  public addSorszam(data): Observable<any> {
-    return this.postRequest('Sorszam/AddSorszam', data);
-  }
-
-  // Telephely
-  public addTelephely(data): Observable<any> {
-    return this.postRequest('Telephely/AddTelephely', data);
-  }
-
-  // UgyfLevelek
-  public addUgyfLevelek(data): Observable<any> {
-    return this.postRequest('UgyfLevelek/AddUgyfLevelek', data);
-  }
-
-  // DELETE
-  public deleteUgyfLevelek(data): Observable<any> {
-    return this.deleteRequest('UgyfLevelek/{data}', data);
-  }
-  */
-
   // GET kérés, a base URL beépítve, csak a kiegészítő útvonal hiányzik
   // Például: getRequest('Ceg') a baseUrl/Ceg útvonalat fogja hívni
-  private getRequest(route: string): Observable<any> {
+  private getRequest(route: String): Observable<any> {
     return this.httpClient.get(this.baseUrl + route);
   }
 
   // Delete kérés, a GET-hez hasonlóan
   // Adott ID-val rendelkező elem törlése esetén a route része legyen az ID
   // Például: deleteRequest('Ceg/1') az 1-es ID-val rendelkező céget törli
-  private deleteRequest(route: string): Observable<any> {
+  private deleteRequest(route: String): Observable<any> {
     return this.httpClient.delete(this.baseUrl + route);
   }
 
   // POST kérés, GET-hez hasonló
   // Plusz adat a body, ez lesz a kérés body-ja JSON formátumban
   // A kapott objektum automatikusan JSON sorosítva lesz
-  private postRequest(route: string, body): Observable<any> {
-    return this.httpClient.post(this.baseUrl + route, null, {
-      params: body
-    });
+  private postRequest(route: String, body: any): Observable<any> {
+    return this.httpClient.post(this.baseUrl + route, body, httpOptions);
 
     // return this.httpClient.post(this.baseUrl + route, body);
   }
 
   // PUT kérés, a POST-hoz hasonló
-  private putRequest(route: string, body): Observable<any> {
-    return this.httpClient.put(this.baseUrl + route, null, {
-      params: body
-    });
+  private putRequest(route: String, body): Observable<any> {
+    return this.httpClient.put(this.baseUrl + route, body, httpOptions);
 
     // return this.httpClient.put(this.baseUrl + route, body);
   }
@@ -138,6 +62,10 @@ export class HttpService {
     return this.getRequest('Ceg/GetCeg/' + id);
   }
 
+  public editCompany(company: Company): Observable<Company> {
+    return this.putRequest('Ceg/UpdateCeg', company);
+  }
+
   // Cégek lekérése
   public getCompanies(): Observable<Company[]> {
     // return this.httpClient.get<Company[]>(this.baseUrl + 'Ceg/GetCegek')
@@ -145,20 +73,14 @@ export class HttpService {
   }
 
   // Cég törlése
-  public deleteCompany(id: number): Observable<any> {
+  public deleteCompany(id: Number): Observable<any> {
     return this.deleteRequest('Ceg/Delete/' + id.toString());
   }
 
   // Egy cég hozzáadása
   public addCompany(company: Company): Observable<Company> {
-    // átírva a Cegkontroller, ha nem lenne, akkor ezzel működne
-    // const backendCompany = {
-    //   cegnev: company.nev,
-    //   cegadmin_id: company.cegadminId
-    // };
-    // return this.postRequest('Ceg/AddCeg', backendCompany);
-
     return this.postRequest('Ceg/AddCeg', company);
+    //return this.httpClient.post<Company>(this.baseUrl + 'Ceg/AddCeg', company, httpOptions);
   }
 
   // Egy cég nevének szerkesztése
@@ -201,14 +123,14 @@ export class HttpService {
   }
 
   // Kategoria törlése
-  public deleteCategory(id: number): Observable<Category> {
+  public deleteCategory(id: Number): Observable<Category> {
     return this.deleteRequest('Kategoria/Delete/' + id.toString());
   }
 
   //// ALKALMAZOTTAK ////
 
-  // Alkalmazottak lekérése
-  public getEmployee(): Observable<User[]> {
+  // Felhasználók lekérése
+  public getUsers(): Observable<User[]> {
     return this.getRequest('Felhasznalo/GetFelhasznalok');
   }
 
@@ -218,40 +140,44 @@ export class HttpService {
   }
 
   // Felhasznalo lekérése id alapján
-  public getEmployeId(id: any): Observable<User> {
+  public getUserById(id: String): Observable<User> {
     return this.getRequest('Felhasznalo/GetFelhasznalo/' + id);
   }
 
+  public getUserByEmail(email: String): Observable<User> {
+    return this.getRequest('Felhasznalo/GetFelhasznaloByEmail/' + email);
+  }
+
   // Felhasznalo aktív sorszámainak a lekérése
-  public getEmployeCurrentQueue(): Observable<Queue[]> {
+public getActiveQueue(): Observable<Queue[]> {
     return this.getRequest('Felhasznalo/AktivSorszamok');
   }
 
   // Felhasznalo előző sorszámainak a lekérése
-  public getEmployeOldQueue(): Observable<Queue[]> {
+  public getQueueHistory(): Observable<Queue[]> {
     return this.getRequest('Felhasznalo/KorabbiSorszamok');
   }
 
   // Felhasznalo hozzáadása
-  public addEmploye(user: User): Observable<User> {
+  public addUser(user: User): Observable<User> {
     return this.postRequest('Felhasznalo/AddFelhasznalo', user);
   }
 
   // Felhasznalo email megváltoztatása
-  public editEmployeEmail(user: User): Observable<User> {
+  public editEmail(user: User): Observable<User> {
     return this.postRequest('Felhasznalo/NewEmail', user);
   }
 
   //// Telephelyek ////
 
   // Telephelyek lekérése
-  public getSites(site: Site): Observable<Site[]> {
+  public getSites(): Observable<Site[]> {
     return this.getRequest('Telephely/GetTelephelyek');
   }
 
   // Egy telephely lekérése
-  public getSiteId(id: any): Observable<Site> {
-    return this.getRequest('Telephely/GetTelephelyek/' + id);
+  public getSiteById(id: Number): Observable<Site> {
+    return this.getRequest('Telephely/GetTelephely/' + id);
   }
 
   // Egy telephely hozzáadása
@@ -260,12 +186,12 @@ export class HttpService {
   }
 
   // Egy telephely törlése
-  public deleteSite(id: any): Observable<Site> {
+  public deleteSite(id: Number): Observable<Site> {
     return this.getRequest('Telephely/Delete' + id);
   }
 
   /*
-  private deleteRequest(route: string): Observable<any> {
+  private deleteRequest(route: String): Observable<any> {
     return this.httpClient.delete(this.baseUrl + route);
   }
    */

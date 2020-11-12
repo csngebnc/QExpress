@@ -5,7 +5,7 @@ import { RegistercompanyComponent } from './registercompany/registercompany.comp
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AddCompanyComponent } from './add-company/add-company.component';
 import { EditCompanyComponent } from './edit-company/edit-company.component';
 
@@ -16,7 +16,8 @@ import { EditCompanyComponent } from './edit-company/edit-company.component';
     imports: [
         CommonModule,
         FontAwesomeModule,
-        FormsModule
+        FormsModule,
+        ReactiveFormsModule
     ]
 })
 export class AdminModule {
