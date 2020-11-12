@@ -228,8 +228,11 @@ namespace QExpress.Controllers
         [Route("SetTelephely")]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            if (_context.FelhasznaloTelephely.Any(ft =>ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
-                return BadRequest();
+            if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+            {
+                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott e-mail cím már egy másik telephelyhez regisztrálva van.");
+                return BadRequest(ModelState);
+            }
 
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {
