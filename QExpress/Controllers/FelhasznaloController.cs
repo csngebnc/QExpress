@@ -228,7 +228,7 @@ namespace QExpress.Controllers
         [Route("SetTelephely")]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            if (_context.FelhasznaloTelephely.Any(ft => ft.TelephelyId == felhasznaloTelephely.TelephelyId && ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+            if (_context.FelhasznaloTelephely.Any(ft =>ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
                 return BadRequest();
 
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
