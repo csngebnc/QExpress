@@ -21,6 +21,7 @@ namespace QExpress.Models
         public String Megnevezes { get; set; }
 
         [ForeignKey("Ceg")]
+        [Required]
         public int CegId { get; set; }
         public Ceg Ceg { get; set; }
 

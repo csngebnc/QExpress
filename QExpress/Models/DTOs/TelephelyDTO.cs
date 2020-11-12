@@ -7,6 +7,7 @@ namespace QExpress.Models.DTOs
 {
     public class TelephelyDTO
     {
+        public TelephelyDTO() { }
         public TelephelyDTO(Telephely t)
         {
             Id = t.Id;

@@ -23,6 +23,7 @@ namespace QExpress.Models
         public String nev { get; set; }
 
         [ForeignKey("Cegadmin")]
+        [Required]
         public String CegadminId { get; set; }
         public Felhasznalo Cegadmin { get; set; }
 

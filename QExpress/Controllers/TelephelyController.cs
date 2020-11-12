@@ -31,9 +31,9 @@ namespace QExpress.Controllers
         [Route("GetTelephelyek")]
         public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek()
         {
-            var telekhelyek = await _context.Telephely.ToListAsync();
+            var telephelyek = await _context.Telephely.ToListAsync();
             var dto = new List<TelephelyDTO>();
-            foreach (var t in telekhelyek)
+            foreach (var t in telephelyek)
             {
                 dto.Add(new TelephelyDTO(t));
             }
@@ -43,7 +43,7 @@ namespace QExpress.Controllers
 
         /*
          * Egy adott id-val rendelkező telephely lekérése.
-         * api/GetTelephely/{id}
+         * api/Telephely/GetTelephely/{id}
          * param: id: telephely id-ja
          */
         [HttpGet("GetTelephely/{id}")]
@@ -59,6 +59,35 @@ namespace QExpress.Controllers
             return new TelephelyDTO(telephely);
         }
 
+        /*
+         * Egy adott id-val rendelkező telephelyhez tartozó sorszámok lekérése, amennyiben az éppen bejelentkezett felhasználó az adott telephelyhez tartozik
+         * api/Telephely/GetTelephelySorszamai/{id}
+         * param: adott telephely id-je
+         */
+
+        [HttpGet("GetTelephelySorszamai/{id}")]
+        public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai([FromRoute]int id)
+        {
+            if(!_context.Telephely.Any(t => t.Id == id))
+            {
+                return NotFound();
+            }
+
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            if(!_context.FelhasznaloTelephely.Any(ft => ft.TelephelyId == id && ft.FelhasznaloId == user_id))
+            {
+                return BadRequest();
+            }
+
+            var sorszamok = await _context.Sorszam.Where(s => s.TelephelyId == id).ToListAsync();
+            var dtoList = new List<SorszamDTO>();
+            foreach (var item in sorszamok)
+            {
+                dtoList.Add(new SorszamDTO(item));
+            }
+
+            return dtoList;
+        }
 
 
         /*
