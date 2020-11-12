@@ -1,1 +1,4 @@
-//Nem tudom hogy kell-e
+export interface UserSite {
+    felhasznaloId: String,
+    telephelyId: Number
+  }

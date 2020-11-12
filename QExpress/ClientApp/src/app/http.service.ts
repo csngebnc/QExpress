@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Company} from './models/Company';
 import {Category} from './models/Category';
-import {Employe} from './models/Employe';
+import {UserSite} from './models/UserSite';
 import {User} from './models/User';
 import {Queue} from './models/Queue';
 import {Site} from './models/Site';
@@ -128,6 +128,19 @@ export class HttpService {
   }
 
   //// ALKALMAZOTTAK ////
+
+  //Cég dolgozóinak lekérése
+  public getEmployees(): Observable<UserSite[]>{
+    return this.getRequest('Ceg/GetDolgozokCegadmin');
+  }
+
+  public deleteEmployee(id: String): Observable<any>{
+    return this.deleteRequest('Felhasznalo/DelFromTelephely/' + id);
+  }
+
+  public addEmployee(us: UserSite): Observable<UserSite>{
+    return this.postRequest('Felhasznalo/SetTelephely', us);
+  }
 
   // Felhasználók lekérése
   public getUsers(): Observable<User[]> {

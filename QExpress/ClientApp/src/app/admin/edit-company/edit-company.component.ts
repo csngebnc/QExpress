@@ -25,7 +25,7 @@ export class EditCompanyComponent implements OnInit {
         name: '1',
         email: ''
       })
-  }
+    }
 
   ngOnInit() {
     const companyId = this.activatedRoute.snapshot.paramMap.get('companyid');
