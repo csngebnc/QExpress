@@ -30,12 +30,12 @@ namespace QExpress.Controllers
         [Route("GetCurrentFelhasznalo")]
         public async Task<ActionResult<FelhasznaloDTO>> GetCurrentFelhasznalo()
         {
-            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            if(id == null)
+            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
+            if(user == null)
             {
                 return new FelhasznaloDTO{ jogosultsagi_szint = 0, Email= "None", Id = "", UserName = "None" };
             }
-            var currentUser = await _context.Felhasznalo.FindAsync(id);
+            var currentUser = await _context.Felhasznalo.FindAsync(user.Value);
             return new FelhasznaloDTO(currentUser);
         }
 

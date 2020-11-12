@@ -213,7 +213,7 @@ export class HttpService {
   }
 
   // Jelenlegi felhasznalo lekérése
-  public getEmployeCurrent(): Observable<User> {
+  public getCurrentUser(): Observable<User> {
     return this.getRequest('Felhasznalo/GetCurrentFelhasznalo');
   }
 
@@ -255,8 +255,8 @@ export class HttpService {
   }
 
   // Egy telephely hozzáadása
-  public addSite(site: Site): Observable<Site> {
-    return this.postRequest('Telephely/AddTelephely', site);
+  public addSite(site: String): Observable<Site> {
+    return this.httpClient.post<Site>('Telephely/AddTelephely', site);
   }
 
   // Egy telephely törlése

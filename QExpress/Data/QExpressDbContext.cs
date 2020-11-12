@@ -25,7 +25,7 @@ namespace QExpress.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -39,6 +39,7 @@ namespace QExpress.Data
 
             modelBuilder.Entity<FelhasznaloTelephely>().HasKey(ft => new { ft.FelhasznaloId, ft.TelephelyId });
         }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
