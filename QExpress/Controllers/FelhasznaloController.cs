@@ -252,6 +252,31 @@ namespace QExpress.Controllers
             return CreatedAtAction(nameof(GetFelhasznalo), new { id = felh.Id }, dto);
         }
 
+        [HttpPut]
+        [Route("UpdateUgyintezoTelephely")]
+        public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
+        {
+            if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+            {
+                return NotFound();
+            }
+
+            if(!_context.Telephely.Any(t => t.Id == felhasznaloTelephely.TelephelyId))
+            {
+                return NotFound();
+            }
+
+            var felhTelep = await _context.FelhasznaloTelephely.Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)).FirstAsync();
+
+            if (felhTelep != null)
+            {
+                felhTelep.TelephelyId = felhasznaloTelephely.TelephelyId;
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
+        }
+
         /*
          * A megadott felhasznalo eltavolitasa egy megadott telephely alkalmazotti listajabol.
          * api/Felhasznalo/DelFromTelephely
