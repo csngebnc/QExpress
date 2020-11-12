@@ -41,7 +41,7 @@ namespace QExpress.Controllers
                 return BadRequest();
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
-            var telephelyek = ceg.Telephely;
+            var telephelyek = await _context.Telephely.Where(c=>c.Ceg_id == ceg.Id).ToListAsync();
 
             var dto = new List<TelephelyDTO>();
             foreach (var t in telephelyek)
@@ -75,7 +75,8 @@ namespace QExpress.Controllers
          * api/Telephely/GetTelephelySorszamai/{id}
          * param: adott telephely id-je
          */
-
+        /*
+         * TODO: törölni!!!!, ha a másikkal működik
         [HttpGet("GetTelephelySorszamai/{id}")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai([FromRoute]int id)
         {
@@ -99,7 +100,7 @@ namespace QExpress.Controllers
 
             return dtoList;
         }
-
+        */
 
         /*
          * Aktuális felhasználó ha cégadmin, akkor az ő cégéhez egy telephely felvétele
