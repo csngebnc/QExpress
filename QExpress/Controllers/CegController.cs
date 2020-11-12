@@ -97,7 +97,17 @@ namespace QExpress.Controllers
             if (!CegExists(ceg_id))
                 return NotFound();
 
-            var ceg = await _context.Ceg.FindAsync(ceg_id);
+            var ceg = await _context.Ceg.FindAsync(ceg_id); 
+            
+            if(string.IsNullOrEmpty(uj_nev))
+                ModelState.AddModelError(nameof(uj_nev), "Cégnév megadása kötelező");
+
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
 
             ceg.nev = uj_nev;
 
@@ -105,13 +115,14 @@ namespace QExpress.Controllers
 
             var dto = new CegDTO(ceg);
 
+
             return CreatedAtAction(nameof(GetCeg), new { id = ceg.Id }, dto);
         }
 
         /*
          * A parameterkent kapott ID-val rendelkezo ceg elere uj felhasznalo beallitasa adminnak.
          * api/Ceg/{ceg_id}/UpdateAdmin
-         * param: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
+         * params: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
          */
         [HttpPut("{ceg_id}/UpdateAdmin")]
         public async Task<IActionResult> EditCegAdmin([FromRoute] int ceg_id, [FromBody] String uj_admin_felhasznalonev)
@@ -143,6 +154,32 @@ namespace QExpress.Controllers
         }
 
         /*
+         * A parameterkent kapott ID-val rendelkezo ceg adatait frissiti.
+         * api/Ceg/{ceg_id}/UpdateCeg
+         * params: id: ceg id-ja, ceg: CegDTO a frissitett adatokkal
+         */
+        [HttpPut("{ceg_id}/UpdateCeg")]
+        public async Task<IActionResult> UpdateCeg([FromRoute] int ceg_id, [FromBody] CegDTO ceg)
+        {
+            if (!CegExists(ceg_id))
+                return NotFound();
+            if (ceg_id != ceg.Id)
+                return BadRequest();
+
+            var frissitendo_ceg = await _context.Ceg.FindAsync(ceg_id);
+            frissitendo_ceg.CegadminId = ceg.CegadminId;
+            frissitendo_ceg.nev = ceg.Nev;
+
+            await _context.SaveChangesAsync();
+            var dto = new CegDTO(frissitendo_ceg);
+
+
+            return CreatedAtAction(nameof(GetCeg), new { id = frissitendo_ceg.Id }, dto);
+
+        }
+
+
+        /*
          * Uj ceg rogzitese
          * api/Ceg/AddCeg
          * params: cegnev: cég neve, cegadmin_id: cégadmin id-ja
@@ -150,9 +187,9 @@ namespace QExpress.Controllers
         [HttpPost]
         [Route("AddCeg")]
         public async Task<ActionResult<Ceg>> AddCeg([FromBody] CegDTO ceg)
-        {
+        {          
             Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
-            // Ceg ujCeg = new Ceg { nev = cegnev, CegadminId = cegadmin_id };
+
             _context.Ceg.Add(ujCeg);
             await _context.SaveChangesAsync();
 
