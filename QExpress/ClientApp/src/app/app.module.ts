@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
-
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
 import {ApiAuthorizationModule} from 'src/api-authorization/api-authorization.module';
@@ -24,7 +23,6 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {NewDialog} from './queue/current/current.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {AddCompanyComponent} from './admin/add-company/add-company.component';
 import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
 import { AddsiteComponent } from './companyadmin/addsite/addsite.component';
 
@@ -53,10 +51,6 @@ var routes = [
   {
     component: EditCompanyComponent,
     path: 'company/edit/:companyid'
-  },
-  {
-    component: AddCompanyComponent,
-    path: 'company/add'
   },
   {
     component: EditsiteComponent,
@@ -106,7 +100,6 @@ var routes = [
     CategoriesComponent,
     EmployeesComponent,
     RegistercompanyComponent,
-    AddCompanyComponent,
     EditCompanyComponent,
     CompaniesComponent,
     WaitingComponent,

@@ -9,7 +9,8 @@ import { SitesComponent } from './sites/sites.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AddsiteComponent } from './addsite/addsite.component';
-import { FormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AddemployeeComponent } from './addemployee/addemployee.component'
 
 @NgModule({
   declarations: [
@@ -19,11 +20,12 @@ import { FormsModule } from '@angular/forms'
     EditsiteComponent, 
     EditemployeeComponent, 
     SitesComponent, 
-    AddsiteComponent],
+    AddsiteComponent, AddemployeeComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class CompanyadminModule { 
