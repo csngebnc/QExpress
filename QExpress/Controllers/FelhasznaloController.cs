@@ -74,6 +74,20 @@ namespace QExpress.Controllers
         }
 
         /*
+         * Egy felhasznalo lekerese megadott email alapjan.
+         * api/Felhasznalo/GetFelhasznaloByEmail/{email}
+         */
+        [HttpGet("GetFelhasznaloByEmail/{email}")]
+        public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznaloByEmail([FromRoute] String email)
+        {
+            var felhasznalo = await _context.Felhasznalo.Where(f => f.Email.Equals(email)).FirstAsync();
+            if (felhasznalo == null)
+                return NotFound();
+
+            return new FelhasznaloDTO(felhasznalo);
+        }
+
+        /*
          * A bejelentkezett felhasznalo aktiv sorszamainak lekerese
          * api/Felhasznalo/AktivSorszamok
          */
