@@ -199,7 +199,8 @@ namespace QExpress.Controllers
                 return BadRequest(ModelState);
             }
 
-
+            var cegadmin = await _context.Felhasznalo.FindAsync(ceg.CegadminId);
+            cegadmin.jogosultsagi_szint = 2;
             Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
 
             _context.Ceg.Add(ujCeg);

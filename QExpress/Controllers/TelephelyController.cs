@@ -71,38 +71,6 @@ namespace QExpress.Controllers
         }
 
         /*
-         * Egy adott id-val rendelkező telephelyhez tartozó sorszámok lekérése, amennyiben az éppen bejelentkezett felhasználó az adott telephelyhez tartozik
-         * api/Telephely/GetTelephelySorszamai/{id}
-         * param: adott telephely id-je
-         */
-        /*
-         * TODO: törölni!!!!, ha a másikkal működik
-        [HttpGet("GetTelephelySorszamai/{id}")]
-        public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai([FromRoute]int id)
-        {
-            if(!_context.Telephely.Any(t => t.Id == id))
-            {
-                return NotFound();
-            }
-
-            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            if(!_context.FelhasznaloTelephely.Any(ft => ft.TelephelyId == id && ft.FelhasznaloId == user_id))
-            {
-                return BadRequest();
-            }
-
-            var sorszamok = await _context.Sorszam.Where(s => s.TelephelyId == id).ToListAsync();
-            var dtoList = new List<SorszamDTO>();
-            foreach (var item in sorszamok)
-            {
-                dtoList.Add(new SorszamDTO(item));
-            }
-
-            return dtoList;
-        }
-        */
-
-        /*
          * Aktuális felhasználó ha cégadmin, akkor az ő cégéhez egy telephely felvétele
          * api/Telephely/AddTelephely
          * param: cim: telephely címe
@@ -133,6 +101,49 @@ namespace QExpress.Controllers
 
             return CreatedAtAction(nameof(GetTelephely), new { id = ujTelephely.Id }, dto);
         }
+
+
+        /*
+         * Paraméterként kapott telephely frissítése
+         * param: telephely: egy telephelydto
+         */
+        [HttpPut]
+        [Route("UpdateTelephely")]
+        public async Task<ActionResult<TelephelyDTO>> UpdateTelephely([FromBody] TelephelyDTO telephely)
+        {
+
+            if (telephely.Cim == null || telephely.Cim.Length == 0)
+            {
+                //TODO validáció
+            }
+
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            Felhasznalo felh = await _context.Felhasznalo.FindAsync(user_id);
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id) && c.Id == telephely.Ceg_id) || felh.jogosultsagi_szint < 3)
+            {
+                return BadRequest();
+            }
+            if (!TelephelyExists(telephely.Id))
+            {
+                NotFound();
+            }
+
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            if(telephely.Ceg_id != ceg.Id)
+            {
+                return BadRequest();
+            }
+
+            var frissitendo_telephely = await _context.Telephely.FindAsync(telephely.Id);
+            frissitendo_telephely.Cim = telephely.Cim;
+
+            await _context.SaveChangesAsync();
+
+            var dto = new TelephelyDTO(frissitendo_telephely);
+
+            return CreatedAtAction(nameof(GetTelephely), new { id = frissitendo_telephely.Id }, dto);
+        }
+
 
         /*
          * Megadott id-val rendelkező telephely törlése
