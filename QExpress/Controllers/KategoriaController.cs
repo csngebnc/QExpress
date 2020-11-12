@@ -23,35 +23,6 @@ namespace QExpress.Controllers
             _context = context;
         }
 
-
-        /*
-         * Cégadminhoz tartozó cég kategóriáinak lekérése
-         * api/Kategoria/GetKategoriakCegadmin
-         */
-        [HttpGet]
-        [Route("GetKategoriakCegadmin")]
-        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriakCegadmin()
-        {
-            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if (cegadmin.jogosultsagi_szint != 3)
-                return BadRequest();
-
-            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
-                return BadRequest();
-
-            var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
-            var kategoriak = await _context.Kategoria.Where(c => c.CegId == ceg.Id).ToListAsync();
-
-            var dto = new List<KategoriaDTO>();
-            foreach (var k in kategoriak)
-            {
-                dto.Add(new KategoriaDTO(k));
-            }
-            return dto;
-        }
-
         /*
          * Az osszes kategoria lekerdezese
          * api/Kategoria/GetKategoriak

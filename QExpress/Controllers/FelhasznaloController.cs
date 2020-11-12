@@ -283,30 +283,26 @@ namespace QExpress.Controllers
          * param: FelhasznaloTelephelyDTO --> FelhasznaloId, TelephelyId
          */
         [HttpPost]
-        [Route("DelFromTelephely")]
-        public async Task<IActionResult> DelFromTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
+        [Route("DelFromTelephely/{id}")]
+        public async Task<IActionResult> DelFromTelephely([FromRoute] String user_id)
         {
-            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
+            if (!FelhasznaloExists(user_id))
             {
                 return NotFound();
             }
 
-            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
+            if(!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
             {
                 return NotFound();
             }
 
-            Felhasznalo felh = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
-            var felhTelep = await _context.FelhasznaloTelephely
-                .Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId))
-                .Where(t => t.TelephelyId == felhasznaloTelephely.TelephelyId).FirstAsync();
+            var felhasznalo = await _context.Felhasznalo.FindAsync(user_id);
+            var hozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
 
-            if (felhTelep != null)
-            {
-                _context.FelhasznaloTelephely.Remove(felhTelep);
-                felh.jogosultsagi_szint = 1;
-                await _context.SaveChangesAsync();
-            }                
+            _context.FelhasznaloTelephely.Remove(hozzarendeles);
+            felhasznalo.jogosultsagi_szint = 1;
+            await _context.SaveChangesAsync();
+           
 
             return NoContent();
         }

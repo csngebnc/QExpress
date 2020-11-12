@@ -88,6 +88,8 @@ namespace QExpress.Controllers
             return dto;
         }
 
+
+
         /*
          * A parameterkent kapott ID-val rendelkezo ceg kategoriainak lekerese.
          * api/Ceg/{id}/Kategoriak
