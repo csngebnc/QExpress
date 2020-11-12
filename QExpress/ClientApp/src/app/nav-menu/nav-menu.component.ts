@@ -29,6 +29,11 @@ export class NavMenuComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.httpService.getCurrentUser().subscribe((u: User) => this.user_level = u.jogosultsagi_szint);
+    this.httpService.getCurrentUser().subscribe(
+      (u: User) => {
+        this.user_level = u['jogosultsagi_szint'];
+        console.log(u);
+      });
+    console.log(this.user_level);
   }
 }

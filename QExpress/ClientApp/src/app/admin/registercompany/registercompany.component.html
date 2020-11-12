@@ -5,13 +5,11 @@
             <form (ngSubmit)="submitCompany()">
                 <div class="form-group">
                     <label for="companyname">Cég neve</label>
-                      <input [(ngModel)]="company.nev" type="text" class="form-control" id="companyname" name="companyname">
+                    <input [(ngModel)]="company.nev" type="text" class="form-control" id="companyname" name="companyname">
                 </div>
                 <div class="form-group">
-<!--                    <label for="companyadminemail">Cégadmin e-mail cime</label> -->
-<!--                  <input type="text" class="form-control" id="companyadminid" name="companyadminid"> -->
-                  <label for="companyadminid">Cégadmin id-ja</label>
-                    <input [(ngModel)]="company.cegadminId" type="text" class="form-control" id="companyadminid" name="companyadminid">
+                    <label for="companyadminemail">Cégadmin e-mail cime</label>
+                    <input [(ngModel)]="email" type="text" class="form-control" id="companyadminemail" name="companyadminemail">
                 </div>
                 <button type="submit" class="btn btn-primary">Mentés</button>
                 <a class="btn btn-link" href="/company/list">Mégsem</a>

@@ -10,11 +10,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class EditCompanyComponent implements OnInit {
 
-  company: Company = {
-    nev: 'meglévő',
-    id: 2,
-    cegadminId: 'Hello'
-  };
+  company: Company;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -30,9 +26,13 @@ export class EditCompanyComponent implements OnInit {
   }
 
   editCompany(): void {
-    this.httpService.addCompany(this.company).subscribe(
+    this.httpService.editComanpy(this.company).subscribe(
       res => console.log(res)
     );
+  }
+
+  addCompany(email: string): void{
+    this.httpService.addCompany(this.company)
   }
 
 }
