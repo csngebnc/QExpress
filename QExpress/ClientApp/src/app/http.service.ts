@@ -172,7 +172,7 @@ public getActiveQueue(): Observable<Queue[]> {
 
   // Telephelyek lekérése
   public getSites(): Observable<Site[]> {
-    return this.getRequest('Telephely/GetTelephelyek');
+    return this.getRequest('Telephely/GetTelephelyekCegadmin');
   }
 
   // Egy telephely lekérése
@@ -181,13 +181,13 @@ public getActiveQueue(): Observable<Queue[]> {
   }
 
   // Egy telephely hozzáadása
-  public addSite(site: String): Observable<Site> {
-    return this.httpClient.post<Site>('Telephely/AddTelephely', site);
+  public addSite(site: Site): Observable<Site> {
+    return this.postRequest('Telephely/AddTelephely', site)
   }
 
   // Egy telephely törlése
   public deleteSite(id: Number): Observable<Site> {
-    return this.getRequest('Telephely/Delete' + id);
+    return this.deleteRequest('Telephely/Delete/' + id);
   }
 
   /*

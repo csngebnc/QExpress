@@ -42,7 +42,6 @@ export class CompaniesComponent implements OnInit {
   loadCompanies(): void {
     this.httpService.getCompanies().subscribe((companies: Company[]) => {
       this.companies = companies;
-      console.log(companies);
     });
   }
 }

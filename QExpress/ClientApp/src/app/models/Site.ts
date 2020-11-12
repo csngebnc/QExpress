@@ -1,5 +1,5 @@
 export interface Site{
   id: number;
-  address: string;
+  cim: string;
   companyid: number;
 }

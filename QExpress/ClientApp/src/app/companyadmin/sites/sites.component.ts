@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import {HttpService} from '../../http.service';
+import { HttpService } from '../../http.service';
+import { Site } from '../../models/Site'
 
 @Component({
   selector: 'app-sites',
@@ -12,27 +13,24 @@ export class SitesComponent implements OnInit {
   faEdit = faEdit;
   faTrashAlt = faTrashAlt;
 
-  public telephelyek: any[] = [];
+  sites: Site[] = [];
 
   constructor(private httpService: HttpService) {
   }
 
   ngOnInit() {
-    console.log('Init Telephely');
-    /* this.getTelephely(); */
+    this.loadSites();
   }
 
-  /* private getTelephely(): void {
-    console.log('Get Telephely');
-
-    this.httpService.getTelephely().subscribe(
-      telephelyek => this.handleTelephelyekResponse(telephelyek),
-      // error => console.log(error)
-    );
+  loadSites(){
+    this.httpService.getSites().subscribe((sites: Site[]) =>{
+      this.sites = sites;
+    })
   }
 
-  private handleTelephelyekResponse(telephelyek): void {
-    console.log(telephelyek);
-    this.telephelyek = telephelyek;
-  } */
+  deleteSite(id: Number){
+    this.httpService.deleteSite(id).subscribe(() => {
+      this.loadSites();
+    })
+  }
 }

@@ -26,6 +26,7 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AddCompanyComponent} from './admin/add-company/add-company.component';
 import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
+import { AddsiteComponent } from './companyadmin/addsite/addsite.component';
 
 var routes = [
   {
@@ -64,6 +65,10 @@ var routes = [
   {
     component: SitesComponent,
     path: 'site/list'
+  },
+  {
+    component: AddsiteComponent,
+    path: 'site/add'
   },
   {
     component: EditemployeeComponent,
@@ -106,6 +111,7 @@ var routes = [
     CompaniesComponent,
     WaitingComponent,
     NewDialog,
+    AddsiteComponent,
   ],
   entryComponents: [
     NewDialog,

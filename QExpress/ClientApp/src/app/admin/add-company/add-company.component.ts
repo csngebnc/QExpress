@@ -25,5 +25,4 @@ export class AddCompanyComponent implements OnInit {
       res => console.log(res)
     );
   }
-
 }

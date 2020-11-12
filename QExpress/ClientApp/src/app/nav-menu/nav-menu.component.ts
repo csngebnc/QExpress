@@ -14,7 +14,7 @@ export class NavMenuComponent implements OnInit{
 
   // user level 4: cegek
   // user level 3: kategoriak, alkalmazottak, telephelyek
-  private user_level: number;
+  public user_level: number;
 
   constructor(private authorizeService: AuthorizeService, private httpService: HttpService){
 

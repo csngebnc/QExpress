@@ -5,21 +5,23 @@
             <table class="table table-striped table-bordered">
                 <tr>
                     <th>
-                        Cím
+                        Cim
                     </th>
                     <th>
                         Műveletek
                     </th>
                 </tr>
-                <tr>
+                <tr *ngFor="let s of sites">
                     <td>
-                        Bartók Béla utca 4.
+                        {{s.cim}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
+                        <a href="/site/edit/{{s.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a (click)="deleteSite(s.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
             </table>
+            <a class="btn btn-primary" href="/site/add">Új cég felvétele</a>
             <br/>
         </div>
     </div>
