@@ -282,7 +282,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/DelFromTelephely
          * param: FelhasznaloTelephelyDTO --> FelhasznaloId, TelephelyId
          */
-        [HttpPost]
+        [HttpDelete]
         [Route("DelFromTelephely/{user_id}")]
         public async Task<IActionResult> DelFromTelephely([FromRoute] String user_id)
         {
