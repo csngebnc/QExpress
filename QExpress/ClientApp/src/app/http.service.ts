@@ -190,6 +190,10 @@ public getActiveQueue(): Observable<Queue[]> {
     return this.deleteRequest('Telephely/Delete/' + id);
   }
 
+  public editSite(site: Site): Observable<Site> {
+    return this.putRequest('Telephely/UpdateTelephely', site);
+  }
+
   /*
   private deleteRequest(route: String): Observable<any> {
     return this.httpClient.delete(this.baseUrl + route);

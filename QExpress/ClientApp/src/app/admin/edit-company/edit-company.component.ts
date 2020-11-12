@@ -3,7 +3,7 @@ import {Company} from '../../models/Company';
 import { User } from '../../models/User';
 import {HttpService} from '../../http.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, FormsModule, FormGroup } from '@angular/forms'
+import { FormBuilder } from '@angular/forms'
 
 @Component({
   selector: 'app-edit-company',
