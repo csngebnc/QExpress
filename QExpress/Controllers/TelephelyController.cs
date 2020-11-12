@@ -24,7 +24,7 @@ namespace QExpress.Controllers
 
 
         /*
-         * Ügyintéző telephelyeinek lekérése
+         * Cégadminhoz tartozó cég telephelyeinek lekérése
          * api/Telephely/GetTelephelyekCegadmin
          */
         [HttpGet]
@@ -55,7 +55,7 @@ namespace QExpress.Controllers
         /*
          * Egy adott id-val rendelkező telephely lekérése.
          * api/Telephely/GetTelephely/{id}
-         * param: id: telephely id-ja
+         * param: id: telephely id-ja   
          */
         [HttpGet("GetTelephely/{id}")]
         public async Task<ActionResult<TelephelyDTO>> GetTelephely([FromRoute] int id)
@@ -108,8 +108,13 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddTelephely")]
-        public async Task<ActionResult<TelephelyDTO>> AddTelephely([FromBody] String cim)
+        public async Task<ActionResult<TelephelyDTO>> AddTelephely([FromBody] TelephelyDTO telephely)
         {
+
+            if(telephely.Cim ==null || telephely.Cim.Length == 0) {
+                //TODO validáció
+            }
+
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             Felhasznalo felh = await _context.Felhasznalo.FindAsync(user_id);
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)) || felh.jogosultsagi_szint<3)
@@ -119,7 +124,7 @@ namespace QExpress.Controllers
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
 
-            Telephely ujTelephely = new Telephely { Cim = cim, Ceg_id = ceg.Id };
+            Telephely ujTelephely = new Telephely { Cim = telephely.Cim, Ceg_id = ceg.Id };
             _context.Telephely.Add(ujTelephely);
             await _context.SaveChangesAsync();
 

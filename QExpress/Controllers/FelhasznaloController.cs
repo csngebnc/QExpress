@@ -124,23 +124,18 @@ namespace QExpress.Controllers
         }
 
         [HttpGet]
-        [Route("GetTelephelyek")]
-        public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek()
+        [Route("GetTelephelySorszamai")]
+        public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai()
         {
-            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            var telephelyHozzarendelesek = await _context.FelhasznaloTelephely.Where(s => s.FelhasznaloId.Equals(id)).ToListAsync();
-            var telephely_ids = new List<int>();
-            foreach (var item in telephelyHozzarendelesek)
-            {
-                if (!telephely_ids.Contains(item.TelephelyId))
-                    telephely_ids.Add(item.TelephelyId);
-            }
-            var telephelyek = await _context.Telephely.Where(t => telephely_ids.Contains(t.Id)).ToListAsync();
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var telephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
+            var telephely = await _context.Telephely.FindAsync(telephelyHozzarendeles.TelephelyId);
+            
 
-            var dto = new List<TelephelyDTO>();
-            foreach (var t in telephelyek)
+            var dto = new List<SorszamDTO>();
+            foreach (var s in telephely.Sorszam)
             {
-                dto.Add(new TelephelyDTO(t));
+                dto.Add(new SorszamDTO(s));
             }
 
             return dto;
@@ -203,33 +198,6 @@ namespace QExpress.Controllers
             return CreatedAtAction(nameof(GetFelhasznalo), new { id = felh.Id }, dto);
         }
 
-
-        /*
-         * Egy felhasznalo felvetele
-         * ###### Aktualis login mellett nem feltetlenul szukseges. ######
-         * api/Felhasznalo/AddFelhasznalo
-         */
-
-        /*
-        [HttpPost]
-        [Route("AddFelhasznalo")]
-        public async Task<ActionResult<FelhasznaloDTO>> AddFelhasznaloParams([FromBody] String name, [FromBody] String email, [FromBody] String pw, [FromBody] int jog_szint)
-        {
-            Felhasznalo newUser = new Felhasznalo { UserName = name, Email = email, PasswordHash = pw, jogosultsagi_szint = jog_szint };
-            _context.Felhasznalo.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            var dto = new FelhasznaloDTO(newUser);
-
-            return CreatedAtAction(nameof(GetFelhasznalo), new { id = newUser.Id }, dto);
-        }
-        */
-
-
-        /*
-         * Megadott ID-val rendelkezo felhasznalo torlese
-         * api/Felhasznalo/Delete/{id}
-         */
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo([FromRoute] String id)
         {
@@ -258,7 +226,9 @@ namespace QExpress.Controllers
         [Route("SetTelephely")]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
+            if (_context.FelhasznaloTelephely.Any(ft => ft.TelephelyId == felhasznaloTelephely.TelephelyId && ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+                return BadRequest();
+
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {
                 return NotFound();
@@ -269,6 +239,7 @@ namespace QExpress.Controllers
                 return NotFound();
             }
 
+            Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
             _context.FelhasznaloTelephely.Add(new FelhasznaloTelephely { FelhasznaloId = felhasznaloTelephely.FelhasznaloId, TelephelyId = felhasznaloTelephely.TelephelyId });
             felh.jogosultsagi_szint = 2;
 
@@ -293,24 +264,22 @@ namespace QExpress.Controllers
                 return NotFound();
             }
 
-            Felhasznalo felh = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
-
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
                 return NotFound();
             }
 
+            Felhasznalo felh = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
             var felhTelep = await _context.FelhasznaloTelephely
                 .Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId))
                 .Where(t => t.TelephelyId == felhasznaloTelephely.TelephelyId).FirstAsync();
 
-            _context.FelhasznaloTelephely.Remove(felhTelep);
-
-            if (!_context.FelhasznaloTelephely.Any(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+            if (felhTelep != null)
+            {
+                _context.FelhasznaloTelephely.Remove(felhTelep);
                 felh.jogosultsagi_szint = 1;
-
-            await _context.SaveChangesAsync();
-
+                await _context.SaveChangesAsync();
+            }                
 
             return NoContent();
         }
