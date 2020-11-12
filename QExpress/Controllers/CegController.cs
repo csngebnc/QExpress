@@ -59,6 +59,36 @@ namespace QExpress.Controllers
         }
 
         /*
+         * Cégadminhoz tartozó cég dolgozóinak lekérése
+         * api/Kategoria/GetDolgozokCegadmin
+         */
+        [HttpGet]
+        [Route("GetDolgozokCegadmin")]
+        public async Task<ActionResult<IEnumerable<FelhasznaloTelephelyDTO>>> GetDolgozokCegadmin()
+        {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+            if (cegadmin.jogosultsagi_szint != 3)
+                return BadRequest();
+
+            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
+                return BadRequest();
+
+            var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
+            var telephelyek = await _context.Telephely.Where(t => t.Ceg_id == ceg.Id).Select(tt=>tt.Id).ToListAsync();
+
+            var dolgozok = await _context.FelhasznaloTelephely.Where(ft => telephelyek.Contains(ft.TelephelyId)).ToListAsync();
+
+            var dto = new List<FelhasznaloTelephelyDTO>();
+            foreach (var d in dolgozok)
+            {
+                dto.Add(new FelhasznaloTelephelyDTO(d));
+            }
+            return dto;
+        }
+
+        /*
          * A parameterkent kapott ID-val rendelkezo ceg kategoriainak lekerese.
          * api/Ceg/{id}/Kategoriak
          * param: id - annak a cégnek az id-ja, aminek a kategóriái kellenek
