@@ -185,7 +185,14 @@ namespace QExpress.Controllers
         [HttpPost]
         [Route("AddCeg")]
         public async Task<ActionResult<CegDTO>> AddCeg([FromBody] CegDTO ceg)
-        {          
+        {        
+            if(!_context.Felhasznalo.Any(f => f.Id == ceg.CegadminId))
+            {
+                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott felhasználó nem létezik.");
+                return BadRequest(ModelState);
+            }
+
+
             Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
 
             _context.Ceg.Add(ujCeg);

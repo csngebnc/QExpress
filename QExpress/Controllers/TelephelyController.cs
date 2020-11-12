@@ -24,14 +24,25 @@ namespace QExpress.Controllers
 
 
         /*
-         * Összes telephely lekérése
-         * api/Telephely/GetTelephelyek
+         * Ügyintéző telephelyeinek lekérése
+         * api/Telephely/GetTelephelyekCegadmin
          */
         [HttpGet]
-        [Route("GetTelephelyek")]
-        public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek()
+        [Route("GetTelephelyekCegadmin")]
+        public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyekCegadmin()
         {
-            var telephelyek = await _context.Telephely.ToListAsync();
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+            if(cegadmin.jogosultsagi_szint != 3)
+                return BadRequest();
+
+            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
+                return BadRequest();
+
+            var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
+            var telephelyek = ceg.Telephely;
+
             var dto = new List<TelephelyDTO>();
             foreach (var t in telephelyek)
             {
