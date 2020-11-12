@@ -161,10 +161,17 @@ namespace QExpress.Controllers
         [HttpPut("UpdateCeg")]
         public async Task<IActionResult> UpdateCeg([FromBody] CegDTO ceg)
         {
-            if (!CegExists(ceg.Id))
+            if (!CegExists(ceg.Id) && !_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
                 return NotFound();
 
             var frissitendo_ceg = await _context.Ceg.FindAsync(ceg.Id);
+
+            var regi_admin = await _context.Felhasznalo.FindAsync(ceg.CegadminId);
+            regi_admin.jogosultsagi_szint = 1;
+
+            var uj_admin = await _context.Felhasznalo.FindAsync(ceg.CegadminId);
+            uj_admin.jogosultsagi_szint = 3;
+
             frissitendo_ceg.CegadminId = ceg.CegadminId;
             frissitendo_ceg.nev = ceg.Nev;
 
