@@ -283,7 +283,7 @@ namespace QExpress.Controllers
          * param: FelhasznaloTelephelyDTO --> FelhasznaloId, TelephelyId
          */
         [HttpPost]
-        [Route("DelFromTelephely/{id}")]
+        [Route("DelFromTelephely/{user_id}")]
         public async Task<IActionResult> DelFromTelephely([FromRoute] String user_id)
         {
             if (!FelhasznaloExists(user_id))
