@@ -1,17 +1,14 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h2>Kategória felvétele / szerkesztése</h2>
-      <form (ngSubmit)="submitCategory()">
+      <h2>Kategória szerkesztése</h2>
+      <form [formGroup]="editCategoryForm" (ngSubmit)="onSubmit()" action="/category/list">
         <div class="form-group">
           <label for="megnevezes">Megnevezés</label>
-          <input [(ngModel)]="category.megnevezes" type="text" class="form-control" id="megnevezes" name="megnevezes">
+<!--          <input [(ngModel)]="category.megnevezes" type="text" class="form-control" id="megnevezes" name="megnevezes">-->
+          <input type="text" class="form-control" id="megnevezes" formControlName="megnevezes">
         </div>
-        <div class="form-group">
-          <label for="Id">Id</label>
-          <input [(ngModel)]="category.id" type="text" class="form-control" id="id" name="id">
-        </div>
-        <button type="submit" class="btn btn-primary">Mentés</button>
+        <button type="submit" class="btn btn-primary" href="/category/list">Mentés</button>
         <a class="btn btn-link" href="/category/list">Mégsem</a>
       </form>
     </div>

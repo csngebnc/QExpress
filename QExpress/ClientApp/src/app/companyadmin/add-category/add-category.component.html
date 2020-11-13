@@ -1,0 +1,25 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h2>Kategória létrehozása</h2>
+      <form (ngSubmit)="submitCategory()" method="POST">
+        <div class="form-group">
+          <label for="megnevezes">Megnevezés</label>
+          <input [(ngModel)]="category.megnevezes" type="text" class="form-control" id="megnevezes" name="megnevezes">
+        </div>
+        <div class="form-group">
+          <label for="cegId">Cég</label>
+          <select [(ngModel)]="category.cegId" class="form-control" id="cegId" name="cegId">
+            <option
+              *ngFor="let company of companies"
+              [ngValue]="company.id">
+              {{company.nev}}
+            </option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" href="/category/list">Mentés</button>
+        <a class="btn btn-link" href="/category/list">Mégsem</a>
+      </form>
+    </div>
+  </div>
+</div>

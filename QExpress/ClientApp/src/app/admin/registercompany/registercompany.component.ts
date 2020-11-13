@@ -21,10 +21,10 @@ export class RegistercompanyComponent implements OnInit {
 
   @Input()
   company: Company = {
-    id: -1,
-    nev: '',
-    cegadminId: ''
-  };
+    id: null,
+    nev: "",
+    cegadminId: ""
+  }
   email: String;
 
   constructor(

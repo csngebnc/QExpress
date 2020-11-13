@@ -123,6 +123,10 @@ export class HttpService {
 
   //// KATEGORIA ////
 
+  public getCategoriesAll(): Observable<Category[]> {
+    return this.getRequest('Kategoria/GetOsszesKategoria/');
+  }
+
   public getCategories(id: Number): Observable<Category[]> {
     return this.getRequest('Kategoria/GetKategoriak/' + id);
   }
