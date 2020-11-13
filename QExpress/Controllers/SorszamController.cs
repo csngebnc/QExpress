@@ -75,16 +75,16 @@ namespace QExpress.Controllers
          * megjegyzés: paramétereket meg kell még beszélni itt!
          */
         [HttpPut("{id}/Update")]
-        public async Task<ActionResult<SorszamDTO>> UpdateSorszam([FromRoute] int id, [FromBody] SorszamDTO putSorszam)
+        public async Task<ActionResult<SorszamDTO>> UpdateSorszam([FromRoute] int id)
         {
-            if (!SorszamExists(putSorszam.Id))
+            // TODO: validál: csak az az ügyintéző updatelheti, akinek a telephelye megegyezik a sorszámhoz tartozó telephellyel
+            if (!SorszamExists(id))
                 return NotFound();
 
-            if (id != putSorszam.Id)
-                return BadRequest();
-
-            var sorszam = await _context.Sorszam.FindAsync(putSorszam.Id);
-            sorszam.Allapot = putSorszam.Allapot;
+            var sorszam = await _context.Sorszam.FindAsync(id);
+            //TODO: ha már behívták, akkor err!!!
+            
+            sorszam.Allapot = "Behívott";
 
             await _context.SaveChangesAsync();
 
@@ -98,6 +98,7 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<SorszamDTO>> DeleteSorszam([FromRoute] int id)
         {
+            // TODO: ÜGYFÉL ÉS ÜGYINTÉZŐ IS TEHETI
             var sorszam = await _context.Sorszam.FindAsync(id);
             if (sorszam == null)
             {

@@ -133,10 +133,11 @@ namespace QExpress.Controllers
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             var telephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var telephely = await _context.Telephely.FindAsync(telephelyHozzarendeles.TelephelyId);
-            
+
+            var sorszamok = await _context.Sorszam.Where(s => s.TelephelyId == telephely.Id && s.Allapot.Equals("Aktív")).ToListAsync();
 
             var dto = new List<SorszamDTO>();
-            foreach (var s in telephely.Sorszam)
+            foreach (var s in sorszamok)
             {
                 dto.Add(new SorszamDTO(s));
             }

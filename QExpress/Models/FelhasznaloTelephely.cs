@@ -9,6 +9,7 @@ namespace QExpress.Models
 {
     public class FelhasznaloTelephely
     {
+        [Key]
         [ForeignKey("Ugyintezo")]
         [Required]
         public String FelhasznaloId { get; set; }
