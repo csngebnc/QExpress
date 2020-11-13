@@ -96,6 +96,20 @@ namespace QExpress.Controllers
         }
 
 
+        [HttpGet("GetAlkalmazottTelephely/{id}")]
+        public async Task<ActionResult<FelhasznaloTelephelyDTO>> GetAlkalmazottTelephely([FromRoute] String id)
+        {
+            if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(id)))
+            {
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nincs regisztrált munkavállaló.");
+                return BadRequest(ModelState);
+            }
+
+            var hozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(id)).FirstAsync();
+
+            return new FelhasznaloTelephelyDTO(hozzarendeles);
+        }
+
 
         /*
          * A parameterkent kapott ID-val rendelkezo ceg kategoriainak lekerese.
