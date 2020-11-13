@@ -10,17 +10,18 @@ import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontaweso
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AddsiteComponent } from './addsite/addsite.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AddemployeeComponent } from './addemployee/addemployee.component'
+import { AddemployeeComponent } from './addemployee/addemployee.component';
+import {AddCategoryComponent} from "./add-category/add-category.component";
 
 @NgModule({
   declarations: [
-    CategoriesComponent, 
-    EmployeesComponent, 
-    EditcategoryComponent, 
-    EditsiteComponent, 
-    EditemployeeComponent, 
-    SitesComponent, 
-    AddsiteComponent, AddemployeeComponent],
+    CategoriesComponent,
+    EmployeesComponent,
+    EditcategoryComponent,
+    EditsiteComponent,
+    EditemployeeComponent,
+    SitesComponent,
+    AddsiteComponent, AddemployeeComponent, AddCategoryComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,
@@ -28,7 +29,7 @@ import { AddemployeeComponent } from './addemployee/addemployee.component'
     ReactiveFormsModule
   ]
 })
-export class CompanyadminModule { 
+export class CompanyadminModule {
   constructor(library: FaIconLibrary){
     library.addIcons(faEdit, faTrashAlt);
   }

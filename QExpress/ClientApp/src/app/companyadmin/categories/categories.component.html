@@ -8,30 +8,30 @@
                         Megnevezés
                     </th>
                     <th>
-                        Utoljára használva
+                        CegId
                     </th>
                     <th>
-                        Használat
+                        Id
                     </th>
                     <th>
                         Műveletek
                     </th>
                 </tr>
-                <tr>
-                    <td>
-                        Lakossági ügyintézés
-                    </td>
-                    <td>
-                        2020.07.09. 15:45
-                    </td>
-                    <td>
-                        5673
-                    </td>
-                    <td style="width:30px;white-space: nowrap">
-                        <a href="/category/edit/:categoryid" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
-                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
-                    </td>
-                </tr>
+<!--                <tr>-->
+<!--                    <td>-->
+<!--                        Lakossági ügyintézés-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        2020.07.09. 15:45-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        5673-->
+<!--                    </td>-->
+<!--                    <td style="width:30px;white-space: nowrap">-->
+<!--                        <a routerLink="/category/edit/:categoryid" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>-->
+<!--                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>-->
+<!--                    </td>-->
+<!--                </tr>-->
               <tr *ngFor="let c of categories">
                 <td>
                   {{c.megnevezes}}
@@ -43,11 +43,13 @@
                   {{c.id}}
                 </td>
                 <td style="width:30px;white-space: nowrap">
-                  <a href="/category/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                  <a routerLink="/category/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
                   <button (click)="deleteCategory(c.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></button>
                 </td>
               </tr>
             </table>
+            <a class="btn btn-primary" routerLink="/category/add">Új kategória felvétele</a>
+<!--            <a class="btn btn-primary" href="/category/add">Új kategória felvétele</a>-->
             <br/>
         </div>
     </div>

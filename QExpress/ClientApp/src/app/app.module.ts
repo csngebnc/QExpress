@@ -26,6 +26,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {EditCompanyComponent} from './admin/edit-company/edit-company.component';
 import { AddsiteComponent } from './companyadmin/addsite/addsite.component';
 import { AddemployeeComponent } from './companyadmin/addemployee/addemployee.component';
+import {AddCategoryComponent} from "./companyadmin/add-category/add-category.component";
 
 var routes = [
   {
@@ -86,6 +87,10 @@ var routes = [
     path: 'category/edit/:categoryid'
   },
   {
+    component: AddCategoryComponent,
+    path: 'category/add'
+  },
+  {
     component: CategoriesComponent,
     path: 'category/list'
   },
@@ -103,6 +108,7 @@ var routes = [
     HistoryComponent,
     EditUserComponent,
     EditcategoryComponent,
+    AddCategoryComponent,
     EditemployeeComponent,
     EditsiteComponent,
     SitesComponent,

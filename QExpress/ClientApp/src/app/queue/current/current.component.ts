@@ -48,7 +48,7 @@ export class CurrentComponent implements OnInit{
   styleUrls: ['./new-dialog.css']
 })
 export class NewDialog implements OnInit{
-  
+
   companies: Company[] = [];
   sites: Site[] = [];
   categories: Category[] = [];
@@ -79,11 +79,17 @@ export class NewDialog implements OnInit{
     })
   }
 
+  // loadCategories(){
+  //   this.httpService.getCategories(this.selectedCompany.id).subscribe((c: Category[]) => {
+  //     this.categories = c;
+  //   })
+  // }
+
   loadCategories(){
-    this.httpService.getCategories(this.selectedCompany.id).subscribe((c: Category[]) => {
-      this.categories = c;
-    })
-  }
+      this.httpService.getCategory(this.selectedCompany.id).subscribe((c: Category[]) => {
+        this.categories = c;
+      })
+    }
 
   loadSites(){
     this.httpService.getSites(this.selectedCompany.id).subscribe((s: Site[]) => {
@@ -91,7 +97,7 @@ export class NewDialog implements OnInit{
     })
   }
 
-  
+
   onCompanyChanged(value){
     this.httpService.getCompany(value).subscribe((c: Company) => {
       this.selectedCompany = c;
@@ -120,5 +126,5 @@ export class NewDialog implements OnInit{
     this.httpService.newQueue(newQueue).subscribe(() => {
       this.router.navigate(['/'])
     })
-  }    
+  }
 }
