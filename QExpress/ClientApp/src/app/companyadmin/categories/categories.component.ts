@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {HttpService} from '../../http.service';
 import {Category} from '../../models/Category';
-import {Company} from '../../models/Company';
 
 @Component({
   selector: 'app-categories',
@@ -20,40 +19,10 @@ export class CategoriesComponent implements OnInit {
   }
 
   ngOnInit() {
-    // console.log('Init categories');
-    /* this.getCategories(); */
     this.loadCategories();
   }
 
-  /* private getCategories(): void {
-    console.log('Get categories');
-
-    this.httpService.getCategories().subscribe(
-      categories => this.handleCategoriesResponse(categories),
-      // error => console.log(error)
-    );
-  }
-
-  private handleCategoriesResponse(categories): void {
-    console.log(categories);
-    this.categories = categories;
-  }
-
-  /*
-  private exampleCompanyCreate(): void {
-    this.httpService.addCompany({
-      id: 0,
-      nev: 'string',
-      CegId: 'string'
-    }).subscribe(res => console.log(res));
-  }
-  */
-
   loadCategories(): void {
-    // this.httpService.getOwnCategories().subscribe((categories: Category[]) => {
-    //   this.categories = categories;
-    //   console.log(categories);
-    // });
     this.httpService.getCategoriesAll().subscribe((categories: Category[]) => {
       this.categories = categories;
       console.log(categories);
