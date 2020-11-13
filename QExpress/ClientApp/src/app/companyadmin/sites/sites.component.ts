@@ -23,7 +23,7 @@ export class SitesComponent implements OnInit {
   }
 
   loadSites(){
-    this.httpService.getSites().subscribe((sites: Site[]) =>{
+    this.httpService.getOwnSites().subscribe((sites: Site[]) =>{
       this.sites = sites;
     })
   }

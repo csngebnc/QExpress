@@ -38,5 +38,4 @@ export class EditsiteComponent implements OnInit {
       this.router.navigate(['/site/list']);
     })
   }
-
 }

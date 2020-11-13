@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import {MatDialog} from '@angular/material';
+import { Router } from '@angular/router';
 import { HttpService } from 'src/app/http.service';
 import { Category } from 'src/app/models/Category';
 import { Company } from 'src/app/models/Company';
 import { Queue } from 'src/app/models/Queue';
 import { Site } from 'src/app/models/Site';
-import { FormBuilder} from '@angular/forms'
 
 @Component({
   selector: 'app-current',
@@ -19,8 +20,7 @@ export class CurrentComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     public httpService: HttpService,
-    private formBuilder: FormBuilder) {
-      formBuilder.group()
+    ) {
   }
 
   ngOnInit(){
@@ -53,9 +53,17 @@ export class NewDialog implements OnInit{
   sites: Site[] = [];
   categories: Category[] = [];
   selectedCompany: Company;
+  newQueueForm;
 
-  constructor(private httpService: HttpService){
-
+  constructor(
+    private httpService: HttpService,
+    private formBuilder: FormBuilder,
+    private router: Router){
+      this.newQueueForm = this.formBuilder.group({
+        companyId: '',
+        categoryId: '',
+        siteId: ''
+      })
   }
 
   ngOnInit(){
@@ -82,5 +90,35 @@ export class NewDialog implements OnInit{
       this.sites = s;
     })
   }
-    
+
+  
+  onCompanyChanged(value){
+    this.httpService.getCompany(value).subscribe((c: Company) => {
+      this.selectedCompany = c;
+      this.loadCategories();
+      this.loadSites();
+    })
+  }
+
+  getQueue(queueData){
+    var newQueue: Queue = {
+      id: -1,
+      sorszamIdTelephelyen: -1,
+      ugyfelId: '',
+      telephelyId: -1,
+      kategoriaId: -1,
+      idopont: new Date("2034-12-12"),
+      allapot: '',
+      sorbanAllokSzama: -1,
+      telephely: '',
+      kategoria: '',
+      ugyfel: '',
+      ceg: '',
+    }
+    newQueue.kategoriaId = queueData.categoryId;
+    newQueue.telephelyId = queueData.siteId;
+    this.httpService.newQueue(newQueue).subscribe(() => {
+      this.router.navigate(['/'])
+    })
+  }    
 }

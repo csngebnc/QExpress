@@ -1,34 +1,34 @@
 <div align="center">
     <h2>Új sorszám húzása</h2>
-    <form>
+    <form method="POST" (ngSubmit)="getQueue(newQueueForm.value)" [formGroup]="newQueueForm">
         <div class="form-group">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="companyradio" id="companyradio1" value="upc" checked>
-                <label class="form-check-label" for="companyradio1">
+              <div style="display: inline" *ngFor="let company of companies">
+                <input class="form-check-input"
+                  type="radio"
+                  id="{{company.nev}}"
+                  value="{{company.id}}"
+                  formControlName="companyId"
+                  [checked]="company === selectedCompany"
+                  (change)="onCompanyChanged(company.id)">
+                <label class="form-check-label" for="{{company.nev}}">
                     <img src="../../../assets/upc.png" alt="">
                 </label>
-                <input class="form-check-input" type="radio" name="companyradio" id="companyradio2" value="tmobile">
-                <label class="form-check-label" for="companyradio2">
-                  <img src="../../../assets/tmobile.png" alt="">
-                </label>
+              </div>
             </div>       
         </div>
         <div class="form-group">
             <label for="siteselector">Üzlethelyeség</label>
-            <select class="form-control" id="siteselector">
-              <option>Bartók Béla utca 45.</option>
-              <option>Allee</option>
-              <option>Mammut</option>
+            <select class="form-control" id="siteselector" formControlName="siteId">
+              <option *ngFor="let site of sites" [ngValue]="site.id">{{site.cim}}</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label for="categoryselector">Kategória</label>
-            <select class="form-control" id="categoryselector">
-              <option>Lakossági ügyintézés</option>
-              <option>Számla befizetése</option>
-              <option>Meglévő előfizetéssel kapcsolatos ügyintézés</option>
-            </select>
-          </div>
+        </div>
+        <div class="form-group">
+          <label for="categoryselector">Kategória</label>
+          <select class="form-control" id="categoryselector" formControlName="categoryId">
+            <option *ngFor="let category of categories" [ngValue]="category.id">{{category.megnevezes}}</option>
+          </select>
+        </div>
         <button type="submit" class="btn btn-primary">Sorszám húzása</button>
       </form>
 </div>

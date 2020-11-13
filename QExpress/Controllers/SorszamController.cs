@@ -34,7 +34,7 @@ namespace QExpress.Controllers
         {
             string ugyfel_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            int sorszam_counter = _context.Sorszam.Where(t => t.TelephelyId == sorszam.TelephelyId).Max(n => n.SorszamIdTelephelyen);
+            int sorszam_counter = 0;
 
             Sorszam ujSorszam = new Sorszam { 
                 UgyfelId = ugyfel_id,

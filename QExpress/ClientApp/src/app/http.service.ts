@@ -70,6 +70,11 @@ export class HttpService {
     return this.putRequest('Sorszam/' + id + '/Update', null)
   }
 
+  //Sorszám húzás
+  public newQueue(q: Queue): Observable<any>{
+    return this.postRequest('Sorszam/AddSorszam', q)
+  }
+
   //// CEGEK ////
 
   // Egy adott ID-jű cég lekérése
