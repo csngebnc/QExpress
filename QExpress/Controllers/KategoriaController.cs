@@ -25,15 +25,37 @@ namespace QExpress.Controllers
 
         /*
          * Az osszes kategoria lekerdezese
-         * api/Kategoria/GetKategoriak
+         * api/Kategoria/GetOsszesKategoria
          */
         [HttpGet]
-        [Route("GetKategoriak")]
-        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriak()
+        [Route("GetOsszesKategoria")]
+        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetOsszesKategoria()
         {
-            var katekoriak = await _context.Kategoria.ToListAsync();
+            var kategoriak = await _context.Kategoria.ToListAsync();
             var dto = new List<KategoriaDTO>();
-            foreach (var k in katekoriak)
+            foreach (var k in kategoriak)
+            {
+                dto.Add(new KategoriaDTO(k));
+            }
+            return dto;
+        }
+
+        /*
+         * Cég kategóriáinak lekérdezése
+         */
+        [HttpGet]
+        [Route("GetKategoriak/{id}")]
+        public async Task<ActionResult<IEnumerable<KategoriaDTO>>> GetKategoriak(int id)
+        {
+            if(!_context.Ceg.Any(c => c.Id == id))
+            {
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
+            }
+
+            var kategoriak = await _context.Kategoria.Where(k => k.CegId == id).ToListAsync();
+            var dto = new List<KategoriaDTO>();
+            foreach (var k in kategoriak)
             {
                 dto.Add(new KategoriaDTO(k));
             }

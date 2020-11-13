@@ -23,6 +23,29 @@ namespace QExpress.Controllers
         }
 
 
+        // Cég telephelyeinek lekérdezése
+        [HttpGet]
+        [Route("GetTelephelyek/{id}")]
+        public async Task<ActionResult<IEnumerable<TelephelyDTO>>> GetTelephelyek(int id)
+        {
+            if(!_context.Ceg.Any(c => c.Id == id))
+            {
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
+            }
+
+            var ceg = await _context.Ceg.FindAsync(id);
+            var telephelyek = await _context.Telephely.Where(c => c.Ceg_id == ceg.Id).ToListAsync();
+
+            var dto = new List<TelephelyDTO>();
+            foreach (var t in telephelyek)
+            {
+                dto.Add(new TelephelyDTO(t));
+            }
+            return dto;
+        }
+
+
         /*
          * Cégadminhoz tartozó cég telephelyeinek lekérése
          * api/Telephely/GetTelephelyekCegadmin
