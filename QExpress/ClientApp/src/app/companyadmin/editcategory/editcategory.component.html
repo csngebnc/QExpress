@@ -5,7 +5,6 @@
       <form [formGroup]="editCategoryForm" (ngSubmit)="onSubmit()" action="/category/list">
         <div class="form-group">
           <label for="megnevezes">Megnevezés</label>
-<!--          <input [(ngModel)]="category.megnevezes" type="text" class="form-control" id="megnevezes" name="megnevezes">-->
           <input type="text" class="form-control" id="megnevezes" formControlName="megnevezes">
         </div>
         <button type="submit" class="btn btn-primary" href="/category/list">Mentés</button>

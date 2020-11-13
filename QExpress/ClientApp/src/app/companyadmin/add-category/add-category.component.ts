@@ -1,10 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Category} from "../../models/Category";
 import {HttpService} from "../../http.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {FormBuilder} from "@angular/forms";
+import {Router} from "@angular/router";
 import {Subscription} from "rxjs";
-import {User} from "../../models/User";
 import {Company} from "../../models/Company";
 
 @Component({
