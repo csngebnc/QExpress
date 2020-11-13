@@ -98,7 +98,13 @@ namespace QExpress.Controllers
         [Route("AktivSorszamok")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetFelhasznaloSorszamai()
         {
-            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
+                return BadRequest(ModelState);
+            }
+            string id = user.Value;
             var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Aktív")).ToListAsync();
 
             var dto = new List<SorszamDTO>();
