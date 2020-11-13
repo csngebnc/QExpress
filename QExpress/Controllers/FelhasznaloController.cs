@@ -127,7 +127,13 @@ namespace QExpress.Controllers
         [Route("KorabbiSorszamok")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetKorabbiSorszamok()
         {
-            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
+                return BadRequest(ModelState);
+            }
+            string id = user.Value;
             var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Behívott")).ToListAsync();
             
             var dto = new List<SorszamDTO>();
@@ -158,7 +164,13 @@ namespace QExpress.Controllers
         [Route("GetTelephelySorszamai")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai()
         {
-            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
+            if(user == null)
+            {
+                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
+                return BadRequest(ModelState);
+            }
+            string user_id = user.Value;
             var telephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var telephely = await _context.Telephely.FindAsync(telephelyHozzarendeles.TelephelyId);
 
