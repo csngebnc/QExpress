@@ -81,30 +81,30 @@ namespace QExpress.Controllers
         }
 
         /*
-         * Parameterkent kapott ID-val rendelkezo kategoria nevenek megvaltoztatasa.
-         * api/Kategoria/{id}/NewName
-         * params: id: kategoria id-ja, uj_megnevezes: kategoria uj neve
+         * Parameterkent kapott kategoriat frissiti.
+         * api/Kategoria/UpdateKategoria
+         * param: KategoriaDTO --> benne Id, Megnevezes
          */
-        [HttpPut("{id}/NewName")]
-        public async Task<IActionResult> EditKategoria([FromRoute] int id, [FromBody] String uj_megnevezes)
+        [HttpPut("UpdateKategoria")]
+        public async Task<IActionResult> EditKategoria([FromBody] KategoriaDTO putKategoria)
         {
-            if (!KategoriaExists(id))
+            if (!KategoriaExists(putKategoria.Id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                ModelState.AddModelError(nameof(putKategoria.Id), "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
-            if(string.IsNullOrEmpty(uj_megnevezes) || string.IsNullOrWhiteSpace(uj_megnevezes))
+            if(string.IsNullOrEmpty(putKategoria.Megnevezes) || string.IsNullOrWhiteSpace(putKategoria.Megnevezes))
             {
-                ModelState.AddModelError(nameof(uj_megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
+                ModelState.AddModelError(nameof(putKategoria.Megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
                 return BadRequest(ModelState);
             }
 
-            Kategoria kategoria = await _context.Kategoria.FindAsync(id);
-            kategoria.Megnevezes = uj_megnevezes;
+            Kategoria kategoria = await _context.Kategoria.FindAsync(putKategoria.Id);
+            kategoria.Megnevezes = putKategoria.Megnevezes;
             await _context.SaveChangesAsync();
 
             var dto = new KategoriaDTO(kategoria);
-            return CreatedAtAction(nameof(GetKategoria), new { id = kategoria.Id }, dto);
+            return Ok();
         }
 
 

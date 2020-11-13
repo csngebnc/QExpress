@@ -81,6 +81,12 @@ namespace QExpress.Controllers
         [HttpGet("GetFelhasznaloByEmail/{email}")]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznaloByEmail([FromRoute] String email)
         {
+            if(!_context.Felhasznalo.Any(f => f.Email.Equals(email)))
+            {
+                ModelState.AddModelError("Email", "A megadott e-mail címhez nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+
             var felhasznalo = await _context.Felhasznalo.Where(f => f.Email.Equals(email)).FirstAsync();
             if (felhasznalo == null)
             {
