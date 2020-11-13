@@ -65,9 +65,10 @@ namespace QExpress.Controllers
         {
             if (!FelhasznaloExists(id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott felhasználó nem létezik.");
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
+
             var felhasznalo = await _context.Felhasznalo.FindAsync(id);
 
             return new FelhasznaloDTO(felhasznalo);
@@ -83,7 +84,7 @@ namespace QExpress.Controllers
             var felhasznalo = await _context.Felhasznalo.Where(f => f.Email.Equals(email)).FirstAsync();
             if (felhasznalo == null)
             {
-                ModelState.AddModelError(nameof(email), "A megadott e-mail címmel nem létezik felhasználó.");
+                ModelState.AddModelError(nameof(email), "A megadott e-mail címhez nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
             return new FelhasznaloDTO(felhasznalo);
@@ -152,16 +153,20 @@ namespace QExpress.Controllers
         [Route("NewEmail")]
         public async Task<IActionResult> EditFelhasznaloEmail([FromBody] String uj_email)
         {
+            if(User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier) == null)
+            {
+                ModelState.AddModelError("Bejelentkezés", "Nincs bejelentkezve. A művelet végrehajtásához jelentkezzen be.");
+                return BadRequest(ModelState);
+            }
+            if (string.IsNullOrEmpty(uj_email))
+            {
+                ModelState.AddModelError("Email", "A megadott e-mail cím nem lehet üres.");
+                return BadRequest(ModelState);
+            }
+
+
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(id)).First();
-            if (!FelhasznaloExists(id))
-            {
-                return NotFound();
-            }
-            if (id != felh.Id)
-            {
-                return BadRequest();
-            }
 
             felh.Email = uj_email;
             await _context.SaveChangesAsync();
@@ -180,19 +185,30 @@ namespace QExpress.Controllers
         [Route("NewPassword")]
         public async Task<IActionResult> EditFelhasznaloJelszo([FromBody] String[] jelszavak)
         {
-            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            Felhasznalo felh = await _context.Felhasznalo.FindAsync(id);
-            if (!FelhasznaloExists(id))
+
+            if (User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier) == null)
             {
-                return NotFound();
+                ModelState.AddModelError("Bejelentkezés", "Nincs bejelentkezve. A művelet végrehajtásához jelentkezzen be.");
+                return BadRequest(ModelState);
             }
-            if (!id.Equals(felh.Id))
+            if (string.IsNullOrEmpty(jelszavak[0]) || string.IsNullOrEmpty(jelszavak[1]))
             {
-                return BadRequest();
+                ModelState.AddModelError("Jelszó", "Minden jelszó mező kitöltése kötelező.");
+                return BadRequest(ModelState);
             }
 
-            if (felh.PasswordHash.Equals(jelszavak[0]))
-                felh.PasswordHash = jelszavak[1];
+            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            Felhasznalo felh = await _context.Felhasznalo.FindAsync(id);
+
+
+            if (!felh.PasswordHash.Equals(jelszavak[0]))
+            {
+                ModelState.AddModelError("Rossz jelszó", "A megadott jelszó nem egyezik a jelenlegi jelszóval.");
+                return BadRequest(ModelState);
+            }
+
+
+            felh.PasswordHash = jelszavak[1];
             await _context.SaveChangesAsync();
 
             var dto = new FelhasznaloDTO(felh);
@@ -203,20 +219,52 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo([FromRoute] String id)
         {
-            var felhasznalo = await _context.Felhasznalo.FindAsync(id);
-            if (felhasznalo == null)
+            if (!FelhasznaloExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
             }
 
+            var felhasznalo = await _context.Felhasznalo.FindAsync(id);
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(felhasznalo.Id)).FirstAsync();
-            if (ceg != null)
-                return BadRequest();
 
+            var felhasznalo_sorszamai = await _context.Sorszam.Where(s => s.UgyfelId.Equals(felhasznalo.Id)).ToListAsync();
+            _context.Sorszam.RemoveRange(felhasznalo_sorszamai);
+            var felhasznalo_panaszai = await _context.UgyfLevelek.Where(s => s.PanaszoloId.Equals(felhasznalo.Id)).ToListAsync();
+            _context.UgyfLevelek.RemoveRange(felhasznalo_panaszai);
+            if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznalo.Id)))
+                _context.FelhasznaloTelephely.Remove(await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(felhasznalo.Id)).FirstAsync());
+
+            if (ceg != null)
+            {
+                var ugyfLevelek = await _context.UgyfLevelek.Where(uf => uf.CegId == ceg.Id).ToListAsync();
+                var telephelyek = await _context.Telephely.Where(t => t.Ceg_id == ceg.Id).ToListAsync();
+                var telephelyek_id = new List<int>();
+                foreach (var item in telephelyek)
+                {
+                    telephelyek_id.Add(item.Id);
+                }
+                var felhasznalo_telephely = await _context.FelhasznaloTelephely.Where(ft => telephelyek_id.Contains(ft.TelephelyId)).ToListAsync();
+
+                var dolgozoIDs = await _context.FelhasznaloTelephely.Where(ft => telephelyek_id.Contains(ft.TelephelyId)).Select(f => f.FelhasznaloId).ToListAsync();
+                var dolgozok = await _context.Felhasznalo.Where(d => dolgozoIDs.Contains(d.Id)).ToListAsync();
+                foreach (var dolgozo in dolgozok)
+                    dolgozo.jogosultsagi_szint = 1;
+
+                var sorszamok = await _context.Sorszam.Where(s => telephelyek_id.Contains(s.TelephelyId)).ToListAsync();
+                var kategoriak = await _context.Kategoria.Where(k => k.CegId == ceg.Id).ToListAsync();
+
+                _context.UgyfLevelek.RemoveRange(ugyfLevelek);
+                _context.Sorszam.RemoveRange(sorszamok);
+                _context.FelhasznaloTelephely.RemoveRange(felhasznalo_telephely);
+                _context.Telephely.RemoveRange(telephelyek);
+                _context.Kategoria.RemoveRange(kategoriak);
+                _context.Ceg.Remove(ceg);
+
+            }
             _context.Felhasznalo.Remove(felhasznalo);
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok();
         }
 
         /*
@@ -228,21 +276,22 @@ namespace QExpress.Controllers
         [Route("SetTelephely")]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
+            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
+            {
+                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
+            {
+                ModelState.AddModelError(nameof(felhasznaloTelephely.TelephelyId), "A megadott azonosítóhoz nem tartozik telephely.");
+                return BadRequest(ModelState);
+            }
             if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
                 ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott e-mail cím már egy másik telephelyhez regisztrálva van.");
                 return BadRequest(ModelState);
             }
 
-            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
-            {
-                return NotFound();
-            }
-
-            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
-            {
-                return NotFound();
-            }
 
             Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
             _context.FelhasznaloTelephely.Add(new FelhasznaloTelephely { FelhasznaloId = felhasznaloTelephely.FelhasznaloId, TelephelyId = felhasznaloTelephely.TelephelyId });
@@ -259,25 +308,29 @@ namespace QExpress.Controllers
         [Route("UpdateUgyintezoTelephely")]
         public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
+            
+            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
+            {
+                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
+            {
+                ModelState.AddModelError(nameof(felhasznaloTelephely.TelephelyId), "A megadott azonosítóhoz nem tartozik telephely.");
+                return BadRequest(ModelState);
+            }
             if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
-                return NotFound();
-            }
-
-            if(!_context.Telephely.Any(t => t.Id == felhasznaloTelephely.TelephelyId))
-            {
-                return NotFound();
+                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott felhasználó nem tartozik telephelyhez.");
+                return BadRequest(ModelState);
             }
 
             var felhTelep = await _context.FelhasznaloTelephely.Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)).FirstAsync();
+            felhTelep.TelephelyId = felhasznaloTelephely.TelephelyId;
+            await _context.SaveChangesAsync();
 
-            if (felhTelep != null)
-            {
-                felhTelep.TelephelyId = felhasznaloTelephely.TelephelyId;
-                await _context.SaveChangesAsync();
-            }
 
-            return NoContent();
+            return Ok();
         }
 
         /*
@@ -291,12 +344,14 @@ namespace QExpress.Controllers
         {
             if (!FelhasznaloExists(user_id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(user_id), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
             }
 
-            if(!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
+            if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(user_id), "A megadott felhasználó nem tartozik telephelyhez.");
+                return BadRequest(ModelState);
             }
 
             var felhasznalo = await _context.Felhasznalo.FindAsync(user_id);
@@ -307,7 +362,7 @@ namespace QExpress.Controllers
             await _context.SaveChangesAsync();
            
 
-            return NoContent();
+            return Ok();
         }
 
         /*

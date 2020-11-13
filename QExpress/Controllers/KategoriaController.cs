@@ -48,13 +48,13 @@ namespace QExpress.Controllers
         [HttpGet("GetKategoria/{id}")]
         public async Task<ActionResult<KategoriaDTO>> GetKategoria([FromRoute] int id)
         {
-            var kategoria = await _context.Kategoria.FindAsync(id);
-
-            if (kategoria == null)
+            if (!KategoriaExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                return BadRequest(ModelState);
             }
 
+            var kategoria = await _context.Kategoria.FindAsync(id);
             return new KategoriaDTO(kategoria);
         }
 
@@ -66,6 +66,17 @@ namespace QExpress.Controllers
         [HttpPut("{id}/NewName")]
         public async Task<IActionResult> EditKategoria([FromRoute] int id, [FromBody] String uj_megnevezes)
         {
+            if (!KategoriaExists(id))
+            {
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                return BadRequest(ModelState);
+            }
+            if(string.IsNullOrEmpty(uj_megnevezes) || string.IsNullOrWhiteSpace(uj_megnevezes))
+            {
+                ModelState.AddModelError(nameof(uj_megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
+                return BadRequest(ModelState);
+            }
+
             Kategoria kategoria = await _context.Kategoria.FindAsync(id);
             kategoria.Megnevezes = uj_megnevezes;
             await _context.SaveChangesAsync();
@@ -84,6 +95,18 @@ namespace QExpress.Controllers
         [Route("AddKategoria")]
         public async Task<ActionResult<KategoriaDTO>> AddKategoria([FromBody] KategoriaDTO kategoria)
         {
+            if(string.IsNullOrEmpty(kategoria.Megnevezes) || string.IsNullOrWhiteSpace(kategoria.Megnevezes))
+            {
+                ModelState.AddModelError(nameof(kategoria.Megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
+                return BadRequest(ModelState);
+            }
+            if(!_context.Ceg.Any(c => c.Id == kategoria.CegId))
+            {
+                ModelState.AddModelError(nameof(kategoria.CegId), "A megadott azonosítóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+
+
             Kategoria newKat = new Kategoria { Megnevezes = kategoria.Megnevezes, CegId = kategoria.CegId };
             _context.Kategoria.Add(newKat);
             await _context.SaveChangesAsync();
@@ -101,18 +124,19 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteKategoria([FromRoute] int id)
         {
-            var kategoria = await _context.Kategoria.FindAsync(id);
-            if (kategoria == null)
+            if (!KategoriaExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                return BadRequest(ModelState);
             }
+            var kategoria = await _context.Kategoria.FindAsync(id);
+            var kategoria_sorszamai = await _context.Sorszam.Where(s => s.KategoriaId == kategoria.Id).ToListAsync();
 
-            var sorszamok = await _context.Sorszam.Where(s => s.KategoriaId == kategoria.Id).ToListAsync();
-            _context.Sorszam.RemoveRange(sorszamok);
+            _context.Sorszam.RemoveRange(kategoria_sorszamai);
             _context.Kategoria.Remove(kategoria);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         /*

@@ -48,12 +48,13 @@ namespace QExpress.Controllers
         [HttpGet("GetCeg/{id}")]
         public async Task<ActionResult<CegDTO>> GetCeg([FromRoute] int id)
         {
-            var ceg = await _context.Ceg.FindAsync(id);
-
             if (!CegExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
             }
+
+            var ceg = await _context.Ceg.FindAsync(id);
 
             return new CegDTO(ceg);
         }
@@ -67,13 +68,19 @@ namespace QExpress.Controllers
         public async Task<ActionResult<IEnumerable<FelhasznaloTelephelyDTO>>> GetDolgozokCegadmin()
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+
             if (cegadmin.jogosultsagi_szint != 3)
-                return BadRequest();
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
 
             if (!_context.Ceg.Any(c => c.CegadminId == user_id))
-                return BadRequest();
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
             var telephelyek = await _context.Telephely.Where(t => t.Ceg_id == ceg.Id).Select(tt=>tt.Id).ToListAsync();
@@ -100,13 +107,15 @@ namespace QExpress.Controllers
         {
             if (!CegExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
             }
             var kategoriak = await _context.Kategoria.Where(k => k.CegId == id).ToListAsync();
 
             if (kategoriak.Count == 0)
             {
-                return NoContent();
+                ModelState.AddModelError("", "A céghez nem tartozik kategória.");
+                return BadRequest(ModelState);
             }
 
             var dto = new List<KategoriaDTO>();
@@ -118,74 +127,6 @@ namespace QExpress.Controllers
         }
 
         /*
-         * Aktuális felhasználó ha cégadmin, akkor a cégének a nevét változtatja meg a kapott paraméterre.
-         * api/Ceg/NewName
-         * param: Aktuális felhasz
-         */
-        [HttpPut]
-        [Route("{ceg_id}/NewName")]
-        public async Task<IActionResult> EdigCegNev([FromRoute] int ceg_id, [FromBody]String uj_nev)
-        {
-            if (!CegExists(ceg_id))
-                return NotFound();
-
-            var ceg = await _context.Ceg.FindAsync(ceg_id); 
-            
-            if(string.IsNullOrEmpty(uj_nev))
-                ModelState.AddModelError(nameof(uj_nev), "Cégnév megadása kötelező");
-
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-
-            ceg.nev = uj_nev;
-
-            await _context.SaveChangesAsync();
-
-            var dto = new CegDTO(ceg);
-
-
-            return CreatedAtAction(nameof(GetCeg), new { id = ceg.Id }, dto);
-        }
-
-        /*
-         * A parameterkent kapott ID-val rendelkezo ceg elere uj felhasznalo beallitasa adminnak.
-         * api/Ceg/{ceg_id}/UpdateAdmin
-         * params: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
-         */
-        [HttpPut("{ceg_id}/UpdateAdmin")]
-        public async Task<IActionResult> EditCegAdmin([FromRoute] int ceg_id, [FromBody] String uj_admin_felhasznalonev)
-        {
-            if (!_context.Felhasznalo.Any(f => f.UserName.Equals(uj_admin_felhasznalonev)))
-            {
-                return NotFound();
-            }
-
-            if(_context.Ceg.Any(c => c.CegadminId == uj_admin_felhasznalonev))
-            {
-                return BadRequest(new { error = "user is admin already" });
-            }
-
-            var uj_admin = await _context.Felhasznalo.Where(f => f.UserName.Equals(uj_admin_felhasznalonev)).FirstAsync();
-
-
-            if (!CegExists(ceg_id))
-            {
-                return NotFound();
-            }
-
-            Ceg ceg = await _context.Ceg.FindAsync(ceg_id);
-
-            ceg.CegadminId = uj_admin.Id;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        /*
          * A parameterkent kapott ID-val rendelkezo ceg adatait frissiti.
          * api/Ceg/{ceg_id}/UpdateCeg
          * params: id: ceg id-ja, ceg: CegDTO a frissitett adatokkal
@@ -193,8 +134,22 @@ namespace QExpress.Controllers
         [HttpPut("UpdateCeg")]
         public async Task<IActionResult> UpdateCeg([FromBody] CegDTO ceg)
         {
-            if (!CegExists(ceg.Id) && !_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
-                return NotFound();
+            if (ceg.Nev.Trim().Length == 0)
+            {
+                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
+                return BadRequest(ModelState);
+            }
+            if (!CegExists(ceg.Id))
+            {
+                ModelState.AddModelError(nameof(ceg.Id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
+            }
+            if(!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
+            {
+                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+
 
             var frissitendo_ceg = await _context.Ceg.FindAsync(ceg.Id);
 
@@ -224,10 +179,15 @@ namespace QExpress.Controllers
         [HttpPost]
         [Route("AddCeg")]
         public async Task<ActionResult<CegDTO>> AddCeg([FromBody] CegDTO ceg)
-        {        
-            if(!_context.Felhasznalo.Any(f => f.Id == ceg.CegadminId))
+        {
+            if (ceg.Nev.Trim().Length == 0)
             {
-                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott felhasználó nem létezik.");
+                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
+                return BadRequest(ModelState);
+            }
+            if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
+            {
+                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
 
@@ -260,12 +220,13 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteCeg([FromRoute] int id)
         {
-            var ceg = await _context.Ceg.FindAsync(id);
-            if (ceg == null || !CegExists(id))
+            if (!CegExists(id))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
             }
-
+            var ceg = await _context.Ceg.FindAsync(id);
+            
             // sorrend: levelek, sorszamok, dolgozok, telephelyek, kategoriak, ceg
 
             var ugyfLevelek = await _context.UgyfLevelek.Where(uf => uf.CegId == id).ToListAsync();
@@ -276,6 +237,11 @@ namespace QExpress.Controllers
                 telephelyek_id.Add(item.Id);
             }
             var felhasznalo_telephely = await _context.FelhasznaloTelephely.Where(ft => telephelyek_id.Contains(ft.TelephelyId)).ToListAsync();
+            
+            var dolgozoIDs = await _context.FelhasznaloTelephely.Where(ft => telephelyek_id.Contains(ft.TelephelyId)).Select(f => f.FelhasznaloId).ToListAsync();
+            var dolgozok = await _context.Felhasznalo.Where(d => dolgozoIDs.Contains(d.Id)).ToListAsync();
+            foreach (var dolgozo in dolgozok)
+                dolgozo.jogosultsagi_szint = 1;
 
             var sorszamok = await _context.Sorszam.Where(s => telephelyek_id.Contains(s.TelephelyId)).ToListAsync();
             var kategoriak = await _context.Kategoria.Where(k => k.CegId == id).ToListAsync();
@@ -298,5 +264,109 @@ namespace QExpress.Controllers
         {
             return _context.Ceg.Any(e => e.Id == id);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+ * Aktuális felhasználó ha cégadmin, akkor a cégének a nevét változtatja meg a kapott paraméterre.
+ * api/Ceg/NewName
+ * param: Aktuális felhasz
+ */
+        [HttpPut]
+        [Route("{ceg_id}/NewName")]
+        public async Task<IActionResult> EdigCegNev([FromRoute] int ceg_id, [FromBody] String uj_nev)
+        {
+            if (!CegExists(ceg_id))
+                return NotFound();
+
+            var ceg = await _context.Ceg.FindAsync(ceg_id);
+
+            if (string.IsNullOrEmpty(uj_nev))
+                ModelState.AddModelError(nameof(uj_nev), "Cégnév megadása kötelező");
+
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+
+            ceg.nev = uj_nev;
+
+            await _context.SaveChangesAsync();
+
+            var dto = new CegDTO(ceg);
+
+
+            return CreatedAtAction(nameof(GetCeg), new { id = ceg.Id }, dto);
+        }
+
+        /*
+         * A parameterkent kapott ID-val rendelkezo ceg elere uj felhasznalo beallitasa adminnak.
+         * api/Ceg/{ceg_id}/UpdateAdmin
+         * params: id: ceg id-ja, uj_admin_id: új admin felhasználó id-ja
+         */
+        [HttpPut("{ceg_id}/UpdateAdmin")]
+        public async Task<IActionResult> EditCegAdmin([FromRoute] int ceg_id, [FromBody] String uj_admin_felhasznalonev)
+        {
+            if (!_context.Felhasznalo.Any(f => f.UserName.Equals(uj_admin_felhasznalonev)))
+            {
+                return NotFound();
+            }
+
+            if (_context.Ceg.Any(c => c.CegadminId == uj_admin_felhasznalonev))
+            {
+                return BadRequest(new { error = "user is admin already" });
+            }
+
+            var uj_admin = await _context.Felhasznalo.Where(f => f.UserName.Equals(uj_admin_felhasznalonev)).FirstAsync();
+
+
+            if (!CegExists(ceg_id))
+            {
+                return NotFound();
+            }
+
+            Ceg ceg = await _context.Ceg.FindAsync(ceg_id);
+
+            ceg.CegadminId = uj_admin.Id;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
     }
 }
