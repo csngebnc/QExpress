@@ -86,7 +86,7 @@ export class NewDialog implements OnInit{
   // }
 
   loadCategories(){
-      this.httpService.getCategory(this.selectedCompany.id).subscribe((c: Category[]) => {
+      this.httpService.getCategories(this.selectedCompany.id).subscribe((c: Category[]) => {
         this.categories = c;
       })
     }

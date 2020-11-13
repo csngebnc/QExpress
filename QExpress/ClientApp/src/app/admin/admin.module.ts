@@ -7,6 +7,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { EditCompanyComponent } from './edit-company/edit-company.component';
+import {RouterModule} from "@angular/router";
 
 
 
@@ -16,7 +17,8 @@ import { EditCompanyComponent } from './edit-company/edit-company.component';
         CommonModule,
         FontAwesomeModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        RouterModule
     ]
 })
 export class AdminModule {

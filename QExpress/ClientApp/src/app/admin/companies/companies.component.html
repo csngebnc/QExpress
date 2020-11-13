@@ -22,7 +22,7 @@
                         {{c.cegadminId}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/company/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a routerLink="/company/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
                         <a (click)="deleteCompany(c.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
