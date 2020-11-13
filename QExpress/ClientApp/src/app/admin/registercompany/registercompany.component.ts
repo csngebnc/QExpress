@@ -20,7 +20,11 @@ export class RegistercompanyComponent implements OnInit {
   saveClicked: Subject<void> = new Subject();
 
   @Input()
-  company: Company;
+  company: Company = {
+    id: -1,
+    nev: '',
+    cegadminId: ''
+  };
   email: String;
 
   constructor(
