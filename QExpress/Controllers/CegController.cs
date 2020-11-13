@@ -265,6 +265,10 @@ namespace QExpress.Controllers
             _context.FelhasznaloTelephely.RemoveRange(felhasznalo_telephely);
             _context.Telephely.RemoveRange(telephelyek);
             _context.Kategoria.RemoveRange(kategoriak);
+            var cegadmin = await _context.Felhasznalo.Where(f => f.Id.Equals(ceg.CegadminId)).FirstAsync();
+            cegadmin.jogosultsagi_szint = 1;
+
+
             _context.Ceg.Remove(ceg);
             await _context.SaveChangesAsync();
 
