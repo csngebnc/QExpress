@@ -9,14 +9,15 @@
         </div>
       </div>
     </div> 
-    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3" *ngFor="let queue of active_queue">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3" *ngFor="let q of activeQueue">
       <div class="card text-center">
         <div class="card-body">
-            <img class="img-fluid" [src]="queue.companylogo" alt="">
-            <h5 class="card-title">{{queue.company}}</h5>
-            <p class="card-text">{{queue.address}}</p>
-            <p class="number">{{queue.number}}</p>
-            <p class="text-muted">Várakozók száma: {{queue.inline}}</p>
+            <img class="img-fluid" src="../../../assets/tmobile.png" alt="">
+            <h5 class="card-title">{{q.ceg}}</h5>
+            <p class="card-text">{{q.telephely}}</p>
+            <p class="card-text">{{q.kategoria}}</p>
+            <p class="number">{{q.sorszamIdTelephelyen}}</p>
+            <p class="text-muted">Várakozók száma: {{q.sorbanAllokSzama}}</p>
         </div>
       </div>
     </div>

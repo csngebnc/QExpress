@@ -50,7 +50,7 @@ export class CategoriesComponent implements OnInit {
   */
 
   loadCategories(): void {
-    this.httpService.getCategories().subscribe((categories: Category[]) => {
+    this.httpService.getOwnCategories().subscribe((categories: Category[]) => {
       this.categories = categories;
       console.log(categories);
     });

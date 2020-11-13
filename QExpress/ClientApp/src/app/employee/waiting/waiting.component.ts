@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { faBullhorn, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBullhorn, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { HttpService } from 'src/app/http.service';
+import { Queue } from 'src/app/models/Queue';
 
 @Component({
   selector: 'app-waiting',
@@ -8,12 +10,31 @@ import { faBullhorn, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icon
 })
 export class WaitingComponent implements OnInit {
 
-  constructor() { }
+  queue: Queue[];
 
-  ngOnInit() {
+  constructor(private httpService: HttpService) { }
+
+  loadWaiting(){
+    this.httpService.getWaiting().subscribe((queue: Queue[]) => {
+      this.queue = queue;
+    })
   }
 
-  faEdit = faEdit;
+  ngOnInit() {
+    this.loadWaiting();
+  }
+
+  deleteQueue(id: Number){
+    this.httpService.deleteQueue(id).subscribe(() => {});
+    this.loadWaiting();
+  }
+
+  setQueueCalled(id: Number){
+    this.httpService.setQueueCalled(id).subscribe((q: Queue) => {
+      this.loadWaiting();
+    })
+  }
+
   faTrashAlt = faTrashAlt;
   bullhorn = faBullhorn;
 

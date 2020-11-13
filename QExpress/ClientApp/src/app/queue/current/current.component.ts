@@ -1,61 +1,37 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog} from '@angular/material';
+import { HttpService } from 'src/app/http.service';
+import { Category } from 'src/app/models/Category';
+import { Company } from 'src/app/models/Company';
+import { Queue } from 'src/app/models/Queue';
+import { Site } from 'src/app/models/Site';
+import { FormBuilder} from '@angular/forms'
 
 @Component({
   selector: 'app-current',
   templateUrl: './current.component.html',
   styleUrls: ['./current.component.css'],
 })
-export class CurrentComponent{
+export class CurrentComponent implements OnInit{
 
-  active_queue = [];
+  activeQueue: Queue[] = [];
 
-  constructor(public dialog: MatDialog) {
+  constructor(
+    public dialog: MatDialog,
+    public httpService: HttpService,
+    private formBuilder: FormBuilder) {
+      formBuilder.group()
+  }
 
-    this.active_queue = 
-    [{
-      company: "T-Mobile",
-      companylogo: "../../../assets/tmobile.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-    {
-      company: "UPC",
-      companylogo: "../../../assets/upc.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-    {
-      company: "T-Mobile",
-      companylogo: "../../../assets/tmobile.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-    {
-      company: "T-Mobile",
-      companylogo: "../../../assets/tmobile.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-    {
-      company: "T-Mobile",
-      companylogo: "../../../assets/tmobile.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-    {
-      company: "T-Mobile",
-      companylogo: "../../../assets/tmobile.png",
-      address: "Bartók Béla utca 23.",
-      number: 34,
-      inline: 5
-    },
-  ]}
+  ngOnInit(){
+    this.loadQueue();
+  }
+
+  loadQueue(){
+    this.httpService.getActiveQueue().subscribe((aq: Queue[]) => {
+      this.activeQueue = aq;
+    })
+  }
 
   openDialog() {
     const dialogRef = this.dialog.open(NewDialog);
@@ -71,4 +47,40 @@ export class CurrentComponent{
   templateUrl: './new-dialog.html',
   styleUrls: ['./new-dialog.css']
 })
-export class NewDialog {}
+export class NewDialog implements OnInit{
+  
+  companies: Company[] = [];
+  sites: Site[] = [];
+  categories: Category[] = [];
+  selectedCompany: Company;
+
+  constructor(private httpService: HttpService){
+
+  }
+
+  ngOnInit(){
+    this.loadCompanies();
+  }
+
+  loadCompanies(){
+    this.httpService.getCompanies().subscribe((c: Company[]) => {
+      this.companies = c;
+      this.selectedCompany = this.companies[0];
+      this.loadCategories();
+      this.loadSites();
+    })
+  }
+
+  loadCategories(){
+    this.httpService.getCategories(this.selectedCompany.id).subscribe((c: Category[]) => {
+      this.categories = c;
+    })
+  }
+
+  loadSites(){
+    this.httpService.getSites(this.selectedCompany.id).subscribe((s: Site[]) => {
+      this.sites = s;
+    })
+  }
+    
+}
