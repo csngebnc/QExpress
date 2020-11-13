@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HistoryComponent } from './history/history.component';
 import { CurrentComponent, NewDialog } from './current/current.component';
 import { MatDialogModule } from '@angular/material';
-
-
+import { ReactiveFormsModule } from '@angular/forms'
 
 @NgModule({
   declarations: [
@@ -20,6 +19,7 @@ import { MatDialogModule } from '@angular/material';
   imports: [
     CommonModule,
     MatDialogModule,
+    ReactiveFormsModule
   ],
 
   bootstrap: [

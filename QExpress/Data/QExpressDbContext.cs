@@ -37,7 +37,7 @@ namespace QExpress.Data
             modelBuilder.Entity<Sorszam>();
             modelBuilder.Entity<UgyfLevelek>();
 
-            modelBuilder.Entity<FelhasznaloTelephely>().HasKey(ft => new { ft.FelhasznaloId, ft.TelephelyId });
+            modelBuilder.Entity<FelhasznaloTelephely>().HasKey(ft => ft.FelhasznaloId);
         }
         
 

@@ -17,19 +17,19 @@
                         Műveletek
                     </th>
                 </tr>
-                <tr>
+                <tr *ngFor="let q of queue">
                     <td>
-                        Tóth Árpád
+                        {{q.ugyfel}}
                     </td>
                     <td>
-                        2020.07.09. 15:45
+                        {{q.idopont}}
                     </td>
                     <td>
-                        Lakossági ügyintézés
+                        {{q.kategoria}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="bullhorn"></fa-icon></a>
-                        <a href="/" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
+                        <a (click)="setQueueCalled(q.id)" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="bullhorn"></fa-icon></a>
+                        <a (click)="deleteQueue(q.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
             </table>

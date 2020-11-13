@@ -54,6 +54,10 @@ var routes = [
     path: 'company/edit/:companyid'
   },
   {
+    component: RegistercompanyComponent,
+    path: 'company/add'
+  },
+  {
     component: EditsiteComponent,
     path: 'site/edit/:siteid'
   },

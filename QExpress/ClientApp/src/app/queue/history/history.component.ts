@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpService } from 'src/app/http.service';
+import { Queue } from 'src/app/models/Queue';
 
 @Component({
   selector: 'app-history',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HistoryComponent implements OnInit {
 
-  constructor() { }
+  history: Queue[] = [];
+
+  constructor(private httpService: HttpService) { }
 
   ngOnInit() {
+    this.loadHistory();
+  }
+
+  loadHistory(){
+    this.httpService.getQueueHistory().subscribe((qh: Queue[]) => {
+      this.history = qh;
+    })
   }
 
 }

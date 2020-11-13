@@ -54,6 +54,22 @@ export class HttpService {
     // return this.httpClient.put(this.baseUrl + route, body);
   }
 
+  //// SORSZAMOK ////
+
+  //Várakozó emberek visszaadása ügyintézőnek adott telephelyen
+  public getWaiting(): Observable<Queue[]> {
+    return this.getRequest('Felhasznalo/GetTelephelySorszamai');
+  }
+
+  //Adott sorszám törlése
+  public deleteQueue(id: Number): Observable<any>{
+    return this.deleteRequest('Sorszam/Delete/' + id);
+  }
+
+  public setQueueCalled(id: Number): Observable<Queue>{
+    return this.putRequest('Sorszam/' + id + '/Update', null)
+  }
+
   //// CEGEK ////
 
   // Egy adott ID-jű cég lekérése
@@ -102,9 +118,13 @@ export class HttpService {
 
   //// KATEGORIA ////
 
-  // Kategoriák lekerese
-  public getCategories(): Observable<Category[]> {
-    return this.getRequest('Kategoria/GetKategoriak');
+  public getCategories(id: Number): Observable<Category[]> {
+    return this.getRequest('Kategoria/GetKategoriak/' + id);
+  }
+
+  // Kategoriák lekerese (cégadmin)
+  public getOwnCategories(): Observable<Category[]> {
+    return this.getRequest('Kategoria/GetKategoriakCegadmin');
   }
 
   public getCategory(id: any): Observable<Category> {
@@ -140,6 +160,14 @@ export class HttpService {
 
   public addEmployee(us: UserSite): Observable<UserSite>{
     return this.postRequest('Felhasznalo/SetTelephely', us);
+  }
+
+  public getEmployeeById(id: String): Observable<UserSite>{
+    return this.getRequest('Ceg/GetAlkalmazottTelephely/' + id);
+  }
+
+  public editEmployee(us: UserSite): Observable<UserSite>{
+    return this.putRequest('Felhasznalo/UpdateUgyintezoTelephely', us);
   }
 
   // Felhasználók lekérése
@@ -183,8 +211,12 @@ public getActiveQueue(): Observable<Queue[]> {
 
   //// Telephelyek ////
 
+  public getSites(id: Number): Observable<Site[]> {
+    return this.getRequest('Telephely/GetTelephelyek/' + id);
+  }
+
   // Telephelyek lekérése
-  public getSites(): Observable<Site[]> {
+  public getOwnSites(): Observable<Site[]> {
     return this.getRequest('Telephely/GetTelephelyekCegadmin');
   }
 
