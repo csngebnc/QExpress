@@ -99,11 +99,22 @@ namespace QExpress.Controllers
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetFelhasznaloSorszamai()
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("aktív")).ToListAsync();
+            var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Aktív")).ToListAsync();
+
             var dto = new List<SorszamDTO>();
             foreach (var s in sorszamok)
             {
-                dto.Add(new SorszamDTO(s));
+                var ujDTO = new SorszamDTO(s);
+                var cegnev = s.Telephely.Ceg.nev;
+                var telephelyCim = s.Telephely.Cim;
+                var kategoriaNeve = s.Kategoria.Megnevezes;
+                var sorbanAllok = (await _context.Sorszam.Where(ssz => ssz.TelephelyId == s.TelephelyId && ssz.Allapot.Equals("Aktív")).ToListAsync()).Count;
+
+                ujDTO.Ceg = cegnev;
+                ujDTO.Telephely = telephelyCim;
+                ujDTO.Kategoria = kategoriaNeve;
+                ujDTO.SorbanAllokSzama = sorbanAllok - 1;
+                dto.Add(ujDTO);
             }
             return dto;
         }
@@ -117,11 +128,28 @@ namespace QExpress.Controllers
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetKorabbiSorszamok()
         {
             string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Behivott")).ToListAsync();
+            var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Behívott")).ToListAsync();
+            
             var dto = new List<SorszamDTO>();
             foreach (var s in sorszamok)
             {
-                dto.Add(new SorszamDTO(s));
+                var ujDTO = new SorszamDTO(s);
+                var cegnev = s.Telephely.Ceg.nev;
+                var telephelyCim = s.Telephely.Cim;
+                var kategoriaNeve = s.Kategoria.Megnevezes;
+                var sorbanAllok = (await _context.Sorszam
+                    .Where(ssz => 
+                    ssz.TelephelyId == s.TelephelyId && 
+                    ssz.Allapot.Equals("Aktív") &&
+                    ssz.KategoriaId == s.KategoriaId &&
+                    ssz.Idopont < s.Idopont
+                    ).ToListAsync()).Count;
+
+                ujDTO.Ceg = cegnev.ToString();
+                ujDTO.Telephely = telephelyCim.ToString();
+                ujDTO.Kategoria = kategoriaNeve.ToString();
+                ujDTO.SorbanAllokSzama = sorbanAllok - 1;
+                dto.Add(ujDTO);
             }
             return dto;
         }
@@ -139,7 +167,15 @@ namespace QExpress.Controllers
             var dto = new List<SorszamDTO>();
             foreach (var s in sorszamok)
             {
-                dto.Add(new SorszamDTO(s));
+                var ujDTO = new SorszamDTO(s);
+                var ugyfelNeve = s.Ugyfel.UserName.ToString();
+                var kategoriaNeve = s.Kategoria.Megnevezes.ToString();
+                var sorbanAllok = (await _context.Sorszam.Where(ssz => ssz.TelephelyId == s.TelephelyId && ssz.Allapot.Equals("Aktív")).ToListAsync()).Count;
+
+                ujDTO.Ugyfel = ugyfelNeve;
+                ujDTO.Kategoria = kategoriaNeve;
+                ujDTO.SorbanAllokSzama = sorbanAllok;
+                dto.Add(ujDTO);
             }
 
             return dto;

@@ -47,8 +47,9 @@ namespace QExpress.Controllers
             _context.Sorszam.Add(ujSorszam);
             await _context.SaveChangesAsync();
 
-            var dto = new SorszamDTO(ujSorszam);
-            return CreatedAtAction(nameof(GetSorszam), new { id = ujSorszam.Id }, dto);
+            //var dto = new SorszamDTO(ujSorszam);
+            //return CreatedAtAction(nameof(GetSorszam), new { id = ujSorszam.Id }, dto);
+            return Ok();
         }
 
         /*
