@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NJsonSchema;
 using QExpress.Data;
 using QExpress.Models;
@@ -34,7 +35,15 @@ namespace QExpress.Controllers
         {
             string ugyfel_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            int sorszam_counter = 0;
+            int sorszam_counter;
+            if (_context.Sorszam.Any(s => s.TelephelyId == sorszam.TelephelyId))
+            {
+                sorszam_counter = (await _context.Sorszam.Where(s => s.TelephelyId == sorszam.TelephelyId).ToListAsync()).Count;
+            }
+            else
+            {
+                sorszam_counter = 0;
+            }
 
             Sorszam ujSorszam = new Sorszam { 
                 UgyfelId = ugyfel_id,
@@ -42,7 +51,7 @@ namespace QExpress.Controllers
                 KategoriaId = sorszam.KategoriaId, 
                 TelephelyId = sorszam.TelephelyId, 
                 Idopont = DateTime.Now, 
-                SorszamIdTelephelyen = sorszam_counter
+                SorszamIdTelephelyen = sorszam_counter+1
             };
             _context.Sorszam.Add(ujSorszam);
             await _context.SaveChangesAsync();
