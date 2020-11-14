@@ -127,6 +127,14 @@ export class HttpService {
     return this.getRequest('Kategoria/GetOsszesKategoria/');
   }
 
+  public getCategoriesForCompany(companyId): Observable<Category[]> {
+    return this.getRequest('Ceg/' + companyId + '/Kategoriak');
+  }
+
+  public getOwnCompany(userId): Observable<Company> {
+    return this.getRequest('Ceg/GetOwnCeg/' + userId);
+  }
+
   public getCategories(id: Number): Observable<Category[]> {
     return this.getRequest('Kategoria/GetKategoriak/' + id);
   }
@@ -141,10 +149,10 @@ export class HttpService {
   }
 
   public editCategorName(category: Category): Observable<Category> {
-    // return this.putRequest('Kategoria/' + category.id.toString() + '/NewName', category);
-    return this.putRequest('Kategoria/' + category.id.toString() + '/NewName', {
-      uj_megnevezes: category.megnevezes
-    });
+    return this.putRequest('Kategoria/UpdateKategoria', category);
+    // return this.putRequest('Kategoria/' + category.id.toString() + '/NewName', {
+    //   uj_megnevezes: category.megnevezes
+    // });
   }
 
   public addCategory(category: Category): Observable<Category> {

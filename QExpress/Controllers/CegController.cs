@@ -60,6 +60,39 @@ namespace QExpress.Controllers
         }
 
         /*
+         * A cegadmin cegenek lekerese a cegadmin userId-val
+         * api/Ceg/GetOwnCeg/{userId}
+         * param: current cegadmin userId
+         */
+        [HttpGet("GetOwnCeg/{userId}")]
+        public async Task<ActionResult<CegDTO>> GetOwnCeg([FromRoute] string userId)
+        {
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(userId);
+            if (!_context.Ceg.Any(c => c.CegadminId == userId))
+            {
+                ModelState.AddModelError(nameof(userId), "A megadott azonosítóval nem létezik cég.");
+                return BadRequest(ModelState);
+            }
+
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
+            if (!_context.Ceg.Any(c => c.CegadminId == userId))
+            {
+                ModelState.AddModelError(nameof(userId), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+
+            var ceg = await _context.Ceg.Where(c => c.CegadminId == userId).FirstAsync();
+
+            return new CegDTO(ceg);
+        }
+
+        /*
          * Cégadminhoz tartozó cég dolgozóinak lekérése
          * api/Kategoria/GetDolgozokCegadmin
          */

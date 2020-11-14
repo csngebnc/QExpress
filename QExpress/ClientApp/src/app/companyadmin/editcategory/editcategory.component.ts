@@ -3,6 +3,8 @@ import {HttpService} from '../../http.service';
 import {Category} from '../../models/Category';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder} from "@angular/forms";
+import {User} from "../../models/User";
+import {Company} from "../../models/Company";
 
 @Component({
   selector: 'app-editcategory',
@@ -28,11 +30,13 @@ export class EditcategoryComponent implements OnInit {
         this.category = category
         this.editCategoryForm.get('megnevezes').setValue(category.megnevezes)
         this.editCategoryForm.get('id').setValue(category.id)
+        this.editCategoryForm.get('cegId').setValue(category.cegId)
       }
     );
     this.editCategoryForm = this.formBuilder.group({
       megnevezes: '',
-      id: null
+      id: null,
+      cegId: null
     })
   }
 
@@ -42,5 +46,8 @@ export class EditcategoryComponent implements OnInit {
       this.router.navigate(['category/list'])
     })
   }
+
+
+
 
 }

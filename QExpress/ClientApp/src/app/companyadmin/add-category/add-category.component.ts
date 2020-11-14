@@ -28,15 +28,12 @@ export class AddCategoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadCompanies();
+    this.getCurrentUser();
   }
 
-  loadCompanies(): void {
-    this.httpService.getCompanies().subscribe(
-      cegek => {
-        this.companies = cegek
-        console.log(cegek);
-      }
+  loadOwnCompany(userId): void {
+    this.httpService.getOwnCompany(userId).subscribe(
+      ceg => this.category.cegId = ceg.id
     )
   }
 
@@ -44,6 +41,12 @@ export class AddCategoryComponent implements OnInit {
     this.httpService.addCategory(this.category).subscribe((c: Category) => {
       this.router.navigate(['/category/list'])
     });
+  }
+
+  getCurrentUser(): void {
+    this.httpService.getCurrentUser().subscribe(
+      user => this.loadOwnCompany(user.id)
+    )
   }
 
 }
