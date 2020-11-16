@@ -64,12 +64,14 @@ namespace QExpress.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
+        //GET
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        //POST
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
