@@ -1,6 +1,7 @@
 
 import {Component, Input, OnInit, Output} from '@angular/core';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import { Company } from 'src/app/models/Company';
 import {HttpService} from '../../http.service';
@@ -14,33 +15,82 @@ import { User } from '../../models/User';
 export class RegistercompanyComponent implements OnInit {
 
   private routeSub: Subscription;
+  form: FormGroup;
+  errors;
 
-  //Megkérdezni Szimit ez mire kell
-  @Output()
-  saveClicked: Subject<void> = new Subject();
-
-  @Input()
   company: Company = {
-    id: null,
-    nev: "",
-    cegadminId: ""
+    id: 2,
+    cegadminId: '',
+    nev: ''
   }
-  email: String;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private httpService: HttpService,
-    private router: Router) {}
+    private router: Router,
+    private formBuilder: FormBuilder) {
+      this.form = this.formBuilder.group({
+        name: ['', Validators.compose([
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(20),
+        ])],
+        email: ['', Validators.compose([
+          Validators.required,
+          Validators.email,
+          Validators.minLength(6),
+          Validators.maxLength(20)
+        ])]
+      })
+    }
+
 
   ngOnInit() {
   }
 
-  submitCompany() {
-    this.httpService.getUserByEmail(this.email).subscribe((user: User) => {
-      this.company.cegadminId = user.id;
-      this.company.id = 0;
-      this.httpService.addCompany(this.company).subscribe((c: Company) => {
-        this.router.navigate(['/company/list'])
-      });
-    })
+  submitPressed(data){
+    
+    this.errors = {
+      'Nev': [],
+      'email': []
+    }
+
+    var valid = true;
+
+    //Üres név
+    if(data.name.trim() === ''){
+      this.errors.Nev.push("Nem lehet üres a név!");
+      valid = false;
+    }
+
+    //Nem megfelelő hosszúságú név
+    if(data.name.trim().length < 6 || data.name.trim().length > 20){
+      this.errors.Nev.push("Nem megfelelő hosszúságú név!");
+      valid = false;
+    }
+
+    //E-mail formátum ellenőrzés
+    if(!this.form.get("email").valid){
+      this.errors.Nev.push("Rossz e-mail formátum!");
+      valid = false;
+    }
+
+    if(valid)
+      this.submitCompany(data)
+  }
+
+  submitCompany(data) {
+    this.httpService.getUserByEmail(data.email).subscribe(
+      (user: User) => {
+        this.company.cegadminId = user.id;
+        this.company.id = 0;
+        this.company.nev = data.name.trim()
+        this.httpService.addCompany(this.company).subscribe(
+          (c: Company) => this.router.navigate(['/company/list']),
+          (err) => this.errors = err.error
+        );
+      }, 
+      (err) => this.errors = err.error
+    )
   }
 }
