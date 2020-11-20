@@ -338,7 +338,12 @@ namespace QExpress.Controllers
         [Authorize]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            // ID ellenőrzés nem kell, mert email alapján van megadva.
+            var felhasznalo = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
+            if(felhasznalo.jogosultsagi_szint != 1)
+            {
+                ModelState.AddModelError("email", "A megadott azonosítóval rendelkező felhasználó már más pozíciót tölt be.");
+                return BadRequest(ModelState);
+            }
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
                 ModelState.AddModelError("telephelyhiba", "A megadott azonosítóhoz nem tartozik telephely.");
@@ -368,10 +373,11 @@ namespace QExpress.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            
-            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
+
+            var felhasznalo = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
+            if (felhasznalo.jogosultsagi_szint != 1)
             {
-                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError("email", "A megadott azonosítóval rendelkező felhasználó már más pozíciót tölt be.");
                 return BadRequest(ModelState);
             }
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
