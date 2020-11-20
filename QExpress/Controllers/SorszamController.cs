@@ -93,16 +93,6 @@ namespace QExpress.Controllers
 
             var ugyintezo = await _context.Felhasznalo.FindAsync(user_id);
 
-            if (ugyintezo.jogosultsagi_szint != 2)
-            {
-                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-            if(_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
-            {
-                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
             if (!SorszamExists(id))
             {
                 ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik sorszám.");
@@ -110,11 +100,7 @@ namespace QExpress.Controllers
             }
             var hozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var sorszam = await _context.Sorszam.FindAsync(id);
-            if(hozzarendeles.TelephelyId != sorszam.TelephelyId)
-            {
-                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
+
             if (sorszam.Allapot.Equals("Behívott"))
             {
                 ModelState.AddModelError(nameof(sorszam.Allapot), "A sorszámot már behívták.");
