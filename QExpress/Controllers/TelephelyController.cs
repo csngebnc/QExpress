@@ -61,17 +61,9 @@ namespace QExpress.Controllers
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                ModelState.AddModelError("ceghiba", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
 
@@ -116,22 +108,15 @@ namespace QExpress.Controllers
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
 
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                ModelState.AddModelError("ceghiba", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
 
-            if (string.IsNullOrEmpty(telephely.Cim) || string.IsNullOrWhiteSpace(telephely.Cim)) {
-                ModelState.AddModelError(nameof(telephely), "A telephely címe nem lehet üres.");
+            if (_context.Telephely.Any(t => t.Cim.Equals(telephely.Cim) && t.Ceg_id ==telephely.Ceg_id)) {
+                ModelState.AddModelError(nameof(telephely), "A megadott néven már létezik telephely.");
                 return BadRequest(ModelState);
             }
 
@@ -160,21 +145,9 @@ namespace QExpress.Controllers
 
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
 
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
-                return BadRequest(ModelState);
-            }
-
-            if (string.IsNullOrEmpty(telephely.Cim) || string.IsNullOrWhiteSpace(telephely.Cim))
-            {
-                ModelState.AddModelError(nameof(telephely), "A telephely címe nem lehet üres.");
+                ModelState.AddModelError("ceghiba", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
 
@@ -183,11 +156,16 @@ namespace QExpress.Controllers
                 ModelState.AddModelError("Telephely", "A megadott azonosítóval nem létezik telephely.");
                 return BadRequest(ModelState);
             }
+            if (_context.Telephely.Any(t => t.Cim.Equals(telephely.Cim) && t.Ceg_id == telephely.Ceg_id))
+            {
+                ModelState.AddModelError(nameof(telephely), "A megadott néven már létezik telephely.");
+                return BadRequest(ModelState);
+            }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
             if(telephely.Ceg_id != ceg.Id)
             {
-                ModelState.AddModelError("Jogosultság", "Nincs jogosultsága a parancs végrehajtásához.");
+                ModelState.AddModelError("ceghiba", "Nincs jogosultsága a parancs végrehajtásához.");
                 return BadRequest(ModelState);
             }
 
@@ -212,29 +190,21 @@ namespace QExpress.Controllers
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                ModelState.AddModelError("ceghiba", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
             if (!TelephelyExists(id))
             {
-                ModelState.AddModelError("Telephely", "A megadott azonosítóval nem létezik telephely.");
+                ModelState.AddModelError("ceghiba", "A megadott azonosítóval nem létezik telephely.");
                 return BadRequest(ModelState);
             }
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
             var telephely = await _context.Telephely.FindAsync(id);
             if(ceg.Id != telephely.Ceg_id)
             {
-                ModelState.AddModelError("Telephely", "A megadott telephely nem ehhez a céghez tartozik. (" + ceg.nev + ")");
+                ModelState.AddModelError("ceghiba", "A megadott telephely nem ehhez a céghez tartozik. (" + ceg.nev + ")");
                 return BadRequest(ModelState);
             }
 
@@ -247,7 +217,7 @@ namespace QExpress.Controllers
             _context.Telephely.Remove(telephely);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         // segédfüggvény - telephely létezik e
