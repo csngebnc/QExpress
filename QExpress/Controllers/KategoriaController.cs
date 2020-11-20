@@ -14,6 +14,7 @@ namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class KategoriaController : ControllerBase
     {
         private readonly QExpressDbContext _context;
@@ -26,6 +27,7 @@ namespace QExpress.Controllers
         /*
          * Az osszes kategoria lekerdezese
          * api/Kategoria/GetOsszesKategoria
+         * TODO: kell egyáltalán?
          */
         [HttpGet]
         [Route("GetOsszesKategoria")]
@@ -42,6 +44,7 @@ namespace QExpress.Controllers
 
         /*
          * Cég kategóriáinak lekérdezése
+         * dupla: {id}/Kategoriak -- melyik legyen?
          */
         [HttpGet]
         [Route("GetKategoriak/{id}")]
@@ -92,10 +95,16 @@ namespace QExpress.Controllers
 
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
             if (cegadmin.jogosultsagi_szint != 3)
-                return BadRequest();
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
 
-            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
-                return BadRequest();
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
             var kategoriak = await _context.Kategoria.Where(c => c.CegId == ceg.Id).ToListAsync();
@@ -116,6 +125,20 @@ namespace QExpress.Controllers
         [HttpPut("UpdateKategoria")]
         public async Task<IActionResult> EditKategoria([FromBody] KategoriaDTO putKategoria)
         {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
             if (!KategoriaExists(putKategoria.Id))
             {
                 ModelState.AddModelError(nameof(putKategoria.Id), "A megadott azonosítóhoz nem tartozik kategória.");
@@ -145,7 +168,22 @@ namespace QExpress.Controllers
         [Route("AddKategoria")]
         public async Task<ActionResult<KategoriaDTO>> AddKategoria([FromBody] KategoriaDTO kategoria)
         {
-            if(string.IsNullOrEmpty(kategoria.Megnevezes) || string.IsNullOrWhiteSpace(kategoria.Megnevezes))
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            if (string.IsNullOrEmpty(kategoria.Megnevezes) || string.IsNullOrWhiteSpace(kategoria.Megnevezes))
             {
                 ModelState.AddModelError(nameof(kategoria.Megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
                 return BadRequest(ModelState);
@@ -153,6 +191,11 @@ namespace QExpress.Controllers
             if(!_context.Ceg.Any(c => c.Id == kategoria.CegId))
             {
                 ModelState.AddModelError(nameof(kategoria.CegId), "A megadott azonosítóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+            if(ceg.Id != kategoria.CegId)
+            {
+                ModelState.AddModelError("Céghiba", "Nem adminja a megadott cégnek.");
                 return BadRequest(ModelState);
             }
 
@@ -174,12 +217,31 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteKategoria([FromRoute] int id)
         {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
             if (!KategoriaExists(id))
             {
                 ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
             var kategoria = await _context.Kategoria.FindAsync(id);
+            if (ceg.Id != kategoria.CegId)
+            {
+                ModelState.AddModelError("Céghiba", "Nem adminja a megadott cégnek.");
+                return BadRequest(ModelState);
+            }
             var kategoria_sorszamai = await _context.Sorszam.Where(s => s.KategoriaId == kategoria.Id).ToListAsync();
 
             _context.Sorszam.RemoveRange(kategoria_sorszamai);

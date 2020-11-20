@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CegController : ControllerBase
     {
@@ -67,20 +68,19 @@ namespace QExpress.Controllers
         [HttpGet("GetOwnCeg/{userId}")]
         public async Task<ActionResult<CegDTO>> GetOwnCeg([FromRoute] string userId)
         {
-
-            var cegadmin = await _context.Felhasznalo.FindAsync(userId);
-            if (!_context.Ceg.Any(c => c.CegadminId == userId))
+            if(!_context.Felhasznalo.Any(f => f.Id.Equals(userId)))
             {
-                ModelState.AddModelError(nameof(userId), "A megadott azonosítóval nem létezik cég.");
+                ModelState.AddModelError(nameof(userId), "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(userId);
 
             if (cegadmin.jogosultsagi_szint != 3)
             {
                 ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
                 return BadRequest(ModelState);
             }
-
             if (!_context.Ceg.Any(c => c.CegadminId == userId))
             {
                 ModelState.AddModelError(nameof(userId), "A felhasználóhoz nem tartozik cég.");
@@ -101,6 +101,7 @@ namespace QExpress.Controllers
         public async Task<ActionResult<IEnumerable<FelhasznaloTelephelyDTO>>> GetDolgozokCegadmin()
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
 
             if (cegadmin.jogosultsagi_szint != 3)
@@ -109,7 +110,7 @@ namespace QExpress.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
                 ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
@@ -132,6 +133,20 @@ namespace QExpress.Controllers
         [HttpGet("GetAlkalmazottTelephely/{id}")]
         public async Task<ActionResult<FelhasznaloTelephelyDTO>> GetAlkalmazottTelephely([FromRoute] String id)
         {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
             if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(id)))
             {
                 ModelState.AddModelError(nameof(id), "A megadott azonosítóval nincs regisztrált munkavállaló.");
@@ -181,9 +196,23 @@ namespace QExpress.Controllers
         [HttpPut("UpdateCeg")]
         public async Task<IActionResult> UpdateCeg([FromBody] CegDTO ceg)
         {
-            if (ceg.Nev.Trim().Length == 0)
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var szuperadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (szuperadmin.jogosultsagi_szint != 4)
             {
-                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
+                ModelState.AddModelError(nameof(szuperadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+            if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
+            {
+                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+            if (_context.Ceg.Any(c => c.CegadminId.Equals(ceg.CegadminId)))
+            {
+                ModelState.AddModelError("Cegadmin", "A megadott felhasználó már egy másik cég adminja.");
                 return BadRequest(ModelState);
             }
             if (!CegExists(ceg.Id))
@@ -191,12 +220,12 @@ namespace QExpress.Controllers
                 ModelState.AddModelError(nameof(ceg.Id), "A megadott azonosítóval nem létezik cég.");
                 return BadRequest(ModelState);
             }
-            if(!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
+            if (string.IsNullOrEmpty(ceg.Nev) || string.IsNullOrWhiteSpace(ceg.Nev))
             {
-                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
                 return BadRequest(ModelState);
             }
-
+            
 
             var frissitendo_ceg = await _context.Ceg.FindAsync(ceg.Id);
 
@@ -227,14 +256,23 @@ namespace QExpress.Controllers
         [Route("AddCeg")]
         public async Task<ActionResult<CegDTO>> AddCeg([FromBody] CegDTO ceg)
         {
-            if (ceg.Nev.Trim().Length == 0)
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var szuperadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (szuperadmin.jogosultsagi_szint != 4)
             {
-                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
+                ModelState.AddModelError(nameof(szuperadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
                 return BadRequest(ModelState);
             }
             if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
             {
                 ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                return BadRequest(ModelState);
+            }
+            if (string.IsNullOrEmpty(ceg.Nev) || string.IsNullOrWhiteSpace(ceg.Nev))
+            {
+                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
                 return BadRequest(ModelState);
             }
 
@@ -267,6 +305,16 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteCeg([FromRoute] int id)
         {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var szuperadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (szuperadmin.jogosultsagi_szint != 4)
+            {
+                ModelState.AddModelError(nameof(szuperadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
             if (!CegExists(id))
             {
                 ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");

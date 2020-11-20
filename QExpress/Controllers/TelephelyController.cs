@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
 using QExpress.Models;
@@ -13,6 +14,7 @@ namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TelephelyController : Controller
     {
         private readonly QExpressDbContext _context;
@@ -22,6 +24,9 @@ namespace QExpress.Controllers
             _context = context;
         }
 
+
+        // ASK
+        // GetTelephelyek és GetTelephelyekCegadmin között van különbség?
 
         // Cég telephelyeinek lekérdezése
         [HttpGet]
@@ -57,11 +62,18 @@ namespace QExpress.Controllers
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if(cegadmin.jogosultsagi_szint != 3)
-                return BadRequest();
 
-            if (!_context.Ceg.Any(c => c.CegadminId == user_id))
-                return BadRequest();
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
             var telephelyek = await _context.Telephely.Where(c=>c.Ceg_id == ceg.Id).ToListAsync();
@@ -102,16 +114,25 @@ namespace QExpress.Controllers
         [Route("AddTelephely")]
         public async Task<ActionResult<TelephelyDTO>> AddTelephely([FromBody] TelephelyDTO telephely)
         {
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            if(telephely.Cim ==null || telephely.Cim.Length == 0) {
-                //TODO validáció
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (cegadmin.jogosultsagi_szint != 3)
+            {
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
             }
 
-            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            Felhasznalo felh = await _context.Felhasznalo.FindAsync(user_id);
-            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)) || felh.jogosultsagi_szint<3)
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+
+            if (string.IsNullOrEmpty(telephely.Cim) || string.IsNullOrWhiteSpace(telephely.Cim)) {
+                ModelState.AddModelError(nameof(telephely), "A telephely címe nem lehet üres.");
+                return BadRequest(ModelState);
             }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
@@ -135,26 +156,39 @@ namespace QExpress.Controllers
         public async Task<ActionResult<TelephelyDTO>> UpdateTelephely([FromBody] TelephelyDTO telephely)
         {
 
-            if (telephely.Cim == null || telephely.Cim.Length == 0)
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (cegadmin.jogosultsagi_szint != 3)
             {
-                //TODO validáció
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
             }
 
-            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            Felhasznalo felh = await _context.Felhasznalo.FindAsync(user_id);
-            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id) && c.Id == telephely.Ceg_id) || felh.jogosultsagi_szint < 3)
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                return BadRequest();
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
             }
+
+            if (string.IsNullOrEmpty(telephely.Cim) || string.IsNullOrWhiteSpace(telephely.Cim))
+            {
+                ModelState.AddModelError(nameof(telephely), "A telephely címe nem lehet üres.");
+                return BadRequest(ModelState);
+            }
+
             if (!TelephelyExists(telephely.Id))
             {
-                NotFound();
+                ModelState.AddModelError("Telephely", "A megadott azonosítóval nem létezik telephely.");
+                return BadRequest(ModelState);
             }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
             if(telephely.Ceg_id != ceg.Id)
             {
-                return BadRequest();
+                ModelState.AddModelError("Jogosultság", "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
             }
 
             var frissitendo_telephely = await _context.Telephely.FindAsync(telephely.Id);
@@ -176,10 +210,32 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<TelephelyDTO>> DeleteTelephely([FromRoute] int id)
         {
-            var telephely = await _context.Telephely.FindAsync(id);
-            if (telephely == null)
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (cegadmin.jogosultsagi_szint != 3)
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+
+            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                return BadRequest(ModelState);
+            }
+            if (!TelephelyExists(id))
+            {
+                ModelState.AddModelError("Telephely", "A megadott azonosítóval nem létezik telephely.");
+                return BadRequest(ModelState);
+            }
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            var telephely = await _context.Telephely.FindAsync(id);
+            if(ceg.Id != telephely.Ceg_id)
+            {
+                ModelState.AddModelError("Telephely", "A megadott telephely nem ehhez a céghez tartozik. (" + ceg.nev + ")");
+                return BadRequest(ModelState);
             }
 
             var eltavolitandoDolgozok = await _context.FelhasznaloTelephely.Where(t => t.TelephelyId == id).ToListAsync();
