@@ -159,8 +159,10 @@ namespace QExpress.Controllers
                 return BadRequest(ModelState);
             }
 
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
 
-            Kategoria newKat = new Kategoria { Megnevezes = kategoria.Megnevezes, CegId = kategoria.CegId };
+
+            Kategoria newKat = new Kategoria { Megnevezes = kategoria.Megnevezes, CegId = ceg.Id };
             _context.Kategoria.Add(newKat);
             await _context.SaveChangesAsync();
 
