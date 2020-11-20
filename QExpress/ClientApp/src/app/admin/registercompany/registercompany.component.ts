@@ -59,13 +59,13 @@ export class RegistercompanyComponent implements OnInit {
 
     //Üres név
     if(data.name.trim() === ''){
-      this.errors.Nev.push("Nem lehet üres a név!");
+      this.errors.Nev.push("Nem lehet üres a cég neve!");
       valid = false;
     }
 
     //Nem megfelelő hosszúságú név
     if(data.name.trim().length < 6 || data.name.trim().length > 20){
-      this.errors.Nev.push("Nem megfelelő hosszúságú név!");
+      this.errors.Nev.push("A cég nevének 6 és 20 karakter között kell lennie!");
       valid = false;
     }
 

@@ -88,10 +88,10 @@ export class EditCompanyComponent implements OnInit {
       this.company.cegadminId = user.id;
       this.httpService.editCompany(this.company).subscribe(
         (c: Company) => this.router.navigate(['company/list']),
-        (err) => this.errors = err
+        (err) => this.errors = err.error
       );
     },
-      (err) => this.errors = err
+      (err) => this.errors = err.error
     )
   }
 }

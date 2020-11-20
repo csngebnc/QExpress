@@ -148,7 +148,7 @@ export class HttpService {
     return this.getRequest('Kategoria/GetKategoria/' + id);
   }
 
-  public editCategorName(category: Category): Observable<Category> {
+  public editCategoryName(category: Category): Observable<Category> {
     return this.putRequest('Kategoria/UpdateKategoria', category);
     // return this.putRequest('Kategoria/' + category.id.toString() + '/NewName', {
     //   uj_megnevezes: category.megnevezes

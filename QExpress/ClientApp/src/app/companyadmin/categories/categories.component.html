@@ -8,24 +8,12 @@
                         Megnevezés
                     </th>
                     <th>
-                        CegId
-                    </th>
-                    <th>
-                        Id
-                    </th>
-                    <th>
                         Műveletek
                     </th>
                 </tr>
               <tr *ngFor="let c of categories">
                 <td>
                   {{c.megnevezes}}
-                </td>
-                <td>
-                  {{c.cegId}}
-                </td>
-                <td>
-                  {{c.id}}
                 </td>
                 <td style="width:30px;white-space: nowrap">
                   <a routerLink="/category/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>

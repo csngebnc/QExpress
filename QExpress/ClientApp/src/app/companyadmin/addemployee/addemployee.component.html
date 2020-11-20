@@ -2,21 +2,28 @@
     <div class="row">
         <div class="col-12">
             <h2>Alkalmazott felvétele</h2>
-            <form [formGroup]="addEmployeeForm" (ngSubmit)="addEmployee(addEmployeeForm.value)" method="POST">
+            <div *ngIf="errors">
+                <div *ngIf="errors.email">
+                    <div class="alert alert-danger" *ngFor="let e of errors.email">
+                        {{e}}
+                    </div>
+                </div>
+            </div>
+            <form [formGroup]="form" (ngSubmit)="submitPressed(form.value)" method="POST">
                 <div class="form-group">
                     <label for="email">Alkalmazott e-mail cime</label>
                     <input formControlName="email" type="text" class="form-control" id="email" name="email">
                 </div>
                 <div class="form-group">
                     <label for="site">Telephely</label>
-                    <select formControlName="siteId" id="site">
+                    <select formControlName="siteId" class="form-control" id="site">
                         <option [ngValue]="s.id" *ngFor="let s of sites">
                             {{s.cim}}
                         </option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Mentés</button>
-                <a class="btn btn-link" routerLink="/employee/list">Mégsem</a>
+                <a class="btn btn-link" [routerLink]="['/employee/list']">Mégsem</a>
             </form>
         </div>
     </div>
