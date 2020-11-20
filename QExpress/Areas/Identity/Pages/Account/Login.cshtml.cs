@@ -79,6 +79,11 @@ namespace QExpress.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
+                if(user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Ezzel az e-mail címmel nincs regisztrált felhasználó.");
+                    return Page();
+                }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
