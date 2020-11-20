@@ -65,7 +65,7 @@ export class EditCompanyComponent implements OnInit {
       this.errors.Nev.push("Nem lehet üres a név!");
       valid = false;
     }
-
+ 
     //Nem megfelelő hosszúságú név
     if (data.name.trim().length < 6 || data.name.trim().length > 20) {
       this.errors.Nev.push("Nem megfelelő hosszúságú név!");
@@ -91,7 +91,7 @@ export class EditCompanyComponent implements OnInit {
         (err) => this.errors = err
       );
     },
-    (err) => this.errors = err
+      (err) => this.errors = err
     )
   }
 }
