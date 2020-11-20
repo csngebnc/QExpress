@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import { Router } from '@angular/router';
 import { HttpService } from 'src/app/http.service';
 import { Category } from 'src/app/models/Category';
@@ -37,7 +37,7 @@ export class CurrentComponent implements OnInit{
     const dialogRef = this.dialog.open(NewDialog);
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadQueue();
+      console.log(`Dialog result: ${result}`);
     });
   }
 }
@@ -56,7 +56,6 @@ export class NewDialog implements OnInit{
   newQueueForm;
 
   constructor(
-    private dialogRef: MatDialogRef<NewDialog>,
     private httpService: HttpService,
     private formBuilder: FormBuilder,
     private router: Router){
@@ -121,6 +120,5 @@ export class NewDialog implements OnInit{
     this.httpService.newQueue(newQueue).subscribe(() => {
       this.router.navigate(['/'])
     })
-    this.dialogRef.close();
   }
 }
