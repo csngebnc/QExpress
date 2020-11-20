@@ -27,16 +27,17 @@ import {EditCompanyComponent} from './admin/edit-company/edit-company.component'
 import { AddsiteComponent } from './companyadmin/addsite/addsite.component';
 import { AddemployeeComponent } from './companyadmin/addemployee/addemployee.component';
 import {AddCategoryComponent} from "./companyadmin/add-category/add-category.component";
+import { RoleGuard } from 'src/api-authorization/role.guard';
 
 var routes = [
   {
     component: EditUserComponent,
-    path: 'profile'
+    path: 'profile',
   },
 
   {
     component: HistoryComponent,
-    path: 'history'
+    path: 'history',
   },
   {
     component: WaitingComponent,

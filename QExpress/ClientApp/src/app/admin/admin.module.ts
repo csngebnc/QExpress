@@ -10,7 +10,6 @@ import { EditCompanyComponent } from './edit-company/edit-company.component';
 import {RouterModule} from "@angular/router";
 
 
-
 @NgModule({
   declarations: [CompaniesComponent, RegistercompanyComponent, EditCompanyComponent],
     imports: [
@@ -18,7 +17,7 @@ import {RouterModule} from "@angular/router";
         FontAwesomeModule,
         FormsModule,
         ReactiveFormsModule,
-        RouterModule
+        RouterModule,
     ]
 })
 export class AdminModule {

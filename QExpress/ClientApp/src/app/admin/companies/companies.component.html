@@ -19,7 +19,7 @@
                         {{c.nev}}
                     </td>
                     <td>
-                        {{c.cegadminId}}
+                        {{companyAdminEmails[companies.indexOf(c)]}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
                         <a routerLink="/company/edit/{{c.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
@@ -27,7 +27,7 @@
                     </td>
                 </tr>
             </table>
-            <a class="btn btn-primary" href="/company/add">Új cég felvétele</a>
+            <a class="btn btn-primary" routerLink="/company/add">Új cég felvétele</a>
             <br/>
         </div>
     </div>

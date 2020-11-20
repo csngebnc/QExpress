@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import { User } from 'src/app/models/User';
 import {HttpService} from '../../http.service';
 import {Company} from '../../models/Company';
 
@@ -14,6 +15,7 @@ export class CompaniesComponent implements OnInit {
   faTrashAlt = faTrashAlt;
 
   companies: Company[] = [];
+  companyAdminEmails: String[] = [];
 
   constructor(private httpService: HttpService) {
   }
@@ -31,6 +33,11 @@ export class CompaniesComponent implements OnInit {
   loadCompanies(): void {
     this.httpService.getCompanies().subscribe((companies: Company[]) => {
       this.companies = companies;
+      companies.forEach( c => {
+        this.httpService.getUserById(c.cegadminId).subscribe((u: User) => {
+          this.companyAdminEmails.push(u.email)
+        })
+      })
     });
   }
 }

@@ -16,12 +16,12 @@
                         {{s.cim}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/site/edit/{{s.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a routerLink="/site/edit/{{s.id}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
                         <a (click)="deleteSite(s.id)" class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
             </table>
-            <a class="btn btn-primary" href="/site/add">Új telephely felvétele</a>
+            <a class="btn btn-primary" routerLink="/site/add">Új telephely felvétele</a>
             <br/>
         </div>
     </div>

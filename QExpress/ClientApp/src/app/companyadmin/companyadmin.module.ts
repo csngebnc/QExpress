@@ -1,4 +1,5 @@
-import { NgModule, Component } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router'
 import { CommonModule } from '@angular/common';
 import { CategoriesComponent } from './categories/categories.component';
 import { EmployeesComponent } from './employees/employees.component';
@@ -26,7 +27,8 @@ import {AddCategoryComponent} from "./add-category/add-category.component";
     CommonModule,
     FontAwesomeModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterModule,
   ]
 })
 export class CompanyadminModule {

@@ -28,12 +28,12 @@
                         {{employeeSites[employees.indexOf(e)]}}
                     </td>
                     <td style="width:30px;white-space: nowrap">
-                        <a href="/employee/edit/{{e.felhasznaloId}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
+                        <a routerLink="/employee/edit/{{e.felhasznaloId}}" class="btn btn-sm btn-primary" style="margin-right: 5px;"><fa-icon [icon]="faEdit"></fa-icon></a>
                         <a (click)="deleteEmployee(e.felhasznaloId)"  class="btn btn-sm btn-danger"><fa-icon [icon]="faTrashAlt"></fa-icon></a>
                     </td>
                 </tr>
             </table>
-            <a class="btn btn-primary" href="/employee/add">Új alkalmazott felvétele</a>
+            <a class="btn btn-primary" routerLink="/employee/add">Új alkalmazott felvétele</a>
             <br/>
         </div>
     </div>
