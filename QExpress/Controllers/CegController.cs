@@ -207,25 +207,19 @@ namespace QExpress.Controllers
             }
             if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
             {
-                ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
             if (_context.Ceg.Any(c => c.CegadminId.Equals(ceg.CegadminId)))
             {
-                ModelState.AddModelError("Cegadmin", "A megadott felhasználó már egy másik cég adminja.");
+                ModelState.AddModelError("email", "A megadott felhasználó már egy másik cég adminja.");
                 return BadRequest(ModelState);
             }
             if (!CegExists(ceg.Id))
             {
-                ModelState.AddModelError(nameof(ceg.Id), "A megadott azonosítóval nem létezik cég.");
+                ModelState.AddModelError("ceg", "A megadott azonosítóval nem létezik cég.");
                 return BadRequest(ModelState);
             }
-            if (string.IsNullOrEmpty(ceg.Nev) || string.IsNullOrWhiteSpace(ceg.Nev))
-            {
-                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
-                return BadRequest(ModelState);
-            }
-            
 
             var frissitendo_ceg = await _context.Ceg.FindAsync(ceg.Id);
 
@@ -268,11 +262,6 @@ namespace QExpress.Controllers
             if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
             {
                 ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
-                return BadRequest(ModelState);
-            }
-            if (string.IsNullOrEmpty(ceg.Nev) || string.IsNullOrWhiteSpace(ceg.Nev))
-            {
-                ModelState.AddModelError(nameof(ceg.Nev), "A cég neve nem lehet üres.");
                 return BadRequest(ModelState);
             }
 
