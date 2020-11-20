@@ -341,11 +341,11 @@ namespace QExpress.Controllers
             // ID ellenőrzés nem kell, mert email alapján van megadva.
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.TelephelyId), "A megadott azonosítóhoz nem tartozik telephely.");
+                ModelState.AddModelError("telephelyhiba", "A megadott azonosítóhoz nem tartozik telephely.");
             }
             if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott e-mail cím már egy másik telephelyhez regisztrálva van.");
+                ModelState.AddModelError("email", "A megadott e-mail cím már egy másik telephelyhez regisztrálva van.");
             }
 
             if (!ModelState.IsValid)
@@ -371,17 +371,17 @@ namespace QExpress.Controllers
             
             if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
             {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.TelephelyId), "A megadott azonosítóhoz nem tartozik telephely.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik telephely.");
                 return BadRequest(ModelState);
             }
-            if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
+            if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott felhasználó nem tartozik telephelyhez.");
+                ModelState.AddModelError("email", "A megadott felhasználó már tartozik egy telephelyhez.");
                 return BadRequest(ModelState);
             }
 
@@ -405,13 +405,13 @@ namespace QExpress.Controllers
         {
             if (!FelhasznaloExists(user_id))
             {
-                ModelState.AddModelError(nameof(user_id), "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
 
             if (!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A megadott felhasználó nem tartozik telephelyhez.");
+                ModelState.AddModelError("email", "A megadott felhasználó nem tartozik telephelyhez.");
                 return BadRequest(ModelState);
             }
 

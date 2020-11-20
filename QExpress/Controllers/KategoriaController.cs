@@ -154,12 +154,12 @@ namespace QExpress.Controllers
                 return BadRequest(ModelState);
             }
 
-            if(_context.Kategoria.Any(k => k.Megnevezes.Equals(kategoria.Megnevezes) && k.CegId == kategoria.CegId)) {
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            if(_context.Kategoria.Any(k => k.Megnevezes.Equals(kategoria.Megnevezes) && k.CegId == ceg.Id)) {
                 ModelState.AddModelError("megnevezes", "A megadott névvel már létezik kategória.");
                 return BadRequest(ModelState);
             }
 
-            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
 
 
             Kategoria newKat = new Kategoria { Megnevezes = kategoria.Megnevezes, CegId = ceg.Id };
