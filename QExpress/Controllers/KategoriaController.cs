@@ -52,7 +52,7 @@ namespace QExpress.Controllers
         {
             if(!_context.Ceg.Any(c => c.Id == id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                ModelState.AddModelError("Megnevezes", "A megadott azonosítóval nem létezik cég.");
                 return BadRequest(ModelState);
             }
 
@@ -75,7 +75,7 @@ namespace QExpress.Controllers
         {
             if (!KategoriaExists(id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                ModelState.AddModelError("Megnevezes", "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
 
@@ -94,17 +94,6 @@ namespace QExpress.Controllers
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-
-            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
-            {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
-                return BadRequest(ModelState);
-            }
 
             var ceg = await _context.Ceg.Where(c => c.CegadminId == user_id).FirstAsync();
             var kategoriak = await _context.Kategoria.Where(c => c.CegId == ceg.Id).ToListAsync();
@@ -127,26 +116,9 @@ namespace QExpress.Controllers
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
-
-            if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
-            {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
-                return BadRequest(ModelState);
-            }
             if (!KategoriaExists(putKategoria.Id))
             {
-                ModelState.AddModelError(nameof(putKategoria.Id), "A megadott azonosítóhoz nem tartozik kategória.");
-                return BadRequest(ModelState);
-            }
-            if(string.IsNullOrEmpty(putKategoria.Megnevezes) || string.IsNullOrWhiteSpace(putKategoria.Megnevezes))
-            {
-                ModelState.AddModelError(nameof(putKategoria.Megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
+                ModelState.AddModelError("Megnevezes", "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
 
@@ -170,32 +142,22 @@ namespace QExpress.Controllers
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
-            var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
 
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
                 ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
-            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
-            if (string.IsNullOrEmpty(kategoria.Megnevezes) || string.IsNullOrWhiteSpace(kategoria.Megnevezes))
-            {
-                ModelState.AddModelError(nameof(kategoria.Megnevezes), "A kategória neve nem lehet üres, vagy csak szóköz.");
-                return BadRequest(ModelState);
-            }
             if(!_context.Ceg.Any(c => c.Id == kategoria.CegId))
             {
-                ModelState.AddModelError(nameof(kategoria.CegId), "A megadott azonosítóhoz nem tartozik cég.");
+                ModelState.AddModelError("Ceghiba", "A megadott azonosítóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
-            if(ceg.Id != kategoria.CegId)
+
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            if (ceg.Id != kategoria.CegId)
             {
-                ModelState.AddModelError("Céghiba", "Nem adminja a megadott cégnek.");
+                ModelState.AddModelError("Ceghiba", "Nem adminja a megadott cégnek.");
                 return BadRequest(ModelState);
             }
 
@@ -220,26 +182,21 @@ namespace QExpress.Controllers
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
             var cegadmin = await _context.Felhasznalo.FindAsync(user_id);
-            if (cegadmin.jogosultsagi_szint != 3)
-            {
-                ModelState.AddModelError(nameof(cegadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
             if (!KategoriaExists(id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott azonosítóhoz nem tartozik kategória.");
+                ModelState.AddModelError("Megnevezes", "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                ModelState.AddModelError("Ceghiba", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
             var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
             var kategoria = await _context.Kategoria.FindAsync(id);
             if (ceg.Id != kategoria.CegId)
             {
-                ModelState.AddModelError("Céghiba", "Nem adminja a megadott cégnek.");
+                ModelState.AddModelError("Ceghiba", "Nem adminja a megadott cégnek.");
                 return BadRequest(ModelState);
             }
             var kategoria_sorszamai = await _context.Sorszam.Where(s => s.KategoriaId == kategoria.Id).ToListAsync();
