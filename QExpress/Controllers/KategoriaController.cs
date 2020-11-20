@@ -121,6 +121,11 @@ namespace QExpress.Controllers
                 ModelState.AddModelError("megnevezes", "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
+            if (_context.Kategoria.Any(k => k.Megnevezes.Equals(putKategoria.Megnevezes) && k.CegId == putKategoria.CegId))
+            {
+                ModelState.AddModelError("megnevezes", "A megadott névvel már létezik kategória.");
+                return BadRequest(ModelState);
+            }
 
             Kategoria kategoria = await _context.Kategoria.FindAsync(putKategoria.Id);
             kategoria.Megnevezes = putKategoria.Megnevezes;
@@ -158,6 +163,11 @@ namespace QExpress.Controllers
             if (ceg.Id != kategoria.CegId)
             {
                 ModelState.AddModelError("ceghiba", "Nem adminja a megadott cégnek.");
+                return BadRequest(ModelState);
+            }
+
+            if(_context.Kategoria.Any(k => k.Megnevezes.Equals(kategoria.Megnevezes) && k.CegId == kategoria.CegId)) {
+                ModelState.AddModelError("megnevezes", "A megadott névvel már létezik kategória.");
                 return BadRequest(ModelState);
             }
 
