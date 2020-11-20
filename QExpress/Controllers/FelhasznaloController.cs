@@ -373,24 +373,6 @@ namespace QExpress.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-
-            var felhasznalo = await _context.Felhasznalo.FindAsync(felhasznaloTelephely.FelhasznaloId);
-            if (felhasznalo.jogosultsagi_szint != 1)
-            {
-                ModelState.AddModelError("email", "A megadott azonosítóval rendelkező felhasználó már más pozíciót tölt be.");
-                return BadRequest(ModelState);
-            }
-            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
-            {
-                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik telephely.");
-                return BadRequest(ModelState);
-            }
-            if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
-            {
-                ModelState.AddModelError("email", "A megadott felhasználó már tartozik egy telephelyhez.");
-                return BadRequest(ModelState);
-            }
-
             var felhTelep = await _context.FelhasznaloTelephely.Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)).FirstAsync();
             felhTelep.TelephelyId = felhasznaloTelephely.TelephelyId;
             await _context.SaveChangesAsync();
