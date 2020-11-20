@@ -264,6 +264,11 @@ namespace QExpress.Controllers
                 ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
                 return BadRequest(ModelState);
             }
+            if (_context.Ceg.Any(c => c.CegadminId.Equals(ceg.CegadminId)))
+            {
+                ModelState.AddModelError("email", "A megadott felhasználó már egy másik cég adminja.");
+                return BadRequest(ModelState);
+            }
 
             var cegadmin = await _context.Felhasznalo.FindAsync(ceg.CegadminId);
             cegadmin.jogosultsagi_szint = 3;
