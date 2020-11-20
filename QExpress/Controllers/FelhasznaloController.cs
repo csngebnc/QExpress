@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
 using QExpress.Models;
@@ -42,8 +43,10 @@ namespace QExpress.Controllers
         /*
          * Osszes felhasznalo lekerese
          * api/Felhasznalo/GetFelhasznalok
+         * TODO: törölni
          */
         [HttpGet]
+        [Authorize]
         [Route("GetFelhasznalok")]
         public async Task<ActionResult<IEnumerable<FelhasznaloDTO>>> GetFelhasznalok()
         {
@@ -61,6 +64,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/GetFelhasznalo/{id}
          */
         [HttpGet("GetFelhasznalo/{id}")]
+        [Authorize]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznalo([FromRoute] String id)
         {
             if (!FelhasznaloExists(id))
@@ -79,6 +83,7 @@ namespace QExpress.Controllers
          * api/Felhasznalo/GetFelhasznaloByEmail/{email}
          */
         [HttpGet("GetFelhasznaloByEmail/{email}")]
+        [Authorize]
         public async Task<ActionResult<FelhasznaloDTO>> GetFelhasznaloByEmail([FromRoute] String email)
         {
             if(!_context.Felhasznalo.Any(f => f.Email.Equals(email)))
@@ -137,15 +142,10 @@ namespace QExpress.Controllers
          */
         [HttpGet]
         [Route("KorabbiSorszamok")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetKorabbiSorszamok()
         {
-            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
-                return BadRequest(ModelState);
-            }
-            string id = user.Value;
+            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Behívott")).ToListAsync();
             
             var dto = new List<SorszamDTO>();
@@ -167,15 +167,17 @@ namespace QExpress.Controllers
 
         [HttpGet]
         [Route("GetTelephelySorszamai")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetTelephelySorszamai()
         {
-            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
-            if(user == null)
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
+            var ugyintezo = await _context.Felhasznalo.FindAsync(user_id);
+            if(ugyintezo.jogosultsagi_szint != 2)
             {
-                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
+                ModelState.AddModelError("Jogosultság", "Nincs megfelelő jogosultságod a parancs végrehajtásához.");
                 return BadRequest(ModelState);
             }
-            string user_id = user.Value;
+
             var telephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var telephely = await _context.Telephely.FindAsync(telephelyHozzarendeles.TelephelyId);
 
@@ -205,6 +207,7 @@ namespace QExpress.Controllers
          */
         [HttpPut]
         [Route("NewEmail")]
+        [Authorize]
         public async Task<IActionResult> EditFelhasznaloEmail([FromBody] String uj_email)
         {
             if(User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier) == null)
@@ -237,6 +240,7 @@ namespace QExpress.Controllers
          */
         [HttpPut]
         [Route("NewPassword")]
+        [Authorize]
         public async Task<IActionResult> EditFelhasznaloJelszo([FromBody] String[] jelszavak)
         {
 
@@ -270,7 +274,10 @@ namespace QExpress.Controllers
             return CreatedAtAction(nameof(GetFelhasznalo), new { id = felh.Id }, dto);
         }
 
+
+        // TODO: ilyet ki tud?
         [HttpDelete("Delete/{id}")]
+        [Authorize]
         public async Task<ActionResult<FelhasznaloDTO>> DeleteFelhasznalo([FromRoute] String id)
         {
             if (!FelhasznaloExists(id))
@@ -328,23 +335,21 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("SetTelephely")]
+        [Authorize]
         public async Task<IActionResult> SetTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
-            if (!FelhasznaloExists(felhasznaloTelephely.FelhasznaloId))
-            {
-                ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott azonosítóhoz nem tartozik felhasználó.");
-                return BadRequest(ModelState);
-            }
+            // ID ellenőrzés nem kell, mert email alapján van megadva.
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
                 ModelState.AddModelError(nameof(felhasznaloTelephely.TelephelyId), "A megadott azonosítóhoz nem tartozik telephely.");
-                return BadRequest(ModelState);
             }
             if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
                 ModelState.AddModelError(nameof(felhasznaloTelephely.FelhasznaloId), "A megadott e-mail cím már egy másik telephelyhez regisztrálva van.");
-                return BadRequest(ModelState);
             }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
 
             Felhasznalo felh = _context.Felhasznalo.Where(f => f.Id.Equals(felhasznaloTelephely.FelhasznaloId)).First();
@@ -360,6 +365,7 @@ namespace QExpress.Controllers
 
         [HttpPut]
         [Route("UpdateUgyintezoTelephely")]
+        [Authorize]
         public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
             
@@ -394,6 +400,7 @@ namespace QExpress.Controllers
          */
         [HttpDelete]
         [Route("DelFromTelephely/{user_id}")]
+        [Authorize]
         public async Task<IActionResult> DelFromTelephely([FromRoute] String user_id)
         {
             if (!FelhasznaloExists(user_id))

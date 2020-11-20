@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NJsonSchema;
 using QExpress.Data;
@@ -14,6 +15,7 @@ namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SorszamController : Controller
     {
 
@@ -87,12 +89,37 @@ namespace QExpress.Controllers
         [HttpPut("{id}/Update")]
         public async Task<ActionResult<SorszamDTO>> UpdateSorszam([FromRoute] int id)
         {
-            // TODO: validál: csak az az ügyintéző updatelheti, akinek a telephelye megegyezik a sorszámhoz tartozó telephellyel
-            if (!SorszamExists(id))
-                return NotFound();
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
+            var ugyintezo = await _context.Felhasznalo.FindAsync(user_id);
+
+            if (ugyintezo.jogosultsagi_szint != 2)
+            {
+                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+            if(_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
+            {
+                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+            if (!SorszamExists(id))
+            {
+                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik sorszám.");
+                return BadRequest(ModelState);
+            }
+            var hozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var sorszam = await _context.Sorszam.FindAsync(id);
-            //TODO: ha már behívták, akkor err!!!
+            if(hozzarendeles.TelephelyId != sorszam.TelephelyId)
+            {
+                ModelState.AddModelError(nameof(ugyintezo.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
+            }
+            if (sorszam.Allapot.Equals("Behívott"))
+            {
+                ModelState.AddModelError(nameof(sorszam.Allapot), "A sorszámot már behívták.");
+                return BadRequest(ModelState);
+            }
             
             sorszam.Allapot = "Behívott";
 
@@ -108,17 +135,19 @@ namespace QExpress.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<SorszamDTO>> DeleteSorszam([FromRoute] int id)
         {
-            // TODO: ÜGYFÉL ÉS ÜGYINTÉZŐ IS TEHETI
-            var sorszam = await _context.Sorszam.FindAsync(id);
-            if (sorszam == null)
-            {
-                return NotFound();
-            }
+            string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
+            var felhasznalo = await _context.Felhasznalo.FindAsync(user_id);
+            if (!SorszamExists(id))
+            {
+                ModelState.AddModelError("Sorszam", "A megadott azonosítóval nem létezik sorszám.");
+                return BadRequest(ModelState);
+            }
+            var sorszam = await _context.Sorszam.FindAsync(id);
             _context.Sorszam.Remove(sorszam);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         //segédfüggvény - létezik e adott számú sorszám

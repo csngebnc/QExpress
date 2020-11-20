@@ -1,4 +1,5 @@
 ﻿using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
@@ -14,6 +15,7 @@ namespace QExpress.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UgyfLevelekController : Controller
     {
 
@@ -90,12 +92,13 @@ namespace QExpress.Controllers
         public async Task<ActionResult<IEnumerable<UgyfLevelekDTO>>> GetCegLevelei()
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
-            if(!_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId == user_id))
+            if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(user_id)))
             {
-                return NotFound();
+                ModelState.AddModelError("Jogosultság", "Nincs jogosultsága a parancs végrehajtásához.");
+                return BadRequest(ModelState);
             }
 
-            var egyTelephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId == user_id).FirstAsync();
+            var egyTelephelyHozzarendeles = await _context.FelhasznaloTelephely.Where(ft => ft.FelhasznaloId.Equals(user_id)).FirstAsync();
             var telephely = await _context.Telephely.Where(t => t.Id == egyTelephelyHozzarendeles.TelephelyId).FirstAsync();
 
             var ceg = await _context.Ceg.FindAsync(telephely.Ceg_id);
