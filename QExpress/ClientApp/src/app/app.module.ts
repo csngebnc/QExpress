@@ -31,73 +31,124 @@ import { RoleGuard } from 'src/api-authorization/role.guard';
 
 var routes = [
   {
-    component: EditUserComponent,
-    path: 'profile',
-  },
-
-  {
     component: HistoryComponent,
     path: 'history',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 1
+    }
   },
   {
     component: WaitingComponent,
-    path: 'waiting'
+    path: 'waiting',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 2
+    }
   },
   {
     component: CurrentComponent,
-    path: ''
+    path: '',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 1
+    }
   },
   {
     component: CompaniesComponent,
-    path: 'company/list'
+    path: 'company/list',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 4
+    }
   },
   {
     component: EditCompanyComponent,
-    path: 'company/edit/:companyid'
+    path: 'company/edit/:companyid',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 4
+    }
   },
   {
     component: RegistercompanyComponent,
-    path: 'company/add'
+    path: 'company/add',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 4
+    }
   },
   {
     component: EditsiteComponent,
-    path: 'site/edit/:siteid'
+    path: 'site/edit/:siteid',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: SitesComponent,
-    path: 'site/list'
+    path: 'site/list',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: AddsiteComponent,
-    path: 'site/add'
+    path: 'site/add',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: AddemployeeComponent,
-    path: 'employee/add'
+    path: 'employee/add',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: EditemployeeComponent,
-    path: 'employee/edit/:employeeid'
+    path: 'employee/edit/:employeeid',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: EmployeesComponent,
-    path: 'employee/list'
+    path: 'employee/list',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: EditcategoryComponent,
-    path: 'category/edit/:categoryid'
+    path: 'category/edit/:categoryid',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: AddCategoryComponent,
-    path: 'category/add'
+    path: 'category/add',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
   {
     component: CategoriesComponent,
-    path: 'category/list'
-  },
-  {
-    component: CurrentComponent,
-    path: ''
+    path: 'category/list',
+    canActivate: [RoleGuard],
+    data: {
+      expectedRole: 3
+    }
   },
 ];
 
@@ -141,7 +192,8 @@ var routes = [
     MatDialogModule,
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true},
+    RoleGuard
   ],
   bootstrap: [AppComponent]
 })
