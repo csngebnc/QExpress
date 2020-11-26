@@ -62,6 +62,7 @@ namespace QExpress.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
         }
 
         //GET
@@ -78,10 +79,12 @@ namespace QExpress.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new Felhasznalo { UserName = Input.Email, Email = Input.Email };
+                string username = Input.Email.Substring(0, Input.Email.IndexOf('@'));
+                var user = new Felhasznalo { UserName = username, Email = Input.Email, jogosultsagi_szint = 1, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    /*
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -104,6 +107,8 @@ namespace QExpress.Areas.Identity.Pages.Account
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
+                    */
+                    return LocalRedirect(Url.Content("~/Identity/Account/Login"));
                 }
                 foreach (var error in result.Errors)
                 {

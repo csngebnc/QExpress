@@ -109,13 +109,7 @@ namespace QExpress.Controllers
         [Route("AktivSorszamok")]
         public async Task<ActionResult<IEnumerable<SorszamDTO>>> GetFelhasznaloSorszamai()
         {
-            var user = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Nem vagy bejelentkezve.");
-                return BadRequest(ModelState);
-            }
-            string id = user.Value;
+            string id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
             var sorszamok = await _context.Sorszam.Where(s => s.UgyfelId.Equals(id) && s.Allapot.Equals("Aktív")).ToListAsync();
 
             var dto = new List<SorszamDTO>();
@@ -346,7 +340,7 @@ namespace QExpress.Controllers
             }
             if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
             {
-                ModelState.AddModelError("telephelyhiba", "A megadott azonosítóhoz nem tartozik telephely.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik telephely.");
             }
             if (_context.FelhasznaloTelephely.Any(ft => ft.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)))
             {
@@ -373,10 +367,14 @@ namespace QExpress.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateUgyintezoTelephely([FromBody] FelhasznaloTelephelyDTO felhasznaloTelephely)
         {
+            if (!_context.Telephely.Any(e => e.Id == felhasznaloTelephely.TelephelyId))
+            {
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik telephely.");
+                return BadRequest(ModelState);
+            }
             var felhTelep = await _context.FelhasznaloTelephely.Where(f => f.FelhasznaloId.Equals(felhasznaloTelephely.FelhasznaloId)).FirstAsync();
             felhTelep.TelephelyId = felhasznaloTelephely.TelephelyId;
             await _context.SaveChangesAsync();
-
 
             return Ok();
         }

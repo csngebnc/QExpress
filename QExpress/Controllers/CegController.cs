@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QExpress.Data;
@@ -6,9 +7,11 @@ using QExpress.Models;
 using QExpress.Models.DTOs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
 namespace QExpress.Controllers
 {
@@ -18,10 +21,12 @@ namespace QExpress.Controllers
     public class CegController : ControllerBase
     {
         private readonly QExpressDbContext _context;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public CegController(QExpressDbContext context)
+        public CegController(QExpressDbContext context, IWebHostEnvironment _webHostEnvironment)
         {
             _context = context;
+            webHostEnvironment = _webHostEnvironment;
         }
 
         /*
@@ -194,23 +199,18 @@ namespace QExpress.Controllers
          * params: id: ceg id-ja, ceg: CegDTO a frissitett adatokkal
          */
         [HttpPut("UpdateCeg")]
-        public async Task<IActionResult> UpdateCeg([FromBody] CegDTO ceg)
+        public async Task<IActionResult> UpdateCeg([FromForm] CegKepDTO ceg)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
             var szuperadmin = await _context.Felhasznalo.FindAsync(user_id);
 
-            if (szuperadmin.jogosultsagi_szint != 4)
-            {
-                ModelState.AddModelError(nameof(szuperadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
             if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
             {
-                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó.");
+                ModelState.AddModelError("email", "A megadott azonosítóhoz nem tartozik felhasználó. " + ceg.CegadminId);
                 return BadRequest(ModelState);
             }
-            if (_context.Ceg.Any(c => c.CegadminId.Equals(ceg.CegadminId)))
+            if (_context.Ceg.Any(c => c.CegadminId.Equals(ceg.CegadminId) && c.Id != ceg.Id))
             {
                 ModelState.AddModelError("email", "A megadott felhasználó már egy másik cég adminja.");
                 return BadRequest(ModelState);
@@ -232,6 +232,16 @@ namespace QExpress.Controllers
             frissitendo_ceg.CegadminId = ceg.CegadminId;
             frissitendo_ceg.nev = ceg.Nev;
 
+            var imagePath = await UploadFileGeneratePath(ceg.image, ceg.Id.ToString());
+
+            if (System.IO.File.Exists(Path.Combine(webHostEnvironment.WebRootPath, frissitendo_ceg.ImagePath)) && imagePath != null)
+                System.IO.File.Delete(Path.Combine(webHostEnvironment.WebRootPath, frissitendo_ceg.ImagePath));
+
+            if (imagePath != null)
+                frissitendo_ceg.ImagePath = imagePath;
+            else
+                frissitendo_ceg.ImagePath = "http://via.placeholder.com/160x160";
+
             await _context.SaveChangesAsync();
             var dto = new CegDTO(frissitendo_ceg);
 
@@ -248,17 +258,12 @@ namespace QExpress.Controllers
          */
         [HttpPost]
         [Route("AddCeg")]
-        public async Task<ActionResult<CegDTO>> AddCeg([FromBody] CegDTO ceg)
+        public async Task<ActionResult<CegKepDTO>> AddCeg([FromForm] CegKepDTO ceg)
         {
             string user_id = User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier).Value;
 
             var szuperadmin = await _context.Felhasznalo.FindAsync(user_id);
 
-            if (szuperadmin.jogosultsagi_szint != 4)
-            {
-                ModelState.AddModelError(nameof(szuperadmin.jogosultsagi_szint), "Nincs jogosultsága a parancs végrehajtásához.");
-                return BadRequest(ModelState);
-            }
             if (!_context.Felhasznalo.Any(f => f.Id.Equals(ceg.CegadminId)))
             {
                 ModelState.AddModelError(nameof(ceg.CegadminId), "A megadott azonosítóhoz nem tartozik felhasználó.");
@@ -272,16 +277,46 @@ namespace QExpress.Controllers
 
             var cegadmin = await _context.Felhasznalo.FindAsync(ceg.CegadminId);
             cegadmin.jogosultsagi_szint = 3;
-            Ceg ujCeg = new Ceg { nev = ceg.Nev, CegadminId = ceg.CegadminId };
-
+            Ceg ujCeg = new Ceg();
+            ujCeg.nev = ceg.Nev;
+            ujCeg.CegadminId = ceg.CegadminId;
+            Console.WriteLine(ujCeg.ImagePath);
             _context.Ceg.Add(ujCeg);
+
+            
             await _context.SaveChangesAsync();
+            var ceg_ujra = await _context.Ceg.Where(c => c.CegadminId.Equals(ceg.CegadminId)).FirstAsync();
+            var image_path = await UploadFileGeneratePath(ceg.image, ceg_ujra.Id.ToString());
 
+            if (image_path != null)
+                ceg_ujra.ImagePath = image_path;
+            else
+                ceg_ujra.ImagePath = "http://via.placeholder.com/160x160";
+
+            await _context.SaveChangesAsync();
             var dto = new CegDTO(ujCeg);
-
             return CreatedAtAction(nameof(GetCeg), new { id = ujCeg.Id }, dto);
         }
 
+
+        private async Task<string> UploadFileGeneratePath(IFormFile uploaded_file, String ceg_id)
+        {
+            string path = null;
+
+            if (uploaded_file != null)
+            {
+                string folder = Path.Combine(webHostEnvironment.WebRootPath, "Images", "Cegek");
+                string newFileName = ceg_id + Path.GetExtension(uploaded_file.FileName);
+
+                path = Path.Combine("Images", "Cegek", newFileName);
+
+                using (var fileStream = new FileStream(Path.Combine(folder, newFileName), FileMode.Create))
+                {
+                    await uploaded_file.CopyToAsync(fileStream);
+                }
+            }
+            return path;
+        }
 
         /*
          * A parameterkent kapott ID-val rendelkezo ceg torlese.
@@ -342,7 +377,9 @@ namespace QExpress.Controllers
             _context.Kategoria.RemoveRange(kategoriak);
             var cegadmin = await _context.Felhasznalo.Where(f => f.Id.Equals(ceg.CegadminId)).FirstAsync();
             cegadmin.jogosultsagi_szint = 1;
-
+            if(ceg.ImagePath != null)
+                if (System.IO.File.Exists(Path.Combine(webHostEnvironment.WebRootPath, ceg.ImagePath)))
+                    System.IO.File.Delete(Path.Combine(webHostEnvironment.WebRootPath, ceg.ImagePath));
 
             _context.Ceg.Remove(ceg);
             await _context.SaveChangesAsync();
@@ -381,7 +418,7 @@ namespace QExpress.Controllers
 
 
 
-
+        // DEADCODE -->
 
 
 

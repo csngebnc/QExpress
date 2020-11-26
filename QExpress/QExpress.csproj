@@ -35,6 +35,27 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20201121210630_Second.cs" />
+    <Compile Remove="Data\Migrations\20201121210630_Second.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201121210821_Init.cs" />
+    <Compile Remove="Data\Migrations\20201121210821_Init.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\admin\registercompany\mime-type.validator.ts" />
+    <None Remove="ClientApp\src\app\models\CompanyImage.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\admin\registercompany\mime-type.validator.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\CompanyImage.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

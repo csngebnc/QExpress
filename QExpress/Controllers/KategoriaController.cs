@@ -121,7 +121,7 @@ namespace QExpress.Controllers
                 ModelState.AddModelError("megnevezes", "A megadott azonosítóhoz nem tartozik kategória.");
                 return BadRequest(ModelState);
             }
-            if (_context.Kategoria.Any(k => k.Megnevezes.Equals(putKategoria.Megnevezes) && k.CegId == putKategoria.CegId))
+            if (_context.Kategoria.Any(k => k.Megnevezes.Equals(putKategoria.Megnevezes) && k.CegId == putKategoria.CegId && k.Id != putKategoria.Id))
             {
                 ModelState.AddModelError("megnevezes", "A megadott névvel már létezik kategória.");
                 return BadRequest(ModelState);
@@ -150,7 +150,7 @@ namespace QExpress.Controllers
 
             if (!_context.Ceg.Any(c => c.CegadminId.Equals(user_id)))
             {
-                ModelState.AddModelError(nameof(user_id), "A felhasználóhoz nem tartozik cég.");
+                ModelState.AddModelError("megnevezes", "A felhasználóhoz nem tartozik cég.");
                 return BadRequest(ModelState);
             }
 

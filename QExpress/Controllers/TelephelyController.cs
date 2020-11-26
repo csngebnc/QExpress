@@ -35,7 +35,7 @@ namespace QExpress.Controllers
         {
             if(!_context.Ceg.Any(c => c.Id == id))
             {
-                ModelState.AddModelError(nameof(id), "A megadott azonosítóval nem létezik cég.");
+                ModelState.AddModelError("address", "A megadott azonosítóval nem létezik cég.");
                 return BadRequest(ModelState);
             }
 
@@ -115,13 +115,12 @@ namespace QExpress.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (_context.Telephely.Any(t => t.Cim.Equals(telephely.Cim) && t.Ceg_id ==telephely.Ceg_id)) {
-                ModelState.AddModelError(nameof(telephely), "A megadott néven már létezik telephely.");
+            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
+            if(_context.Telephely.Any(t => t.Ceg_id == ceg.Id && t.Cim.Equals(telephely.Cim)))
+            {
+                ModelState.AddModelError("address", "A megadott néven már létezik telephely.");
                 return BadRequest(ModelState);
             }
-
-            var ceg = await _context.Ceg.Where(c => c.CegadminId.Equals(user_id)).FirstAsync();
-
             Telephely ujTelephely = new Telephely { Cim = telephely.Cim, Ceg_id = ceg.Id };
             _context.Telephely.Add(ujTelephely);
             await _context.SaveChangesAsync();
@@ -156,9 +155,9 @@ namespace QExpress.Controllers
                 ModelState.AddModelError("Telephely", "A megadott azonosítóval nem létezik telephely.");
                 return BadRequest(ModelState);
             }
-            if (_context.Telephely.Any(t => t.Cim.Equals(telephely.Cim) && t.Ceg_id == telephely.Ceg_id))
+            if (_context.Telephely.Any(t => t.Cim.Equals(telephely.Cim) && t.Ceg_id == telephely.Ceg_id && t.Id != telephely.Id))
             {
-                ModelState.AddModelError(nameof(telephely), "A megadott néven már létezik telephely.");
+                ModelState.AddModelError("address", "A megadott néven már létezik telephely.");
                 return BadRequest(ModelState);
             }
 

@@ -3,8 +3,9 @@ import { Company } from '../../models/Company';
 import { User } from '../../models/User';
 import { HttpService } from '../../http.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms'
+import { mimeType } from '../registercompany/mime-type.validator';
 
 @Component({
   selector: 'app-edit-company',
@@ -29,6 +30,10 @@ export class EditCompanyComponent implements OnInit {
         Validators.minLength(6),
         Validators.maxLength(20)
       ])],
+      companyimage: new FormControl(null,
+        [Validators.required],
+        [mimeType]
+      ),
       email: ['', Validators.compose([
         Validators.required,
         Validators.email,
@@ -78,15 +83,32 @@ export class EditCompanyComponent implements OnInit {
       valid = false;
     }
 
+    if (!this.form.get('companyimage').valid) {
+      valid = false;
+    }
+
     if (valid)
       this.onSubmit(data)
   }
 
+  onImagePicked(event: Event) {
+    this.form.get('companyimage').markAsTouched();
+
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({ companyimage: file });
+    this.form.get('companyimage').updateValueAndValidity();
+  }
+
   onSubmit(companyData) {
     this.httpService.getUserByEmail(companyData.email).subscribe((user: User) => {
+      const company_w_image = new FormData();
+      company_w_image.append('Id', this.activatedRoute.snapshot.paramMap.get('companyid'));
+      company_w_image.append('CegadminId', user.id);
+      company_w_image.append('Nev', companyData.name.trim());
+      company_w_image.append('image', companyData.companyimage);
       this.company.nev = companyData.name.trim();
       this.company.cegadminId = user.id;
-      this.httpService.editCompany(this.company).subscribe(
+      this.httpService.editCompany(company_w_image).subscribe(
         (c: Company) => this.router.navigate(['company/list']),
         (err) => this.errors = err.error
       );

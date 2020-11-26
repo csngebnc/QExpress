@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QExpress.Data;
 
-namespace QExpress.Data.Migrations
+namespace QExpress.Migrations
 {
     [DbContext(typeof(QExpressDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    partial class QExpressDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.7")
+                .HasAnnotation("ProductVersion", "3.1.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -244,7 +244,11 @@ namespace QExpress.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CegadminId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("nev")
                         .IsRequired()
@@ -333,7 +337,7 @@ namespace QExpress.Data.Migrations
                     b.Property<int>("TelephelyId")
                         .HasColumnType("int");
 
-                    b.HasKey("FelhasznaloId", "TelephelyId");
+                    b.HasKey("FelhasznaloId");
 
                     b.HasIndex("TelephelyId");
 
@@ -502,7 +506,9 @@ namespace QExpress.Data.Migrations
                 {
                     b.HasOne("QExpress.Models.Felhasznalo", "Cegadmin")
                         .WithMany("Ceg")
-                        .HasForeignKey("CegadminId");
+                        .HasForeignKey("CegadminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("QExpress.Models.FelhasznaloTelephely", b =>

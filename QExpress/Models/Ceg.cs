@@ -22,6 +22,8 @@ namespace QExpress.Models
         [Required]
         public String nev { get; set; }
 
+        public String ImagePath { get; set; }
+
         [ForeignKey("Cegadmin")]
         [Required]
         public String CegadminId { get; set; }

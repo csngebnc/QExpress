@@ -1,11 +1,13 @@
 
+import { HttpClient } from '@angular/common/http';
 import {Component, Input, OnInit, Output} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
-import { Company } from 'src/app/models/Company';
+import { CompanyImage } from 'src/app/models/CompanyImage';
 import {HttpService} from '../../http.service';
 import { User } from '../../models/User';
+import { mimeType } from './mime-type.validator';
 
 @Component({
   selector: 'app-registercompany',
@@ -18,23 +20,29 @@ export class RegistercompanyComponent implements OnInit {
   form: FormGroup;
   errors;
 
-  company: Company = {
+  company: CompanyImage = {
     id: 2,
     cegadminId: '',
-    nev: ''
+    nev: '',
+    image: {} as File
   }
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private httpService: HttpService,
+    private http: HttpClient,
     private router: Router,
     private formBuilder: FormBuilder) {
-      this.form = this.formBuilder.group({
-        name: ['', Validators.compose([
-          Validators.required,
-          Validators.minLength(6),
-          Validators.maxLength(20),
-        ])],
+    this.form = this.formBuilder.group({
+      name: ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(20),
+      ])],
+      companyimage: new FormControl(null,
+        [Validators.required],
+        [mimeType]
+      ),
         email: ['', Validators.compose([
           Validators.required,
           Validators.email,
@@ -75,21 +83,35 @@ export class RegistercompanyComponent implements OnInit {
       valid = false;
     }
 
+    if (!this.form.get('companyimage').valid) {
+      valid = false;
+    }
+
     if(valid)
       this.submitCompany(data)
+  }
+
+  onImagePicked(event: Event) {
+    this.form.get('companyimage').markAsTouched();
+
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({ companyimage: file });
+    this.form.get('companyimage').updateValueAndValidity();
   }
 
   submitCompany(data) {
     this.httpService.getUserByEmail(data.email).subscribe(
       (user: User) => {
-        this.company.cegadminId = user.id;
-        this.company.id = 0;
-        this.company.nev = data.name.trim()
-        this.httpService.addCompany(this.company).subscribe(
-          (c: Company) => this.router.navigate(['/company/list']),
+        const company_w_image = new FormData();
+        company_w_image.append('CegadminId', user.id);
+        company_w_image.append('Id', "0");
+        company_w_image.append('Nev', data.name.trim());
+        company_w_image.append('image', data.companyimage);
+        this.httpService.addCompany(company_w_image).subscribe(
+          (c: CompanyImage) => this.router.navigate(['/company/list']),
           (err) => this.errors = err.error
         );
-      }, 
+      },
       (err) => this.errors = err.error
     )
   }

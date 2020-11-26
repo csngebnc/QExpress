@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {Company} from './models/Company';
+import { Observable } from 'rxjs';
+import { Company } from './models/Company';
+import { CompanyImage } from './models/CompanyImage';
 import {Category} from './models/Category';
 import {UserSite} from './models/UserSite';
 import {User} from './models/User';
@@ -14,6 +15,7 @@ const httpOptions = {
     Authorization: 'my-auth-token'
   })
 };
+
 
 @Injectable({
   providedIn: 'root'
@@ -47,11 +49,21 @@ export class HttpService {
     // return this.httpClient.post(this.baseUrl + route, body);
   }
 
+    // POST kérés, HEADER nélkül
+  private postRequestWOH(route: String, body: any): Observable<any> {
+    return this.httpClient.post(this.baseUrl + route, body);
+  }
+
   // PUT kérés, a POST-hoz hasonló
   private putRequest(route: String, body): Observable<any> {
     return this.httpClient.put(this.baseUrl + route, body, httpOptions);
 
     // return this.httpClient.put(this.baseUrl + route, body);
+  }
+
+  // PUT kérés, HEADER nélkül
+  private putRequestWOH(route: String, body): Observable<any> {
+    return this.httpClient.put(this.baseUrl + route, body);
   }
 
   //// SORSZAMOK ////
@@ -83,8 +95,8 @@ export class HttpService {
     return this.getRequest('Ceg/GetCeg/' + id);
   }
 
-  public editCompany(company: Company): Observable<Company> {
-    return this.putRequest('Ceg/UpdateCeg', company);
+  public editCompany(company: FormData): Observable<Company> {
+    return this.putRequestWOH('Ceg/UpdateCeg', company);
   }
 
   // Cégek lekérése
@@ -99,8 +111,8 @@ export class HttpService {
   }
 
   // Egy cég hozzáadása
-  public addCompany(company: Company): Observable<Company> {
-    return this.postRequest('Ceg/AddCeg', company);
+  public addCompany(company: FormData): Observable<CompanyImage> {
+    return this.postRequestWOH('Ceg/AddCeg', company);
     //return this.httpClient.post<Company>(this.baseUrl + 'Ceg/AddCeg', company, httpOptions);
   }
 
