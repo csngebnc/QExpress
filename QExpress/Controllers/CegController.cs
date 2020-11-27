@@ -232,15 +232,12 @@ namespace QExpress.Controllers
             frissitendo_ceg.CegadminId = ceg.CegadminId;
             frissitendo_ceg.nev = ceg.Nev;
 
-            var imagePath = await UploadFileGeneratePath(ceg.image, ceg.Id.ToString());
 
-            if (System.IO.File.Exists(Path.Combine(webHostEnvironment.WebRootPath, frissitendo_ceg.ImagePath)) && imagePath != null)
+            if (System.IO.File.Exists(Path.Combine(webHostEnvironment.WebRootPath, frissitendo_ceg.ImagePath)) && ceg.image != null)
                 System.IO.File.Delete(Path.Combine(webHostEnvironment.WebRootPath, frissitendo_ceg.ImagePath));
 
-            if (imagePath != null)
-                frissitendo_ceg.ImagePath = imagePath;
-            else
-                frissitendo_ceg.ImagePath = "http://via.placeholder.com/160x160";
+            var imagePath = await UploadFileGeneratePath(ceg.image, ceg.Id.ToString());
+            frissitendo_ceg.ImagePath = imagePath;
 
             await _context.SaveChangesAsync();
             var dto = new CegDTO(frissitendo_ceg);
