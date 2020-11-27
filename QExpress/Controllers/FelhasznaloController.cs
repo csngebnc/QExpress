@@ -117,6 +117,7 @@ namespace QExpress.Controllers
             {
                 var ujDTO = new SorszamDTO(s);
                 var cegnev = (await _context.Ceg.FindAsync((await _context.Telephely.FindAsync(s.TelephelyId)).Ceg_id)).nev;
+                var cegid = (await _context.Ceg.FindAsync((await _context.Telephely.FindAsync(s.TelephelyId)).Ceg_id)).Id;
                 var telephelyCim = (await _context.Telephely.FindAsync(s.TelephelyId)).Cim;
                 var kategoriaNeve = (await _context.Kategoria.FindAsync(s.KategoriaId)).Megnevezes;
                 var sorbanAllok = (await _context.Sorszam.Where(ssz => ssz.TelephelyId == s.TelephelyId && ssz.Allapot.Equals("Aktív") && ssz.Idopont < s.Idopont).ToListAsync()).Count;
@@ -125,6 +126,7 @@ namespace QExpress.Controllers
                 ujDTO.Telephely = telephelyCim;
                 ujDTO.Kategoria = kategoriaNeve;
                 ujDTO.SorbanAllokSzama = sorbanAllok;
+                ujDTO.CegId = cegid;
                 dto.Add(ujDTO);
             }
             return dto;
@@ -147,10 +149,12 @@ namespace QExpress.Controllers
             {
                 var ujDTO = new SorszamDTO(s);
                 var cegnev = (await _context.Ceg.FindAsync((await _context.Telephely.FindAsync(s.TelephelyId)).Ceg_id)).nev;
+                var cegid = (await _context.Ceg.FindAsync((await _context.Telephely.FindAsync(s.TelephelyId)).Ceg_id)).Id;
                 var telephelyCim = (await _context.Telephely.FindAsync(s.TelephelyId)).Cim;
                 var kategoriaNeve = (await _context.Kategoria.FindAsync(s.KategoriaId)).Megnevezes;
 
                 ujDTO.Ceg = cegnev.ToString();
+                ujDTO.CegId = cegid;
                 ujDTO.Telephely = telephelyCim.ToString();
                 ujDTO.Kategoria = kategoriaNeve.ToString();
                 ujDTO.SorbanAllokSzama = 0;

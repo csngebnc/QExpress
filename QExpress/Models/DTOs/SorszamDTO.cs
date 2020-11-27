@@ -34,5 +34,6 @@ namespace QExpress.Models.DTOs
         public String Kategoria { get; set; }
         public String Ugyfel { get; set; }
         public String Ceg { get; set; }
+        public int CegId { get; set; }
     }
 }
