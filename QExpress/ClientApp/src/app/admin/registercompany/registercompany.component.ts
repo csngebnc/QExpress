@@ -36,7 +36,7 @@ export class RegistercompanyComponent implements OnInit {
     this.form = this.formBuilder.group({
       name: ['', Validators.compose([
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(3),
         Validators.maxLength(20),
       ])],
       companyimage: new FormControl(null,
@@ -73,8 +73,8 @@ export class RegistercompanyComponent implements OnInit {
     }
 
     //Nem megfelelő hosszúságú név
-    if(data.name.trim().length < 6 || data.name.trim().length > 20){
-      this.errors.Nev.push("A cég nevének 6 és 20 karakter között kell lennie!");
+    if(data.name.trim().length < 3 || data.name.trim().length > 20){
+      this.errors.Nev.push("A cég nevének 3 és 20 karakter között kell lennie!");
       valid = false;
     }
 

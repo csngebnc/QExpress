@@ -12,7 +12,7 @@
                   [checked]="company === selectedCompany"
                   (change)="onCompanyChanged(company.id)">
                 <label class="form-check-label" for="{{company.nev}}">
-                    <img src="../../../assets/upc.png" alt="">
+                    <img  [src]="company.imagePath" alt="">
                 </label>
               </div>
             </div>       

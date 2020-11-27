@@ -5,6 +5,9 @@
             <table class="table table-striped table-bordered">
                 <tr>
                     <th>
+                        Logó
+                    </th>
+                    <th>
                         Név
                     </th>
                     <th>
@@ -15,6 +18,9 @@
                     </th>
                 </tr>
                 <tr *ngFor="let c of companies">
+                    <td align="center">
+                        <img [src]="c.imagePath" class="mx-auto" style="max-width: 50px;" alt="">
+                    </td>
                     <td>
                         {{c.nev}}
                     </td>
