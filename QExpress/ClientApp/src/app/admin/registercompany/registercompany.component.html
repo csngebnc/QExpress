@@ -18,9 +18,9 @@
               {{e}}
             </div>
           </div>
-          <div *ngIf="form.get('companyimage').invalid">
-            <div class="alert alert-danger">
-              A kiválaszott fájl nem kép!
+          <div *ngIf="errors.image">
+            <div class="alert alert-danger" *ngFor="let e of errors.image">
+              {{e}}
             </div>
           </div>
         </div>

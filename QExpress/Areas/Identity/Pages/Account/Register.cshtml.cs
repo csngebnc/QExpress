@@ -48,6 +48,10 @@ namespace QExpress.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "Név")]
+            public string UserName { get; set; }
+            
+            [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -79,8 +83,7 @@ namespace QExpress.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                string username = Input.Email.Substring(0, Input.Email.IndexOf('@'));
-                var user = new Felhasznalo { UserName = username, Email = Input.Email, jogosultsagi_szint = 1, EmailConfirmed = true };
+                var user = new Felhasznalo { UserName = Input.UserName, Email = Input.Email, jogosultsagi_szint = 1, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

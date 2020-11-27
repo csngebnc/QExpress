@@ -31,8 +31,7 @@ export class EditCompanyComponent implements OnInit {
         Validators.maxLength(20)
       ])],
       companyimage: new FormControl(null,
-        [Validators.required],
-        [mimeType]
+        [mimeType],
       ),
       email: ['', Validators.compose([
         Validators.required,
@@ -83,7 +82,9 @@ export class EditCompanyComponent implements OnInit {
       valid = false;
     }
 
-    if (!this.form.get('companyimage').valid) {
+    //Valid kép
+    if (this.form.get('companyimage') && !this.form.get('companyimage').valid) {
+      this.errors.image.push("A kiválaszott fájl nem kép!")
       valid = false;
     }
 

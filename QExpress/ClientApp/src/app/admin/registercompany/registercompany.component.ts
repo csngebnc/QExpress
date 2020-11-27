@@ -60,7 +60,8 @@ export class RegistercompanyComponent implements OnInit {
     
     this.errors = {
       'Nev': [],
-      'email': []
+      'email': [],
+      'image': []
     }
 
     var valid = true;
@@ -83,7 +84,15 @@ export class RegistercompanyComponent implements OnInit {
       valid = false;
     }
 
-    if (!this.form.get('companyimage').valid) {
+    //Üres logó
+    if(!this.form.get('companyimage').touched){
+      this.errors.image.push("Nincsen feltöltött cég logó!")
+      valid = false;
+    }
+
+    //Valid kép
+    else if (!this.form.get('companyimage').valid) {
+      this.errors.image.push("A kiválaszott fájl nem kép!")
       valid = false;
     }
 

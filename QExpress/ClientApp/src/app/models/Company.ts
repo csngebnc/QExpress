@@ -2,6 +2,7 @@ import { User } from "./User";
 
 export interface Company{
   id: number;
-  nev: string;
-  cegadminId: string;
+  nev: String;
+  cegadminId: String;
+  imagePath: String;
 }

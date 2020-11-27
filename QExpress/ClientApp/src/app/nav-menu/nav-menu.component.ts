@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service'
 import { HttpService } from 'src/app/http.service'
 import { User } from '../models/User'
@@ -14,7 +15,8 @@ export class NavMenuComponent implements OnInit{
 
   // user level 4: cegek
   // user level 3: kategoriak, alkalmazottak, telephelyek
-  public user_level: number;
+
+  user$: Observable<User>
 
   constructor(private authorizeService: AuthorizeService, private httpService: HttpService){
 
@@ -29,10 +31,6 @@ export class NavMenuComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.httpService.getCurrentUser().subscribe(
-      (u: User) => {
-        this.user_level = u['jogosultsagi_szint'];
-      });
-    console.log(this.user_level);
+    this.user$ = this.httpService.getCurrentUser()
   }
 }
