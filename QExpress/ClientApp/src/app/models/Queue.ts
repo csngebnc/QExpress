@@ -14,5 +14,6 @@ export interface Queue{
     telephely: String,
     kategoria: String,
     ugyfel: String,
-    ceg: String
+    ceg: String,
+    cegId: Number
 }
