@@ -19,13 +19,6 @@ export const mimeType = (
           case "89504e47":
             isValid = true;
             break;
-          case "ffd8ffe0":
-          case "ffd8ffe1":
-          case "ffd8ffe2":
-          case "ffd8ffe3":
-          case "ffd8ffe8":
-            isValid = true;
-            break;
           default:
             isValid = false; // Or you can use the blob.type as fallback
             break;

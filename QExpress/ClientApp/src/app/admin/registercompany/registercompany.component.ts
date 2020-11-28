@@ -92,7 +92,7 @@ export class RegistercompanyComponent implements OnInit {
 
     //Valid kép
     else if (!this.form.get('companyimage').valid) {
-      this.errors.image.push("A kiválaszott fájl nem kép!")
+      this.errors.image.push("A kiválaszott fájl nem .png kép!")
       valid = false;
     }
 

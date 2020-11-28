@@ -84,7 +84,7 @@ export class EditCompanyComponent implements OnInit {
 
     //Valid kép
     if (this.form.get('companyimage') && !this.form.get('companyimage').valid) {
-      this.errors.image.push("A kiválaszott fájl nem kép!")
+      this.errors.image.push("A kiválaszott fájl nem .png kép!")
       valid = false;
     }
 
